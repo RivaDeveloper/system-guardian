@@ -66,7 +66,7 @@
                                     </StackPanel>
                                     <TextBlock Grid.Column="1" Text="{x:Bind Version}" />
                                     <TextBlock Grid.Column="2" Text="{x:Bind DateText}" />
-                                    <TextBlock Grid.Column="3" Text="{x:Bind Status}" />
+                                    <TextBlock Grid.Column="3" Text="{x:Bind Status}" Foreground="{x:Bind StatusBrush}" />
                                 </Grid>
                             </DataTemplate>
                         </ListView.ItemTemplate>

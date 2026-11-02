@@ -8,29 +8,45 @@ public sealed partial class OverviewPage : Page
 {
     readonly DefenderService _defender = new();
 
-    public OverviewPage() => InitializeComponent();
+    public OverviewPage()
+    {
+        InitializeComponent();
+        NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
+    }
 
     async void Page_Loaded(object sender, RoutedEventArgs e) => await RefreshAsync();
 
     async void Refresh_Click(object sender, RoutedEventArgs e) => await RefreshAsync();
 
+    void Shortcut_Click(object sender, RoutedEventArgs e) =>
+        App.MainWindow.NavigateTo((string)((Button)sender).Tag);
+
     async Task RefreshAsync()
     {
-        AdminText.Text = Elevation.IsElevated
-            ? "Administrator: yes"
-            : "Administrator: no (restart as administrator for drivers and repairs)";
+        var admin = Elevation.IsElevated;
+        AdminValue.Text = admin ? "Administrator" : "Standard";
+        AdminDot.Fill = admin ? Tones.Good : Tones.Warn;
+        AdminDetail.Text = admin ? "Drivers and repairs are unlocked." : "Restart as administrator for drivers and repairs.";
+
         Busy.IsActive = true;
         try
         {
             var s = await _defender.GetStatusAsync();
             if (s is null)
             {
-                DefenderText.Text = "Windows Defender: status unavailable (another antivirus may be managing protection).";
-                SignatureText.Text = "";
+                ProtectionValue.Text = "Unknown";
+                ProtectionDot.Fill = Tones.Neutral;
+                ProtectionDetail.Text = "Another antivirus may be managing protection.";
+                DefinitionsValue.Text = "—";
+                DefinitionsDetail.Text = "";
                 return;
             }
-            DefenderText.Text = $"Windows Defender: {(s.Enabled ? "on" : "OFF")}, real-time protection {(s.RealTime ? "on" : "OFF")}";
-            SignatureText.Text = $"Virus definitions: {s.SignatureVersion} (updated {s.SignaturesUpdated})";
+            var healthy = s.Enabled && s.RealTime;
+            ProtectionValue.Text = healthy ? "Protected" : "At risk";
+            ProtectionDot.Fill = healthy ? Tones.Good : Tones.Bad;
+            ProtectionDetail.Text = $"Defender {(s.Enabled ? "on" : "OFF")}, real-time protection {(s.RealTime ? "on" : "OFF")}.";
+            DefinitionsValue.Text = s.SignatureVersion;
+            DefinitionsDetail.Text = $"Updated {s.SignaturesUpdated}";
         }
         finally { Busy.IsActive = false; }
     }

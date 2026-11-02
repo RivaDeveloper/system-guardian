@@ -11,6 +11,7 @@ public sealed class ThreatInfo(string id, string name, int severity, bool active
     public bool Active { get; set; } = active;
     public string Resources { get; set; } = resources;
     public string SeverityText => Severity switch { 1 => "Low", 2 => "Moderate", 4 => "High", 5 => "Severe", _ => "Unknown" };
+    public Microsoft.UI.Xaml.Media.Brush StateBrush => Active ? Tones.Bad : Tones.Good;
     public string StateText => Active ? "Active" : "Quarantined / resolved";
 }
 

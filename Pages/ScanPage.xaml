@@ -39,7 +39,7 @@
                                 <StackPanel Padding="0,6">
                                     <TextBlock Text="{x:Bind Name}" FontWeight="SemiBold" />
                                     <TextBlock Text="{x:Bind Resources}" Opacity="0.7" TextWrapping="Wrap" />
-                                    <TextBlock Opacity="0.7">
+                                    <TextBlock Foreground="{x:Bind StateBrush}">
                                         <Run Text="{x:Bind SeverityText}" /> · <Run Text="{x:Bind StateText}" />
                                     </TextBlock>
                                 </StackPanel>
@@ -70,7 +70,7 @@
                             <DataTemplate x:DataType="m:VtResult">
                                 <StackPanel Padding="0,6">
                                     <TextBlock Text="{x:Bind FileName}" FontWeight="SemiBold" />
-                                    <TextBlock Text="{x:Bind VerdictText}" />
+                                    <TextBlock Text="{x:Bind VerdictText}" Foreground="{x:Bind VerdictBrush}" />
                                     <TextBlock Text="{x:Bind FilePath}" Opacity="0.6" TextTrimming="CharacterEllipsis" />
                                 </StackPanel>
                             </DataTemplate>

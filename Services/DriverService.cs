@@ -13,6 +13,7 @@ public sealed class DriverInfo(string name, string manufacturer, string version,
     // In-box Microsoft drivers are routinely dated 2006, so they are not treated as stale.
     public bool IsOld => Date is { } d && (DateTime.Today - d).TotalDays > 365 * 3
         && !Manufacturer.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase);
+    public Microsoft.UI.Xaml.Media.Brush StatusBrush => IsOld ? Tones.Warn : Tones.Good;
     public string DateText => Date?.ToString("yyyy-MM-dd") ?? "";
     public string Status => Date is { } d && IsOld ? $"Old ({(DateTime.Today - d).TotalDays / 365:0.0} yrs)" : "OK";
 }

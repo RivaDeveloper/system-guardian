@@ -19,6 +19,13 @@ public sealed class VtResult(string filePath, string sha256, VtVerdict verdict, 
     public int Total { get; set; } = total;
     public string Note { get; set; } = note;
     public string FileName => Path.GetFileName(FilePath);
+    public Microsoft.UI.Xaml.Media.Brush VerdictBrush => Verdict switch
+    {
+        VtVerdict.Clean => Tones.Good,
+        VtVerdict.Suspicious => Tones.Warn,
+        VtVerdict.Malicious or VtVerdict.Error => Tones.Bad,
+        _ => Tones.Neutral,
+    };
     public string VerdictText => Verdict switch
     {
         VtVerdict.Clean => $"Clean ({Total} engines)",

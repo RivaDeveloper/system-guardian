@@ -1,5 +1,6 @@
 using Guardian.Pages;
 using Guardian.Services;
+using Microsoft.UI;
 using Microsoft.UI.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -12,12 +13,25 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        SystemBackdrop = new Microsoft.UI.Xaml.Media.MicaBackdrop();
-        AppWindow.Resize(new SizeInt32(1180, 780));
+        AppWindow.Resize(new SizeInt32(1240, 820));
         Title = Elevation.IsElevated ? "Guardian (administrator)" : "Guardian";
+
+        // Draw our own title bar over the ambient background.
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
+        var bar = AppWindow.TitleBar;
+        bar.ButtonBackgroundColor = Colors.Transparent;
+        bar.ButtonInactiveBackgroundColor = Colors.Transparent;
+        bar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 238, 240, 247);
 
         AdminBar.IsOpen = !Elevation.IsElevated;
         Nav.SelectedItem = Nav.MenuItems[0];
+    }
+
+    public void NavigateTo(string tag)
+    {
+        foreach (var item in Nav.MenuItems.OfType<NavigationViewItem>())
+            if ((string)item.Tag == tag) { Nav.SelectedItem = item; return; }
     }
 
     void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
