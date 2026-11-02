@@ -1,0 +1,19 @@
+<Page
+    x:Class="Guardian.Pages.OverviewPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Loaded="Page_Loaded">
+    <StackPanel Margin="32,24" Spacing="12" MaxWidth="760" HorizontalAlignment="Left">
+        <TextBlock Text="Overview" Style="{StaticResource TitleTextBlockStyle}" />
+        <TextBlock x:Name="AdminText" />
+        <TextBlock x:Name="DefenderText" TextWrapping="Wrap" />
+        <TextBlock x:Name="SignatureText" />
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <Button x:Name="RefreshButton" Content="Refresh" Click="Refresh_Click" />
+            <Button x:Name="UpdateButton" Content="Update virus definitions" Click="Update_Click" />
+            <ProgressRing x:Name="Busy" IsActive="False" Width="20" Height="20" />
+        </StackPanel>
+        <TextBlock Margin="0,16,0,0" TextWrapping="Wrap" Opacity="0.7"
+                   Text="Guardian never deletes or quarantines anything on its own. Every removal, driver install and repair is started by you." />
+    </StackPanel>
+</Page>

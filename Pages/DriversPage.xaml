@@ -1,0 +1,78 @@
+<Page
+    x:Class="Guardian.Pages.DriversPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:Guardian.Services">
+    <Grid Margin="32,24,32,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Drivers" Style="{StaticResource TitleTextBlockStyle}" Margin="0,0,0,12" />
+
+        <Pivot Grid.Row="1">
+            <PivotItem Header="Available updates">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="CheckButton" Content="Check Windows Update" Click="Check_Click" Style="{StaticResource AccentButtonStyle}" />
+                        <Button x:Name="InstallButton" Content="Install selected" Click="Install_Click" IsEnabled="False" />
+                        <ProgressRing x:Name="UpdateBusy" IsActive="False" Width="20" Height="20" />
+                    </StackPanel>
+                    <TextBlock x:Name="UpdateStatus" Grid.Row="1" TextWrapping="Wrap" />
+                    <ListView x:Name="UpdatesList" Grid.Row="2" ItemsSource="{x:Bind Updates}" SelectionMode="Multiple"
+                              SelectionChanged="UpdatesList_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="m:DriverUpdate">
+                                <StackPanel Padding="0,6">
+                                    <TextBlock Text="{x:Bind Title}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{x:Bind Subtitle}" Opacity="0.7" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+
+            <PivotItem Header="Installed drivers">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="ScanButton" Content="Scan installed drivers" Click="Scan_Click" />
+                        <ProgressRing x:Name="ScanBusy" IsActive="False" Width="20" Height="20" />
+                    </StackPanel>
+                    <TextBlock x:Name="ScanStatus" Grid.Row="1" TextWrapping="Wrap" />
+                    <ListView Grid.Row="2" ItemsSource="{x:Bind Installed}" SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="m:DriverInfo">
+                                <Grid Padding="0,6" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="140" />
+                                        <ColumnDefinition Width="110" />
+                                        <ColumnDefinition Width="110" />
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel>
+                                        <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{x:Bind Manufacturer}" Opacity="0.6" TextTrimming="CharacterEllipsis" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="1" Text="{x:Bind Version}" />
+                                    <TextBlock Grid.Column="2" Text="{x:Bind DateText}" />
+                                    <TextBlock Grid.Column="3" Text="{x:Bind Status}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>
