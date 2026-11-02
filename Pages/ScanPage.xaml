@@ -55,7 +55,7 @@
                                             <TextBlock Text="{x:Bind SeverityText}" Foreground="{x:Bind SeverityBrush}" FontSize="11" FontWeight="Bold"
                                                        CharacterSpacing="80" VerticalAlignment="Top" Margin="0,3,0,0" />
                                             <StackPanel Grid.Column="1" Spacing="2">
-                                                <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="14" TextWrapping="Wrap" />
+                                                <TextBlock Text="{x:Bind Title}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="21" TextWrapping="Wrap" />
                                                 <TextBlock Text="{x:Bind Subtitle}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextTrimming="CharacterEllipsis" />
                                             </StackPanel>
                                         </Grid>
@@ -69,7 +69,7 @@
                                     <ScrollViewer x:Name="DetailsScroll" Visibility="Collapsed">
                                         <StackPanel Spacing="10">
                                             <TextBlock x:Name="DetailSeverity" FontSize="11" FontWeight="Bold" CharacterSpacing="100" />
-                                            <TextBlock x:Name="DetailTitle" FontFamily="{StaticResource DisplayBoldFont}" FontSize="18" TextWrapping="Wrap" />
+                                            <TextBlock x:Name="DetailTitle" FontFamily="{StaticResource DisplayBoldFont}" FontSize="25" TextWrapping="Wrap" />
                                             <TextBlock Text="WHY IT WAS FLAGGED" Style="{StaticResource CardLabelStyle}" Margin="0,6,0,0" />
                                             <TextBlock x:Name="DetailReasons" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
                                             <TextBlock Text="WHAT TO DO" Style="{StaticResource CardLabelStyle}" Margin="0,6,0,0" />
@@ -118,7 +118,7 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="m:ThreatInfo">
                                     <StackPanel Padding="0,10" Spacing="2">
-                                        <TextBlock Text="{x:Bind Name}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="15" />
+                                        <TextBlock Text="{x:Bind Name}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="22" />
                                         <TextBlock Text="{x:Bind Resources}" Foreground="{StaticResource MutedBrush}" FontSize="12" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
                                         <TextBlock Foreground="{x:Bind StateBrush}">
                                             <Run Text="{x:Bind SeverityText}" /> · <Run Text="{x:Bind StateText}" />
@@ -151,7 +151,7 @@
                             <ListView.ItemTemplate>
                                 <DataTemplate x:DataType="m:VtResult">
                                     <StackPanel Padding="0,10" Spacing="2">
-                                        <TextBlock Text="{x:Bind FileName}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="15" />
+                                        <TextBlock Text="{x:Bind FileName}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="22" />
                                         <TextBlock Text="{x:Bind VerdictText}" Foreground="{x:Bind VerdictBrush}" />
                                         <TextBlock Text="{x:Bind FilePath}" Opacity="0.6" TextTrimming="CharacterEllipsis" />
                                     </StackPanel>

@@ -86,13 +86,14 @@
                     </Grid.RowDefinitions>
                     <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
                                Text="Save a copy of every third-party driver installed on this PC, so you can put them back after a reinstall or a bad update. Needs administrator rights. Backups go to Documents\Guardian driver backups." />
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button x:Name="BackupButton" Content="Back up all drivers" Click="Backup_Click" Style="{StaticResource AccentButtonStyle}" />
                         <Button x:Name="RestoreDriversButton" Content="Restore selected" Click="RestoreDrivers_Click" IsEnabled="False" />
                         <Button Content="Open folder" Click="OpenBackups_Click" />
-                        <ProgressRing x:Name="BackupBusy" IsActive="False" Width="20" Height="20" />
-                        <TextBlock x:Name="BackupStatus" VerticalAlignment="Center" TextWrapping="Wrap" />
-                    </StackPanel>
+                        <ProgressRing x:Name="BackupBusy" IsActive="False" Width="20" Height="20" /></StackPanel>
+            <TextBlock x:Name="BackupStatus" TextWrapping="Wrap" />
+        </StackPanel>
                     <ListView x:Name="BackupsList" Grid.Row="2" ItemsSource="{x:Bind Backups}" SelectionMode="Single"
                               SelectionChanged="BackupsList_SelectionChanged">
                         <ListView.ItemTemplate>

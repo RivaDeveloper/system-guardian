@@ -24,12 +24,13 @@
                     </Grid.RowDefinitions>
                     <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
                                Text="Finds leftover entries that point at programs, uninstallers, fonts, COM objects, context-menu items and file types that no longer exist, in HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER and HKEY_CLASSES_ROOT. Every fix is saved to a backup first, so you can undo it from the Restore tab." />
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button x:Name="RegScanButton" Content="Scan registry" Click="RegScan_Click" Style="{StaticResource AccentButtonStyle}" />
                         <Button x:Name="RegFixButton" Content="Fix selected" Click="RegFix_Click" IsEnabled="False" />
-                        <ProgressRing x:Name="RegBusy" IsActive="False" Width="20" Height="20" />
-                        <TextBlock x:Name="RegStatus" VerticalAlignment="Center" TextWrapping="Wrap" />
-                    </StackPanel>
+                        <ProgressRing x:Name="RegBusy" IsActive="False" Width="20" Height="20" /></StackPanel>
+            <TextBlock x:Name="RegStatus" TextWrapping="Wrap" />
+        </StackPanel>
                     <ListView x:Name="RegList" Grid.Row="2" ItemsSource="{x:Bind RegIssues}" SelectionMode="Multiple"
                               SelectionChanged="RegList_SelectionChanged">
                         <ListView.ItemTemplate>
@@ -54,12 +55,13 @@
                     </Grid.RowDefinitions>
                     <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
                                Text="Temporary files and caches that Windows and apps rebuild by themselves. Only files older than a day are removed. Your documents, downloads and the recycle bin are never touched." />
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button x:Name="JunkScanButton" Content="Scan for junk" Click="JunkScan_Click" Style="{StaticResource AccentButtonStyle}" />
                         <Button x:Name="JunkCleanButton" Content="Clean selected" Click="JunkClean_Click" IsEnabled="False" />
-                        <ProgressRing x:Name="JunkBusy" IsActive="False" Width="20" Height="20" />
-                        <TextBlock x:Name="JunkStatus" VerticalAlignment="Center" TextWrapping="Wrap" />
-                    </StackPanel>
+                        <ProgressRing x:Name="JunkBusy" IsActive="False" Width="20" Height="20" /></StackPanel>
+            <TextBlock x:Name="JunkStatus" TextWrapping="Wrap" />
+        </StackPanel>
                     <ListView x:Name="JunkList" Grid.Row="2" ItemsSource="{x:Bind JunkItems}" SelectionMode="Multiple"
                               SelectionChanged="JunkList_SelectionChanged">
                         <ListView.ItemTemplate>
@@ -91,11 +93,12 @@
                     </Grid.RowDefinitions>
                     <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
                                Text="Each registry fix keeps a backup. Pick one and restore it to put the entries back exactly as they were. Restoring machine-wide entries needs administrator rights." />
-                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                    <StackPanel Grid.Row="1" Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
                         <Button x:Name="RestoreButton" Content="Restore selected" Click="Restore_Click" IsEnabled="False" Style="{StaticResource AccentButtonStyle}" />
-                        <Button Content="Open backups folder" Click="OpenBackups_Click" />
-                        <TextBlock x:Name="RestoreStatus" VerticalAlignment="Center" TextWrapping="Wrap" />
-                    </StackPanel>
+                        <Button Content="Open backups folder" Click="OpenBackups_Click" /></StackPanel>
+            <TextBlock x:Name="RestoreStatus" TextWrapping="Wrap" />
+        </StackPanel>
                     <ListView x:Name="BackupList" Grid.Row="2" ItemsSource="{x:Bind Backups}" SelectionMode="Single"
                               SelectionChanged="BackupList_SelectionChanged">
                         <ListView.ItemTemplate>

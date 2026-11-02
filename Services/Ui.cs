@@ -41,6 +41,9 @@ public static class Ui
     /// Classic Win32 folder dialog. The WinRT FolderPicker throws inside elevated processes,
     /// and Guardian is often run as administrator, so it can't be used here.
     /// </summary>
+    public static Task<string?> PickFileAsync(string title) =>
+        Task.FromResult(FolderDialog.PickFile(WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow), title));
+
     public static Task<string?> PickFolderAsync() =>
         Task.FromResult(FolderDialog.Pick(WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow), "Choose a folder"));
 }

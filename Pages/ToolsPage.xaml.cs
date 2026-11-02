@@ -4,30 +4,47 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Guardian.Pages;
 
-public sealed class ToolTile(string key, string name, string glyph)
+public sealed class ToolTile(string key, string name, string description, string glyph)
 {
     public string Key { get; set; } = key;
     public string Name { get; set; } = name;
+    public string Description { get; set; } = description;
     public string Glyph { get; set; } = glyph;
 }
 
 public sealed partial class ToolsPage : Page
 {
-    public ObservableCollection<ToolTile> Tiles { get; } = new()
+    public ObservableCollection<ToolTile> Cleaning { get; } = new()
     {
-        new("startup", "Startup manager", ""),
-        new("uninstall", "Uninstall manager", ""),
-        new("processes", "Process manager", ""),
-        new("diskspace", "Disk space analyzer", ""),
-        new("duplicates", "Duplicate files finder", ""),
-        new("emptyfolders", "Empty folders finder", ""),
-        new("sysinfo", "System information", ""),
-        new("link:cleanup:1", "Disk cleanup", ""),
-        new("link:cleanup:0", "Registry repair", ""),
-        new("link:drivers", "Driver manager", ""),
-        new("link:apps", "Software update", ""),
-        new("link:repair", "System repair", ""),
-        new("link:scan", "Virus scan", ""),
+        new("link:cleanup:1", "Disk cleanup", "Clear temp files and caches", ""),
+        new("link:cleanup:0", "Registry repair", "Fix leftover registry entries", ""),
+        new("debloat", "Debloat", "Remove pre-installed apps you don't use", ""),
+        new("tracks", "Tracks eraser", "Clear recent files, history and browser cache", ""),
+        new("duplicates", "Duplicate files", "Find identical files taking up space", ""),
+        new("emptyfolders", "Empty folders", "Find and remove folders with nothing in them", ""),
+        new("shortcuts", "Shortcut fixer", "Repair or remove broken shortcuts", ""),
+        new("uninstall", "Uninstall manager", "Remove programs you no longer use", ""),
+    };
+
+    public ObservableCollection<ToolTile> Speed { get; } = new()
+    {
+        new("startup", "Startup manager", "Choose what starts with Windows", ""),
+        new("processes", "Process manager", "See what's running and end what's stuck", ""),
+        new("diskspace", "Disk space analyzer", "See which folders take the most space", ""),
+    };
+
+    public ObservableCollection<ToolTile> Hardware { get; } = new()
+    {
+        new("link:drivers", "Driver manager", "Check, back up and restore drivers", ""),
+        new("link:apps", "Software update", "Update your apps through winget", ""),
+        new("bios", "BIOS update assistant", "Safe checks before a BIOS update", ""),
+        new("sysinfo", "System information", "Your PC's hardware and Windows details", ""),
+    };
+
+    public ObservableCollection<ToolTile> Protect { get; } = new()
+    {
+        new("link:scan", "Virus scan", "Deep scan, Defender and VirusTotal", ""),
+        new("link:repair", "System repair", "Repair Windows files with DISM and SFC", ""),
     };
 
     public ToolsPage()
@@ -56,6 +73,10 @@ public sealed partial class ToolsPage : Page
             "duplicates" => typeof(DuplicatesToolPage),
             "emptyfolders" => typeof(EmptyFoldersToolPage),
             "sysinfo" => typeof(SysInfoToolPage),
+            "bios" => typeof(BiosToolPage),
+            "debloat" => typeof(DebloatToolPage),
+            "shortcuts" => typeof(ShortcutToolPage),
+            "tracks" => typeof(TracksToolPage),
             _ => null,
         };
         if (page == null) return;

@@ -49,13 +49,18 @@ internal static class FolderDialog
     }
 
     /// <summary>Returns the chosen folder, or null if the user cancelled.</summary>
-    public static string? Pick(IntPtr owner, string title)
+    public static string? Pick(IntPtr owner, string title) => Show(owner, title, true);
+
+    /// <summary>Returns the chosen file, or null if the user cancelled.</summary>
+    public static string? PickFile(IntPtr owner, string title) => Show(owner, title, false);
+
+    static string? Show(IntPtr owner, string title, bool folders)
     {
         var dialog = (IFileDialog)new FileOpenDialogCoClass();
         try
         {
             dialog.GetOptions(out var options);
-            dialog.SetOptions(options | FOS_PICKFOLDERS | FOS_FORCEFILESYSTEM);
+            dialog.SetOptions(options | (folders ? FOS_PICKFOLDERS : 0) | FOS_FORCEFILESYSTEM);
             dialog.SetTitle(title);
 
             if (dialog.Show(owner) != 0) return null; // cancelled (HRESULT_FROM_WIN32(ERROR_CANCELLED)) or failed

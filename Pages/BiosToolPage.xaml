@@ -1,0 +1,77 @@
+<Page
+    x:Class="Guardian.Pages.BiosToolPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ScrollViewer>
+        <StackPanel Spacing="14" MaxWidth="760" HorizontalAlignment="Left" Margin="0,0,16,24">
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="How Guardian handles BIOS updates" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                               Text="A failed BIOS flash can leave a PC unable to start, so Guardian never writes firmware itself. It reads your current version, helps you find the right update from the manufacturer, runs the protective steps, and checks the file you download. The flash is then done with the manufacturer's own tool." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="1. Your current BIOS" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <ProgressRing x:Name="InfoBusy" IsActive="True" Width="20" Height="20" HorizontalAlignment="Left" />
+                    <TextBlock x:Name="InfoText" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="SaveInfoButton" Content="Save this information" Click="SaveInfo_Click" IsEnabled="False" />
+                        <TextBlock x:Name="SaveStatus" VerticalAlignment="Center" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="2. Find an update" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                               Text="Only update if you need to: a fix for a problem you have, a new CPU you're installing, or a security fix. A PC that works fine doesn't need a new BIOS. Always download from the manufacturer's own site." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="VendorButton" Content="Search the manufacturer's site" Click="Vendor_Click" IsEnabled="False" />
+                        <Button x:Name="WuButton" Content="Check Windows Update for firmware" Click="Wu_Click" />
+                        <ProgressRing x:Name="WuBusy" IsActive="False" Width="20" Height="20" />
+                    </StackPanel>
+                    <TextBlock x:Name="FindStatus" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="10">
+                    <TextBlock Text="3. Check before you flash" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock x:Name="PowerStatus" TextWrapping="Wrap" />
+                    <TextBlock x:Name="BitLockerStatus" TextWrapping="Wrap" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="RestoreButton" Content="Create a restore point" Click="Restore_Click" />
+                        <Button x:Name="SuspendButton" Content="Pause BitLocker for one restart" Click="Suspend_Click" />
+                        <Button Content="Re-check" Click="Recheck_Click" />
+                    </StackPanel>
+                    <TextBlock x:Name="ActionStatus" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource FaintBrush}" FontSize="12"
+                               Text="The restore point and BitLocker steps need administrator rights. A restore point protects Windows, not the BIOS chip; it's a general safety net." />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="4. Check your download" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <Button Content="Choose the downloaded file…" Click="CheckFile_Click" />
+                        <ProgressRing x:Name="FileBusy" IsActive="False" Width="20" Height="20" />
+                    </StackPanel>
+                    <TextBlock x:Name="FileResult" TextWrapping="Wrap" IsTextSelectionEnabled="True" />
+                </StackPanel>
+            </Border>
+
+            <Border Style="{StaticResource GlassCard}">
+                <StackPanel Spacing="8">
+                    <TextBlock Text="5. When you flash" Style="{StaticResource SubtitleTextBlockStyle}" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                               Text="• Use the manufacturer's flash tool, built into the BIOS menu or from their download.&#10;• Never turn the PC off or restart it while it is flashing, even if it looks frozen. It can take several minutes.&#10;• Laptops: plug in the charger. Desktops: avoid flashing during storms or power cuts; a UPS is best.&#10;• Don't skip versions the manufacturer says must be installed in order.&#10;• Close other programs first, and don't flash a beta unless you need it." />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ScrollViewer>
+</Page>

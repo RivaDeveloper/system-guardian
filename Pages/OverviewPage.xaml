@@ -8,8 +8,8 @@
 
             <StackPanel Spacing="6">
                 <TextBlock Text="SYSTEM CARE" Style="{StaticResource EyebrowStyle}" />
-                <TextBlock Text="Your PC, in check." FontFamily="{StaticResource DisplayFont}" FontSize="50"
-                           CharacterSpacing="-35" LineHeight="54" TextWrapping="Wrap" />
+                <TextBlock Text="Your PC, in check." FontFamily="{StaticResource DisplayFont}" FontSize="78"
+                           CharacterSpacing="10" LineHeight="80" TextWrapping="Wrap" />
                 <TextBlock Foreground="{StaticResource MutedBrush}" FontSize="16" MaxWidth="560" HorizontalAlignment="Left" TextWrapping="Wrap"
                            Text="Scan for threats, keep drivers and apps current, and repair Windows. Nothing runs until you start it." />
             </StackPanel>
@@ -82,7 +82,7 @@
                                 </Border.Background>
                                 <FontIcon Glyph="&#xEA18;" Foreground="White" FontSize="20" />
                             </Border>
-                            <TextBlock Text="Scan for viruses" FontFamily="{StaticResource DisplayBoldFont}" FontSize="17" />
+                            <TextBlock Text="Scan for viruses" FontFamily="{StaticResource DisplayBoldFont}" FontSize="24" />
                             <TextBlock Text="Defender scan plus VirusTotal check" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Button>
@@ -97,7 +97,7 @@
                                 </Border.Background>
                                 <FontIcon Glyph="&#xE772;" Foreground="White" FontSize="20" />
                             </Border>
-                            <TextBlock Text="Check drivers" FontFamily="{StaticResource DisplayBoldFont}" FontSize="17" />
+                            <TextBlock Text="Check drivers" FontFamily="{StaticResource DisplayBoldFont}" FontSize="24" />
                             <TextBlock Text="Find newer drivers via Windows Update" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Button>
@@ -112,7 +112,7 @@
                                 </Border.Background>
                                 <FontIcon Glyph="&#xE71D;" Foreground="White" FontSize="20" />
                             </Border>
-                            <TextBlock Text="Update apps" FontFamily="{StaticResource DisplayBoldFont}" FontSize="17" />
+                            <TextBlock Text="Update apps" FontFamily="{StaticResource DisplayBoldFont}" FontSize="24" />
                             <TextBlock Text="See and install updates with winget" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Button>
@@ -127,7 +127,7 @@
                                 </Border.Background>
                                 <FontIcon Glyph="&#xE90F;" Foreground="White" FontSize="20" />
                             </Border>
-                            <TextBlock Text="Repair Windows" FontFamily="{StaticResource DisplayBoldFont}" FontSize="17" />
+                            <TextBlock Text="Repair Windows" FontFamily="{StaticResource DisplayBoldFont}" FontSize="24" />
                             <TextBlock Text="DISM and SFC system file repair" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Button>

@@ -46,11 +46,11 @@
             <SolidColorBrush x:Key="AccentButtonForegroundPointerOver" Color="#FFFFFF" />
             <SolidColorBrush x:Key="AccentButtonForegroundPressed" Color="#FFFFFF" />
 
-            <FontFamily x:Key="DisplayFont">ms-appx:///Assets/Fonts/Syne-ExtraBold.ttf#Syne ExtraBold</FontFamily>
-            <FontFamily x:Key="DisplayBoldFont">ms-appx:///Assets/Fonts/Syne-Bold.ttf#Syne</FontFamily>
+            <FontFamily x:Key="DisplayFont">ms-appx:///Assets/Fonts/BebasNeue-Regular.ttf#Bebas Neue</FontFamily>
+            <FontFamily x:Key="DisplayBoldFont">ms-appx:///Assets/Fonts/BebasNeue-Regular.ttf#Bebas Neue</FontFamily>
             <FontFamily x:Key="NumberFont">ms-appx:///Assets/Fonts/BebasNeue-Regular.ttf#Bebas Neue</FontFamily>
-            <FontFamily x:Key="BodyFont">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
-            <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
+            <FontFamily x:Key="BodyFont">ms-appx:///Assets/Fonts/Manrope-Regular.ttf#Manrope</FontFamily>
+            <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/Manrope-Regular.ttf#Manrope</FontFamily>
 
             <x:Double x:Key="PivotHeaderItemFontSize">16</x:Double>
             <Thickness x:Key="PivotHeaderItemMargin">0,0,24,0</Thickness>
@@ -71,14 +71,14 @@
 
             <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-                <Setter Property="FontSize" Value="32" />
-                <Setter Property="CharacterSpacing" Value="-30" />
-                <Setter Property="LineHeight" Value="38" />
+                <Setter Property="FontSize" Value="52" />
+                <Setter Property="CharacterSpacing" Value="20" />
+                <Setter Property="LineHeight" Value="52" />
             </Style>
             <Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource DisplayBoldFont}" />
-                <Setter Property="FontSize" Value="20" />
-                <Setter Property="CharacterSpacing" Value="-10" />
+                <Setter Property="FontSize" Value="28" />
+                <Setter Property="CharacterSpacing" Value="20" />
             </Style>
             <Style x:Key="EyebrowStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
@@ -96,9 +96,9 @@
             </Style>
             <Style x:Key="CardValueStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource DisplayBoldFont}" />
-                <Setter Property="FontSize" Value="19" />
+                <Setter Property="FontSize" Value="28" />
                 <Setter Property="TextWrapping" Value="Wrap" />
-                <Setter Property="CharacterSpacing" Value="-20" />
+                <Setter Property="CharacterSpacing" Value="20" />
             </Style>
 
             <!-- Frosted glass panel -->

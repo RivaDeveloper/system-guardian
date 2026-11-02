@@ -34,7 +34,7 @@
         <!-- Only appears once a repair has been started -->
         <Border x:Name="ProgressCard" Grid.Row="3" Style="{StaticResource GlassCard}" Padding="18,14" Visibility="Collapsed">
             <StackPanel Spacing="10">
-                <TextBlock x:Name="StatusText" FontFamily="{StaticResource DisplayBoldFont}" FontSize="16" TextWrapping="Wrap" />
+                <TextBlock x:Name="StatusText" FontFamily="{StaticResource DisplayBoldFont}" FontSize="23" TextWrapping="Wrap" />
                 <ProgressBar x:Name="Progress" Minimum="0" Maximum="100" Value="0" />
             </StackPanel>
         </Border>

@@ -3,7 +3,46 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:m="using:Guardian.Pages">
-    <Grid Margin="40,28,40,20" RowSpacing="8">
+    <Page.Resources>
+        <!-- One tool: tinted icon square, name, one-line description -->
+        <DataTemplate x:Key="TileTemplate" x:DataType="m:ToolTile">
+            <Border Width="276" Height="84" CornerRadius="16" Background="{StaticResource GlassBrush}" BorderBrush="{StaticResource StrokeBrush}" BorderThickness="1">
+            <Grid Padding="14,0" ColumnSpacing="14">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
+                <Border Width="48" Height="48" CornerRadius="14" VerticalAlignment="Center" Background="#26FF2E55">
+                    <FontIcon Glyph="{x:Bind Glyph}" FontSize="22" Foreground="{StaticResource AccentBrush}" />
+                </Border>
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                    <TextBlock Text="{x:Bind Name}" FontSize="16" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Text="{x:Bind Description}" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                               TextWrapping="Wrap" MaxLines="2" TextTrimming="CharacterEllipsis" />
+                </StackPanel>
+            </Grid>
+            </Border>
+        </DataTemplate>
+
+        <Style x:Key="TileGridStyle" TargetType="GridView">
+            <Setter Property="IsItemClickEnabled" Value="True" />
+            <Setter Property="SelectionMode" Value="None" />
+            <Setter Property="Margin" Value="-4,0,0,0" />
+            <Setter Property="ItemTemplate" Value="{StaticResource TileTemplate}" />
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="GridViewItem">
+                        <Setter Property="Margin" Value="0,0,12,12" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="Background" Value="Transparent" />
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="40,28,40,0" RowSpacing="8">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -21,20 +60,20 @@
             </StackPanel>
         </StackPanel>
 
-        <ScrollViewer x:Name="TileScroll" Grid.Row="1">
-            <GridView x:Name="TileGrid" ItemsSource="{x:Bind Tiles}" IsItemClickEnabled="True" SelectionMode="None"
-                      ItemClick="Tile_Click" Margin="0,8,0,0">
-                <GridView.ItemTemplate>
-                    <DataTemplate x:DataType="m:ToolTile">
-                        <Border Style="{StaticResource GlassCard}" Width="138" Height="104" Padding="8">
-                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="10">
-                                <FontIcon Glyph="{x:Bind Glyph}" FontSize="28" HorizontalAlignment="Center" Foreground="{StaticResource AccentBrush}" />
-                                <TextBlock Text="{x:Bind Name}" TextAlignment="Center" TextWrapping="Wrap" FontSize="12" />
-                            </StackPanel>
-                        </Border>
-                    </DataTemplate>
-                </GridView.ItemTemplate>
-            </GridView>
+        <ScrollViewer x:Name="TileScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel Spacing="6" Margin="0,10,16,28">
+                <TextBlock Text="CLEAN UP" Style="{StaticResource CardLabelStyle}" Margin="0,0,0,10" />
+                <GridView ItemsSource="{x:Bind Cleaning}" ItemClick="Tile_Click" Style="{StaticResource TileGridStyle}" />
+
+                <TextBlock Text="SPEED AND STARTUP" Style="{StaticResource CardLabelStyle}" Margin="0,14,0,10" />
+                <GridView ItemsSource="{x:Bind Speed}" ItemClick="Tile_Click" Style="{StaticResource TileGridStyle}" />
+
+                <TextBlock Text="HARDWARE AND UPDATES" Style="{StaticResource CardLabelStyle}" Margin="0,14,0,10" />
+                <GridView ItemsSource="{x:Bind Hardware}" ItemClick="Tile_Click" Style="{StaticResource TileGridStyle}" />
+
+                <TextBlock Text="PROTECT AND REPAIR" Style="{StaticResource CardLabelStyle}" Margin="0,14,0,10" />
+                <GridView ItemsSource="{x:Bind Protect}" ItemClick="Tile_Click" Style="{StaticResource TileGridStyle}" />
+            </StackPanel>
         </ScrollViewer>
 
         <Frame x:Name="ToolFrame" Grid.Row="1" Visibility="Collapsed" Margin="0,8,0,0" />

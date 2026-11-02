@@ -1,0 +1,32 @@
+<Page
+    x:Class="Guardian.Pages.TracksToolPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:Guardian.Services.Tools">
+    <Grid RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
+                   Text="Clears the trail Windows and browsers keep of what you opened and typed. Passwords, cookies, saved logins, browsing history, bookmarks and your files are never touched. Browsers only lose their cache, and close them first so their files aren't in use." />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <Button x:Name="ScanButton" Content="Scan for traces" Click="Scan_Click" Style="{StaticResource AccentButtonStyle}" />
+            <Button x:Name="CleanButton" Content="Erase selected" Click="Clean_Click" IsEnabled="False" />
+            <ProgressRing x:Name="Busy" IsActive="False" Width="20" Height="20" />
+            <TextBlock x:Name="StatusText" VerticalAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+        <ListView x:Name="TrackList" Grid.Row="2" ItemsSource="{x:Bind Items}" SelectionMode="Multiple"
+                  SelectionChanged="TrackList_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="m:TrackCategory">
+                    <StackPanel Padding="0,6">
+                        <TextBlock Text="{x:Bind Name}" />
+                        <TextBlock Text="{x:Bind Subtitle}" Opacity="0.6" FontSize="12" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

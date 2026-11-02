@@ -22,7 +22,10 @@
             <Button x:Name="CancelButton" Content="Cancel" Click="Cancel_Click" IsEnabled="False" />
             <ProgressRing x:Name="Busy" IsActive="False" Width="20" Height="20" />
         </StackPanel>
-        <TextBlock x:Name="StatusText" Grid.Row="2" TextWrapping="Wrap" />
+        <StackPanel Grid.Row="2" Spacing="2">
+            <TextBlock x:Name="StatusText" TextWrapping="Wrap" />
+            <TextBlock x:Name="NoteText" Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap" Visibility="Collapsed" />
+        </StackPanel>
         <ListView x:Name="AppsList" Grid.Row="3" ItemsSource="{x:Bind Apps}" SelectionMode="Multiple"
                   SelectionChanged="AppsList_SelectionChanged">
             <ListView.ItemTemplate>
@@ -33,7 +36,7 @@
                             <ColumnDefinition Width="220" />
                         </Grid.ColumnDefinitions>
                         <StackPanel>
-                            <TextBlock Text="{x:Bind Name}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="15" />
+                            <TextBlock Text="{x:Bind Name}" FontFamily="{StaticResource DisplayBoldFont}" FontSize="22" />
                             <TextBlock Text="{x:Bind Id}" Foreground="{StaticResource MutedBrush}" FontSize="12" />
                         </StackPanel>
                         <TextBlock Grid.Column="1" Text="{x:Bind VersionText}" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" />

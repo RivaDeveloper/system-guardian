@@ -29,6 +29,14 @@ public sealed partial class AppsPage : Page
 
     void Log(string line) => DispatcherQueue.TryEnqueue(() =>
     {
+        // winget's "N package(s) have version numbers that cannot be determined" line becomes a small note instead of log text.
+        var unknown = System.Text.RegularExpressions.Regex.Match(line, @"^(\d+) package\(s\) have version numbers that cannot be determined");
+        if (unknown.Success)
+        {
+            NoteText.Text = $"{unknown.Groups[1].Value} installed programs don't report a version number, so Guardian can't tell whether they're out of date.";
+            NoteText.Visibility = Visibility.Visible;
+            return;
+        }
         LogBox.Text += line + "\n";
         LogBox.SelectionStart = LogBox.Text.Length;
     });
