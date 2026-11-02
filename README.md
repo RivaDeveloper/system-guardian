@@ -15,7 +15,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 | **Drivers** | Lists installed drivers (flags non-Microsoft ones older than 3 years) and asks Windows Update which driver updates are pending. A restore point is attempted before any install. |
 | **App updates** | Finds and installs updates through `winget`, one at a time or all at once. |
 | **System repair** | DISM `/ScanHealth` and `/RestoreHealth`, `sfc /scannow`, and an online `chkdsk C: /scan`, with live progress and output. |
-| **Cleanup** | Registry cleaner (leftover entries for programs, uninstallers and fonts that no longer exist, every fix backed up and restorable) and a junk-file cleaner for temp files and caches. |
+| **Cleanup** | Registry cleaner (leftover entries in HKEY_LOCAL_MACHINE, HKEY_CURRENT_USER and HKEY_CLASSES_ROOT: uninstallers, startup entries, fonts, COM objects, type libraries, context-menu items and file types that point at things that no longer exist; every fix backed up and restorable) and a junk-file cleaner for temp files and caches. |
 | **System tools** | A tile hub in the style of classic PC-care suites: startup manager, uninstall manager, process manager, disk space analyzer, duplicate files finder (to the Recycle Bin), empty folders finder and system information, plus shortcuts to the cleanup, driver, update, repair and scan pages. |
 
 ![System repair](docs/repair.png)

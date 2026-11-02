@@ -67,8 +67,171 @@ public sealed class RegistryCleaner
             Step("Startup entries", () => { ScanRun(found, true, Run); ScanRun(found, true, Run32); ScanRun(found, false, Run); });
             Step("Program names cache", () => ScanMui(found));
             Step("Fonts", () => ScanFonts(found));
+            // HKEY_CLASSES_ROOT is a merged view of these two stores, so each is scanned on its own.
+            foreach (var machine in new[] { true, false })
+            {
+                var classes = machine ? @"SOFTWARE\Classes" : @"Software\Classes";
+                Step("File extensions", () => ScanExtensions(found, machine, classes));
+                Step("Context menu and file actions", () => ScanVerbs(found, machine, classes));
+                Step("COM objects", () =>
+                {
+                    ScanClsid(found, machine, classes + @"\CLSID", false);
+                    if (machine) ScanClsid(found, true, classes + @"\WOW6432Node\CLSID", true);
+                });
+                Step("Type libraries", () => ScanTypeLibs(found, machine, classes + @"\TypeLib"));
+            }
             return found;
         }, ct);
+
+    // ---- HKEY_CLASSES_ROOT ------------------------------------------------------------------------
+
+    static bool ClassKeyExists(string classes, string name)
+    {
+        foreach (var machine in new[] { true, false })
+        {
+            using var k = Base(machine).OpenSubKey((machine ? @"SOFTWARE\Classes\" : @"Software\Classes\") + name);
+            if (k != null) return true;
+        }
+        return false;
+    }
+
+    /// <summary>Like <see cref="Missing"/>, but never flags anything inside the Windows folder, and honours 32-bit redirection.</summary>
+    static bool MissingThirdParty(string path, bool wow)
+    {
+        if (!Missing(path)) return false;
+        var win = Environment.GetFolderPath(Environment.SpecialFolder.Windows);
+        if (path.StartsWith(win + "\\", StringComparison.OrdinalIgnoreCase)) return false;
+        if (wow)
+        {
+            var sys32 = Environment.GetFolderPath(Environment.SpecialFolder.System);
+            if (path.StartsWith(sys32 + "\\", StringComparison.OrdinalIgnoreCase)) return false;
+            var x86 = Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86);
+            if (!string.IsNullOrEmpty(x86) && path.StartsWith(x86 + "\\", StringComparison.OrdinalIgnoreCase) == false
+                && path.StartsWith(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + "\\", StringComparison.OrdinalIgnoreCase))
+            {
+                var alt = x86 + path[Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles).Length..];
+                if (File.Exists(alt) || Directory.Exists(alt)) return false;
+            }
+        }
+        return true;
+    }
+
+    static void ScanExtensions(List<RegistryIssue> found, bool machine, string classes)
+    {
+        // Windows' own machine-wide defaults deliberately point at file types that aren't registered (Paint, .txt aliases),
+        // so only the user's own associations are checked.
+        if (machine) return;
+        using var root = Base(machine).OpenSubKey(classes);
+        if (root == null) return;
+        foreach (var name in root.GetSubKeyNames())
+        {
+            if (!name.StartsWith('.')) continue;
+            using var k = root.OpenSubKey(name);
+            if (k?.GetValue("") is not string progId || string.IsNullOrWhiteSpace(progId)) continue;
+            if (ClassKeyExists(classes, progId)) continue;
+            found.Add(new RegistryIssue
+            {
+                Category = "File extension", Title = name, Detail = $"opens with \"{progId}\", which no longer exists",
+                IsMachine = machine, KeyPath = classes + "\\" + name, ValueName = "",
+            });
+        }
+    }
+
+    static void ScanVerbs(List<RegistryIssue> found, bool machine, string classes)
+    {
+        using var root = Base(machine).OpenSubKey(classes);
+        if (root == null) return;
+        var shellParents = new List<string>();
+        foreach (var name in root.GetSubKeyNames())
+        {
+            if (name.StartsWith('.') || name.Equals("CLSID", StringComparison.OrdinalIgnoreCase) || name.Equals("TypeLib", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("Interface", StringComparison.OrdinalIgnoreCase) || name.Equals("WOW6432Node", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("Installer", StringComparison.OrdinalIgnoreCase) || name.Equals("AppID", StringComparison.OrdinalIgnoreCase)) continue;
+            shellParents.Add(name + @"\shell");
+        }
+        shellParents.Add(@"Directory\Background\shell");
+        foreach (var parent in shellParents)
+        {
+            using var shell = root.OpenSubKey(parent);
+            if (shell == null) continue;
+            foreach (var verb in shell.GetSubKeyNames())
+            {
+                using var cmdKey = shell.OpenSubKey(verb + @"\command");
+                if (cmdKey?.GetValue("") is not string cmd || string.IsNullOrWhiteSpace(cmd)) continue;
+                var exe = ExtractPath(cmd);
+                if (!MissingThirdParty(exe, false)) continue;
+                found.Add(new RegistryIssue
+                {
+                    Category = "Context menu / file action", Title = $"{parent.Replace(@"\shell", "")} · {verb}",
+                    Detail = $"program missing: {exe}", IsMachine = machine, KeyPath = classes + "\\" + parent + "\\" + verb,
+                });
+            }
+        }
+    }
+
+    static void ScanClsid(List<RegistryIssue> found, bool machine, string path, bool wow)
+    {
+        using var root = Base(machine).OpenSubKey(path);
+        if (root == null) return;
+        foreach (var guid in root.GetSubKeyNames())
+        {
+            using var k = root.OpenSubKey(guid);
+            if (k == null) continue;
+            string? exe = null;
+            foreach (var server in new[] { "InprocServer32", "LocalServer32" })
+            {
+                using var s = k.OpenSubKey(server);
+                if (s?.GetValue("") is string cmd && !string.IsNullOrWhiteSpace(cmd)) { exe = ExtractPath(cmd.Trim()); break; }
+            }
+            if (exe == null || !MissingThirdParty(exe, wow)) continue;
+            var title = (k.GetValue("") as string) is { Length: > 0 } n ? n : guid;
+            found.Add(new RegistryIssue
+            {
+                Category = wow ? "COM object (32-bit)" : "COM object", Title = title,
+                Detail = $"{guid} · file missing: {exe}", IsMachine = machine, KeyPath = path + "\\" + guid,
+            });
+        }
+    }
+
+    static void ScanTypeLibs(List<RegistryIssue> found, bool machine, string path)
+    {
+        using var root = Base(machine).OpenSubKey(path);
+        if (root == null) return;
+        foreach (var guid in root.GetSubKeyNames())
+        {
+            using var lib = root.OpenSubKey(guid);
+            if (lib == null) continue;
+            foreach (var ver in lib.GetSubKeyNames())
+            {
+                using var vk = lib.OpenSubKey(ver);
+                if (vk == null) continue;
+                var paths = new List<string>();
+                foreach (var lcid in vk.GetSubKeyNames())
+                {
+                    if (!lcid.All(char.IsDigit)) continue;
+                    foreach (var plat in new[] { "win32", "win64" })
+                    {
+                        using var p = vk.OpenSubKey(lcid + "\\" + plat);
+                        if (p?.GetValue("") is string f && !string.IsNullOrWhiteSpace(f))
+                        {
+                            // Paths may end in a resource index, like "foo.dll\2".
+                            var file = Environment.ExpandEnvironmentVariables(f.Trim('"'));
+                            var cut = file.LastIndexOf('\\');
+                            if (cut > 0 && file[(cut + 1)..].All(char.IsDigit) && file[(cut + 1)..].Length > 0) file = file[..cut];
+                            paths.Add(file);
+                        }
+                    }
+                }
+                // Only when every recorded file is gone, so a library that still has one working copy is never touched.
+                if (paths.Count == 0 || !paths.All(p => MissingThirdParty(p, true))) continue;
+                found.Add(new RegistryIssue
+                {
+                    Category = "Type library", Title = (vk.GetValue("") as string) is { Length: > 0 } t ? t : guid,
+                    Detail = $"{guid} · file missing: {paths[0]}", IsMachine = machine, KeyPath = path + "\\" + guid + "\\" + ver,
+                });
+            }
+        }
+    }
 
     // ---- scanners ---------------------------------------------------------------------------------
 
@@ -197,10 +360,15 @@ public sealed class RegistryCleaner
     {
         var s = Environment.ExpandEnvironmentVariables(command.Trim());
         if (s.StartsWith('"')) { var end = s.IndexOf('"', 1); return end > 1 ? s[1..end] : ""; }
-        var i = s.IndexOf(".exe", StringComparison.OrdinalIgnoreCase);
-        if (i >= 0) return s[..(i + 4)];
-        var sp = s.IndexOf(' ');
-        return sp > 0 ? s[..sp] : s;
+        var best = -1; var len = 0;
+        foreach (var ext in new[] { ".exe", ".dll", ".ocx", ".ax", ".cpl" })
+        {
+            var i = s.IndexOf(ext, StringComparison.OrdinalIgnoreCase);
+            if (i >= 0 && (best < 0 || i < best)) { best = i; len = ext.Length; }
+        }
+        if (best >= 0) return s[..(best + len)];
+        // No recognisable program extension: only trust it when it is a single token.
+        return s.Contains(' ') ? "" : s;
     }
 
     static bool DriveAvailable(string path)
