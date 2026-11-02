@@ -10,6 +10,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 
 | | |
 |---|---|
+| **Deep scan** | Guardian's own scanner. Looks where malware hides and survives a reboot: Run keys, scheduled tasks, services, Winlogon, IFEO debuggers, AppInit DLLs, WMI subscriptions, running programs, kernel drivers (signatures, odd locations, known abused drivers), temp/AppData/ProgramData/Public/Recycle Bin folders and security settings that attackers switch off. Every finding lists the reasons it was flagged. Quarantine is reversible. Your documents, photos and ID scans are never opened. |
 | **Virus scan** | Quick, full or folder scans through Windows Defender (`Start-MpScan`). An optional VirusTotal check hashes the newest executables in a folder and looks the hashes up. Files are never uploaded. |
 | **Drivers** | Lists installed drivers (flags non-Microsoft ones older than 3 years) and asks Windows Update which driver updates are pending. A restore point is attempted before any install. |
 | **App updates** | Finds and installs updates through `winget`, one at a time or all at once. |

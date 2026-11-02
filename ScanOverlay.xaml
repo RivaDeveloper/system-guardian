@@ -1,0 +1,65 @@
+<UserControl
+    x:Class="Guardian.ScanOverlay"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:Guardian"
+    Visibility="Collapsed">
+    <!-- Dimmed backdrop plus a centred glass card: the scan progress window -->
+    <Grid Background="#CC06070C">
+        <Border Style="{StaticResource GlassCard}" Background="#E6101220" Width="560" MaxWidth="640"
+                HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28">
+            <StackPanel Spacing="16">
+                <StackPanel Spacing="2">
+                    <TextBlock x:Name="EyebrowText" Text="SCANNING" Style="{StaticResource EyebrowStyle}" />
+                    <TextBlock x:Name="TitleText" Text="Deep scan" Style="{StaticResource TitleTextBlockStyle}" />
+                </StackPanel>
+
+                <Grid ColumnSpacing="16">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="PercentText" Text="0%" FontFamily="{StaticResource DisplayFont}" FontSize="44"
+                               CharacterSpacing="-30" VerticalAlignment="Center" MinWidth="120" />
+                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
+                        <TextBlock x:Name="StageText" FontFamily="{StaticResource DisplayBoldFont}" FontSize="16" TextTrimming="CharacterEllipsis" />
+                        <ProgressBar x:Name="Bar" Minimum="0" Maximum="100" />
+                    </StackPanel>
+                </Grid>
+
+                <ItemsControl x:Name="StageList" ItemsSource="{x:Bind Stages}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="m:StageRow">
+                            <Grid Padding="0,3" ColumnSpacing="10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="20" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <FontIcon Glyph="{x:Bind Glyph, Mode=OneWay}" FontSize="14" Foreground="{x:Bind Brush, Mode=OneWay}" />
+                                <TextBlock Grid.Column="1" Text="{x:Bind Name}" Foreground="{x:Bind Brush, Mode=OneWay}" />
+                                <TextBlock Grid.Column="2" Text="{x:Bind Note, Mode=OneWay}" Foreground="{StaticResource FaintBrush}" FontSize="12" />
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Background="#0FFFFFFF" CornerRadius="10" Padding="12,8">
+                    <TextBlock x:Name="ItemText" FontFamily="Consolas" FontSize="12" Foreground="{StaticResource MutedBrush}"
+                               TextTrimming="CharacterEllipsis" MaxLines="1" />
+                </Border>
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock x:Name="StatsText" Foreground="{StaticResource MutedBrush}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Column="1" x:Name="CancelButton" Content="Cancel" Click="Cancel_Click" />
+                </Grid>
+
+                <TextBlock x:Name="NoteText" Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap" Visibility="Collapsed" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

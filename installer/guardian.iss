@@ -3,12 +3,20 @@
 #define AppName "Guardian"
 ; installer\build.ps1 passes /DAppVersion=<version from Guardian.csproj>; this default is only a fallback.
 #ifndef AppVersion
-  #define AppVersion "1.1.0"
+  #define AppVersion "1.2.0"
 #endif
 #define AppExe "Guardian.exe"
 
+; Test builds (see the updater test) pass a different /DAppIdGuid so they never collide with a real install.
+#ifndef AppIdGuid
+  #define AppIdGuid "{{6B1E2A5C-3F4D-4C8A-9E71-5D0B8A2C41F7}"
+#endif
+#ifndef OutputSuffix
+  #define OutputSuffix ""
+#endif
+
 [Setup]
-AppId={{6B1E2A5C-3F4D-4C8A-9E71-5D0B8A2C41F7}
+AppId={#AppIdGuid}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
@@ -22,7 +30,7 @@ UninstallDisplayIcon={app}\{#AppExe}
 UninstallDisplayName={#AppName}
 SetupIconFile=..\Assets\guardian.ico
 OutputDir=..\dist
-OutputBaseFilename=Guardian-Setup-{#AppVersion}
+OutputBaseFilename=Guardian-Setup-{#AppVersion}{#OutputSuffix}
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern dark

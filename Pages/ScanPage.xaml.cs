@@ -1,5 +1,7 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using Guardian.Services;
+using Guardian.Services.Deep;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Navigation;
@@ -15,37 +17,275 @@ public sealed partial class ScanPage : Page
 
     public ObservableCollection<ThreatInfo> Threats { get; } = new();
     public ObservableCollection<VtResult> VtResults { get; } = new();
+    public ObservableCollection<Finding> Findings { get; } = new();
 
     public ScanPage()
     {
         InitializeComponent();
         NavigationCacheMode = NavigationCacheMode.Required; // keep a running scan alive while browsing other tabs
+        Overlay.CancelRequested += () => _cts?.Cancel();
+        ShowDetails(null);
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e) => await LoadThreatsAsync();
 
+    // =====================================================================
+    //  Deep scan
+    // =====================================================================
+
+    async void DeepStart_Click(object sender, RoutedEventArgs e)
+    {
+        _cts = new CancellationTokenSource();
+        DeepButton.IsEnabled = false;
+        DeepSummary.Text = "";
+        Findings.Clear();
+        ShowDetails(null);
+
+        var started = DateTime.Now;
+        var scanner = new DeepScanner();
+        long items = 0;
+        List<Finding>? results = null;
+        var defenderNote = "";
+
+        Overlay.Begin("Deep scan", DeepScanner.StageNames, percentKnown: true);
+        try
+        {
+            var progress = new Progress<ScanProgress>(p => { items = p.ItemsChecked; Overlay.Update(p); });
+            results = await scanner.RunAsync(progress, _cts.Token);
+
+            if (IncludeDefender.IsChecked == true)
+            {
+                Overlay.Begin("Windows Defender quick scan", new[] { "Quick scan" }, percentKnown: false,
+                    note: "Defender doesn't report a percentage while it scans, so Guardian shows how long it has been running. A quick scan usually takes a few minutes.");
+                var r = await _defender.ScanAsync(DefenderScanType.Quick, null, _cts.Token);
+                defenderNote = r.ExitCode == 0 ? " Defender quick scan finished." : " Defender quick scan reported an error.";
+                await LoadThreatsAsync();
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            DeepSummary.Text = "Scan cancelled.";
+            results = null;
+        }
+        finally
+        {
+            Overlay.End();
+            DeepButton.IsEnabled = true;
+        }
+
+        if (results is null) return;
+
+        var ignored = SettingsStore.Load().Ignored;
+        _all = results.Where(f => !ignored.Contains(f.Key)).ToList();
+        _lastItems = items;
+        _lastElapsed = DateTime.Now - started;
+        _defenderNote = defenderNote;
+        ApplyFilter();
+    }
+
+    List<Finding> _all = new();
+    long _lastItems;
+    TimeSpan _lastElapsed;
+    string _defenderNote = "";
+
+    void ShowLow_Changed(object sender, RoutedEventArgs e) => ApplyFilter();
+
+    /// <summary>Medium and above lead the list; low-risk and informational items are behind a toggle (except the "limited checks" note).</summary>
+    void ApplyFilter()
+    {
+        var showLow = ShowLow.IsChecked == true;
+        var visible = _all.Where(f => showLow || f.Severity >= Severity.Medium || f.Key == "not-elevated").ToList();
+
+        Findings.Clear();
+        foreach (var f in visible) Findings.Add(f);
+        ShowDetails(null);
+
+        if (_all.Count == 0 && _lastItems == 0) return;   // nothing scanned yet
+
+        var attention = _all.Count(f => f.Severity >= Severity.Medium);
+        var hidden = _all.Count - visible.Count;
+        var worst = _all.Count(f => f.Severity >= Severity.High);
+        var checkedText = $"Checked {_lastItems:N0} items in {_lastElapsed:mm\\:ss}.";
+        DeepSummary.Text = attention == 0
+            ? $"Nothing suspicious found. {checkedText}{(hidden > 0 ? $" {hidden} low-risk notes are hidden." : "")}{_defenderNote}"
+            : $"{checkedText} {attention} item{(attention == 1 ? "" : "s")} worth a look{(worst > 0 ? $", {worst} of them high priority" : "")}.{(hidden > 0 ? $" {hidden} low-risk notes are hidden." : "")}{_defenderNote}";
+        DeepSummary.Foreground = attention == 0 ? Tones.Good : (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["InkBrush"];
+        if (Findings.Count > 0) FindingsList.SelectedIndex = 0;
+    }
+
+    Finding? Selected => FindingsList.SelectedItem as Finding;
+
+    void Finding_Selected(object sender, SelectionChangedEventArgs e) => ShowDetails(Selected);
+
+    void ShowDetails(Finding? f)
+    {
+        DetailsEmpty.Visibility = f is null ? Visibility.Visible : Visibility.Collapsed;
+        DetailsScroll.Visibility = f is null ? Visibility.Collapsed : Visibility.Visible;
+        if (f is null) return;
+
+        DetailSeverity.Text = $"{f.SeverityText}  ·  {f.KindText.ToUpperInvariant()}";
+        DetailSeverity.Foreground = f.SeverityBrush;
+        DetailTitle.Text = f.Title;
+        DetailReasons.Text = f.Reasons.Count > 0 ? f.ReasonsText : "No further detail.";
+        DetailAdvice.Text = f.Recommendation.Length > 0 ? f.Recommendation : "Nothing to do unless you didn't expect this.";
+
+        var info = new List<string>();
+        if (f.Detail.Length > 0) info.Add(f.Detail);
+        if (f.FilePath.Length > 0 && f.Detail != f.FilePath) info.Add(f.FilePath);
+        if (f.Signer.Length > 0) info.Add("Signed by: " + f.Signer);
+        if (f.Sha256.Length > 0) info.Add("SHA-256: " + f.Sha256);
+        DetailInfo.Text = string.Join("\n", info);
+
+        var canMove = f.HasFile && f.Kind != FindingKind.Security;
+        QuarantineButton.Visibility = canMove ? Visibility.Visible : Visibility.Collapsed;
+        ShowButton.Visibility = f.HasFile ? Visibility.Visible : Visibility.Collapsed;
+        CheckVtButton.Visibility = f.HasFile ? Visibility.Visible : Visibility.Collapsed;
+        EndButton.Visibility = f.Pid > 0 ? Visibility.Visible : Visibility.Collapsed;
+    }
+
+    void ShowInFolder_Click(object sender, RoutedEventArgs e)
+    {
+        if (Selected is { HasFile: true } f)
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{f.FilePath}\"") { UseShellExecute = true });
+    }
+
+    async void QuarantineFile_Click(object sender, RoutedEventArgs e)
+    {
+        if (Selected is not { HasFile: true } f) return;
+        if (!await Ui.ConfirmAsync(XamlRoot, "Quarantine this file?",
+                $"{f.FilePath}\n\nGuardian moves it into a locked folder and renames it so it can't run. Nothing is deleted, and you can restore it from the Quarantine button.",
+                "Quarantine"))
+            return;
+        try
+        {
+            Quarantine.Add(f.FilePath, f.Sha256, f.Title);
+            Findings.Remove(f);
+            DeepSummary.Text = $"Quarantined {Path.GetFileName(f.FilePath)}. It can be restored from the Quarantine button.";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or InvalidOperationException)
+        {
+            await Ui.ShowAsync(XamlRoot, "Couldn't quarantine it",
+                ex is IOException ? "The file is in use. End the process first (if it is running), then try again." : ex.Message);
+        }
+    }
+
+    async void EndProcess_Click(object sender, RoutedEventArgs e)
+    {
+        if (Selected is not { Pid: > 0 } f) return;
+        if (!await Ui.ConfirmAsync(XamlRoot, "End this process?",
+                $"{Path.GetFileName(f.FilePath)} (PID {f.Pid}) will be closed immediately. Unsaved work in it would be lost.", "End process"))
+            return;
+        try
+        {
+            using var p = Process.GetProcessById(f.Pid);
+            // Process IDs get reused: make sure it's still the same program before ending anything.
+            if (f.FilePath.Length > 0 && !string.Equals(p.MainModule?.FileName, f.FilePath, StringComparison.OrdinalIgnoreCase))
+            {
+                await Ui.ShowAsync(XamlRoot, "Not the same program", "That process ID now belongs to a different program, so Guardian left it alone.");
+                return;
+            }
+            p.Kill(entireProcessTree: true);
+            DeepSummary.Text = $"Ended {p.ProcessName}.";
+        }
+        catch (Exception ex)
+        {
+            await Ui.ShowAsync(XamlRoot, "Couldn't end it", ex.Message + (Elevation.IsElevated ? "" : "\n\nTry restarting Guardian as administrator."));
+        }
+    }
+
+    async void CheckVt_Click(object sender, RoutedEventArgs e)
+    {
+        if (Selected is not { HasFile: true } f) return;
+        CheckVtButton.IsEnabled = false;
+        try
+        {
+            var r = await VirusTotalService.CheckOneAsync(f.FilePath);
+            await Ui.ShowAsync(XamlRoot, "VirusTotal result",
+                $"{Path.GetFileName(f.FilePath)}\n\n{r.VerdictText}\n\nOnly the file's SHA-256 hash was sent. The file itself was not uploaded.");
+        }
+        catch (Exception ex) { await Ui.ShowAsync(XamlRoot, "VirusTotal", ex.Message); }
+        finally { CheckVtButton.IsEnabled = true; }
+    }
+
+    void Ignore_Click(object sender, RoutedEventArgs e)
+    {
+        if (Selected is not { } f) return;
+        var settings = SettingsStore.Load();
+        if (!settings.Ignored.Contains(f.Key)) settings.Ignored.Add(f.Key);
+        SettingsStore.Save(settings);
+        Findings.Remove(f);
+        DeepSummary.Text = "Ignored. Guardian won't show this one again.";
+    }
+
+    async void ShowQuarantine_Click(object sender, RoutedEventArgs e)
+    {
+        var entries = Quarantine.List();
+        if (entries.Count == 0)
+        {
+            await Ui.ShowAsync(XamlRoot, "Quarantine", "Nothing is in quarantine.");
+            return;
+        }
+
+        var list = new ListView { ItemsSource = entries, SelectionMode = ListViewSelectionMode.Single, MaxHeight = 360 };
+        list.ItemTemplate = (DataTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(
+            "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'><StackPanel Padding='0,6'><TextBlock Text='{Binding DisplayName}' FontWeight='SemiBold'/><TextBlock Text='{Binding Summary}' Opacity='0.7' FontSize='12' TextWrapping='Wrap'/></StackPanel></DataTemplate>");
+        list.SelectedIndex = 0;
+
+        var dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot, Title = "Quarantine", Content = list,
+            PrimaryButtonText = "Restore", SecondaryButtonText = "Delete forever", CloseButtonText = "Close",
+        };
+        var result = await dialog.ShowAsync();
+        if (list.SelectedItem is not QuarantineEntry entry) return;
+
+        try
+        {
+            if (result == ContentDialogResult.Primary)
+            {
+                Quarantine.Restore(entry);
+                DeepSummary.Text = $"Restored {entry.DisplayName} to its original place.";
+            }
+            else if (result == ContentDialogResult.Secondary &&
+                     await Ui.ConfirmAsync(XamlRoot, "Delete permanently?", $"{entry.DisplayName} will be deleted for good. This can't be undone.", "Delete"))
+            {
+                Quarantine.DeleteForever(entry);
+                DeepSummary.Text = $"Deleted {entry.DisplayName}.";
+            }
+        }
+        catch (Exception ex) { await Ui.ShowAsync(XamlRoot, "Quarantine", ex.Message); }
+    }
+
+    // =====================================================================
+    //  Windows Defender
+    // =====================================================================
+
     async Task LoadThreatsAsync()
     {
-        var threats = await _defender.GetThreatsAsync();
-        Threats.Clear();
-        foreach (var t in threats) Threats.Add(t);
-        RemoveButton.IsEnabled = threats.Any(t => t.Active);
+        try
+        {
+            var threats = await _defender.GetThreatsAsync();
+            Threats.Clear();
+            foreach (var t in threats) Threats.Add(t);
+            RemoveButton.IsEnabled = threats.Any(t => t.Active);
+        }
+        catch { /* Defender not available */ }
     }
 
     void SetScanning(bool scanning)
     {
-        Busy.IsActive = scanning;
-        QuickButton.IsEnabled = FullButton.IsEnabled = FolderButton.IsEnabled = !scanning;
-        CancelButton.IsEnabled = scanning;
+        QuickButton.IsEnabled = FullButton.IsEnabled = FolderButton.IsEnabled = DeepButton.IsEnabled = !scanning;
     }
 
     async Task RunScanAsync(DefenderScanType type, string? path)
     {
         _cts = new CancellationTokenSource();
         SetScanning(true);
-        StatusText.Text = type == DefenderScanType.Full
-            ? "Full scan running. This can take a long time…"
-            : "Scanning…";
+        var name = type switch { DefenderScanType.Quick => "quick scan", DefenderScanType.Full => "full scan", _ => "folder scan" };
+        Overlay.Begin($"Windows Defender {name}", new[] { "Scanning" }, percentKnown: false,
+            note: "Defender doesn't report a percentage while it scans, so Guardian shows how long it has been running. "
+                + (type == DefenderScanType.Full ? "A full scan can take an hour or more." : "This usually takes a few minutes.")
+                + " You can cancel at any time.");
         try
         {
             var r = await _defender.ScanAsync(type, path, _cts.Token);
@@ -57,6 +297,7 @@ public sealed partial class ScanPage : Page
         }
         finally
         {
+            Overlay.End();
             SetScanning(false);
         }
         await LoadThreatsAsync();
@@ -74,8 +315,6 @@ public sealed partial class ScanPage : Page
         if (folder != null) await RunScanAsync(DefenderScanType.Custom, folder);
     }
 
-    void Cancel_Click(object sender, RoutedEventArgs e) => _cts?.Cancel();
-
     async void Remove_Click(object sender, RoutedEventArgs e)
     {
         var names = string.Join("\n", Threats.Where(t => t.Active).Select(t => "• " + t.Name));
@@ -90,7 +329,9 @@ public sealed partial class ScanPage : Page
         await LoadThreatsAsync();
     }
 
-    // ---- VirusTotal ----
+    // =====================================================================
+    //  VirusTotal folder check
+    // =====================================================================
 
     async void VtFolder_Click(object sender, RoutedEventArgs e)
     {

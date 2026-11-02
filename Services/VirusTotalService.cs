@@ -112,6 +112,15 @@ public sealed class VirusTotalService
         }
     }
 
+    /// <summary>Looks up one file by its hash. Throws if no API key is saved.</summary>
+    public static Task<VtResult> CheckOneAsync(string path, CancellationToken ct = default)
+    {
+        var key = ApiKeyStore.Load();
+        if (string.IsNullOrEmpty(key))
+            throw new InvalidOperationException("No VirusTotal API key saved. Add one under Settings.");
+        return CheckFileAsync(path, key, ct);
+    }
+
     static async Task<VtResult> CheckFileAsync(string path, string key, CancellationToken ct)
     {
         string sha;

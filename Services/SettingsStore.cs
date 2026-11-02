@@ -6,6 +6,9 @@ public sealed class AppSettings
 {
     public bool AutoCheckUpdates { get; set; } = true;
     public DateTime? LastUpdateCheckUtc { get; set; }
+
+    /// <summary>Keys of deep-scan findings the user chose to ignore.</summary>
+    public List<string> Ignored { get; set; } = new();
 }
 
 /// <summary>Small per-user settings file in %LOCALAPPDATA%\Guardian.</summary>
