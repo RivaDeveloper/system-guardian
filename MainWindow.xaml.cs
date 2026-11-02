@@ -15,6 +15,7 @@ public sealed partial class MainWindow : Window
         InitializeComponent();
         AppWindow.Resize(new SizeInt32(1240, 820));
         Title = Elevation.IsElevated ? "Guardian (administrator)" : "Guardian";
+        AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "guardian.ico"));
 
         // Draw our own title bar over the ambient background.
         ExtendsContentIntoTitleBar = true;
