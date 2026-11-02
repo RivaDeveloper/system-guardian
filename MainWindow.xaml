@@ -21,7 +21,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <local:LumenOrb Width="22" Height="22" VerticalAlignment="Center" />
-                <TextBlock Grid.Column="1" Text="guardian" VerticalAlignment="Center"
+                <TextBlock Grid.Column="1" Text="Guardian" VerticalAlignment="Center"
                            FontFamily="{StaticResource DisplayFont}" FontSize="19" CharacterSpacing="-20" />
             </Grid>
 
@@ -59,6 +59,9 @@
                     </NavigationViewItem>
                     <NavigationViewItem Content="App updates" Tag="apps">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xE71D;" /></NavigationViewItem.Icon>
+                    </NavigationViewItem>
+                    <NavigationViewItem Content="Cleanup" Tag="cleanup">
+                        <NavigationViewItem.Icon><FontIcon Glyph="&#xE74D;" /></NavigationViewItem.Icon>
                     </NavigationViewItem>
                     <NavigationViewItem Content="System repair" Tag="repair">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon>

@@ -11,7 +11,9 @@
             <StackPanel Spacing="16">
                 <StackPanel Spacing="2">
                     <TextBlock x:Name="EyebrowText" Text="SCANNING" Style="{StaticResource EyebrowStyle}" />
-                    <TextBlock x:Name="TitleText" Text="Deep scan" Style="{StaticResource TitleTextBlockStyle}" />
+                    <TextBlock x:Name="TitleText" Text="Deep scan" Style="{StaticResource TitleTextBlockStyle}"
+                               FontFamily="{StaticResource NumberFont}" FontSize="44" CharacterSpacing="20"
+                               TextWrapping="Wrap" />
                 </StackPanel>
 
                 <Grid ColumnSpacing="16">
@@ -19,10 +21,10 @@
                         <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="PercentText" Text="0%" FontFamily="{StaticResource DisplayFont}" FontSize="44"
-                               CharacterSpacing="-30" VerticalAlignment="Center" MinWidth="120" />
+                    <TextBlock x:Name="PercentText" Text="0%" FontFamily="{StaticResource NumberFont}" FontSize="64"
+                               CharacterSpacing="10" VerticalAlignment="Center" MinWidth="120" />
                     <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="6">
-                        <TextBlock x:Name="StageText" FontFamily="{StaticResource DisplayBoldFont}" FontSize="16" TextTrimming="CharacterEllipsis" />
+                        <TextBlock x:Name="StageText" FontFamily="{StaticResource NumberFont}" FontSize="26" CharacterSpacing="30" TextTrimming="CharacterEllipsis" />
                         <ProgressBar x:Name="Bar" Minimum="0" Maximum="100" />
                     </StackPanel>
                 </Grid>

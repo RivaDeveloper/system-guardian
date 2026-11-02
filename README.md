@@ -15,6 +15,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 | **Drivers** | Lists installed drivers (flags non-Microsoft ones older than 3 years) and asks Windows Update which driver updates are pending. A restore point is attempted before any install. |
 | **App updates** | Finds and installs updates through `winget`, one at a time or all at once. |
 | **System repair** | DISM `/ScanHealth` and `/RestoreHealth`, `sfc /scannow`, and an online `chkdsk C: /scan`, with live progress and output. |
+| **Cleanup** | Registry cleaner (leftover entries for programs, uninstallers and fonts that no longer exist, every fix backed up and restorable) and a junk-file cleaner for temp files and caches. |
 
 ![System repair](docs/repair.png)
 
@@ -38,7 +39,7 @@ dotnet build -p:Platform=x64
 bin\x64\Debug\net9.0-windows10.0.19041.0\win-x64\Guardian.exe
 ```
 
-Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `repair` or `settings` to open straight to a page.
+Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `cleanup`, `repair` or `settings` to open straight to a page.
 
 ## Updates
 

@@ -48,6 +48,7 @@
 
             <FontFamily x:Key="DisplayFont">ms-appx:///Assets/Fonts/Syne-ExtraBold.ttf#Syne ExtraBold</FontFamily>
             <FontFamily x:Key="DisplayBoldFont">ms-appx:///Assets/Fonts/Syne-Bold.ttf#Syne</FontFamily>
+            <FontFamily x:Key="NumberFont">ms-appx:///Assets/Fonts/BebasNeue-Regular.ttf#Bebas Neue</FontFamily>
             <FontFamily x:Key="BodyFont">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
             <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
 

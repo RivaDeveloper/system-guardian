@@ -2,7 +2,8 @@
     x:Class="Guardian.Pages.DriversPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:m="using:Guardian.Services">
+    xmlns:m="using:Guardian.Services"
+    xmlns:c="using:Guardian.Services.Cleanup">
     <Grid Margin="40,28,40,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -71,6 +72,32 @@
                                     <TextBlock Grid.Column="2" Text="{x:Bind DateText}" />
                                     <TextBlock Grid.Column="3" Text="{x:Bind Status}" Foreground="{x:Bind StatusBrush}" />
                                 </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+            <PivotItem Header="Backup and restore">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
+                               Text="Save a copy of every third-party driver installed on this PC, so you can put them back after a reinstall or a bad update. Needs administrator rights. Backups go to Documents\Guardian driver backups." />
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="BackupButton" Content="Back up all drivers" Click="Backup_Click" Style="{StaticResource AccentButtonStyle}" />
+                        <Button x:Name="RestoreDriversButton" Content="Restore selected" Click="RestoreDrivers_Click" IsEnabled="False" />
+                        <Button Content="Open folder" Click="OpenBackups_Click" />
+                        <ProgressRing x:Name="BackupBusy" IsActive="False" Width="20" Height="20" />
+                        <TextBlock x:Name="BackupStatus" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <ListView x:Name="BackupsList" Grid.Row="2" ItemsSource="{x:Bind Backups}" SelectionMode="Single"
+                              SelectionChanged="BackupsList_SelectionChanged">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="c:DriverBackupInfo">
+                                <TextBlock Text="{x:Bind Text}" Padding="0,8" />
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>

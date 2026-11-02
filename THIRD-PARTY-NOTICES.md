@@ -29,5 +29,5 @@ https://github.com/magicsword-io/LOLDrivers). License: Apache-2.0.
 attribution to the rule authors.
 
 ## Fonts
-Syne and Manrope are used under the SIL Open Font License 1.1.
-Syne: https://github.com/googlefonts/syne. Manrope: https://github.com/sharanda/manrope.
+Syne, Manrope and Bebas Neue are used under the SIL Open Font License 1.1.
+Syne: https://github.com/googlefonts/syne. Manrope: https://github.com/sharanda/manrope. Bebas Neue: https://github.com/dharmatype/Bebas-Neue.
