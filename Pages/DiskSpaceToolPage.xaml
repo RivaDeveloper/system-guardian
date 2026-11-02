@@ -1,0 +1,39 @@
+<Page
+    x:Class="Guardian.Pages.DiskSpaceToolPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:Guardian.Services.Tools">
+    <Grid RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
+                   Text="Shows which folders take up the most space. Double-click a folder to look inside it. This only measures sizes; nothing is changed." />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <Button x:Name="PickButton" Content="Choose folder…" Click="Pick_Click" Style="{StaticResource AccentButtonStyle}" />
+            <Button x:Name="UpButton" Content="Up one level" Click="Up_Click" IsEnabled="False" />
+            <Button x:Name="OpenButton" Content="Show in Explorer" Click="Open_Click" IsEnabled="False" />
+            <ProgressRing x:Name="Busy" IsActive="False" Width="20" Height="20" />
+            <TextBlock x:Name="StatusText" VerticalAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+        <ListView x:Name="SizeList" Grid.Row="2" ItemsSource="{x:Bind Items}" SelectionMode="Single"
+                  SelectionChanged="SizeList_SelectionChanged" DoubleTapped="SizeList_DoubleTapped">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="m:FolderEntry">
+                    <Grid Padding="0,6" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="90" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{x:Bind Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                        <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{x:Bind Percent}" VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="2" Text="{x:Bind SizeText}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

@@ -1,0 +1,29 @@
+<Page
+    x:Class="Guardian.Pages.EmptyFoldersToolPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:m="using:Guardian.Services.Tools">
+    <Grid RowSpacing="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="700" HorizontalAlignment="Left"
+                   Text="Finds folders with nothing in them (including folders that only hold other empty folders) inside a folder you choose. Some programs expect a few empty folders, so review the list before removing." />
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+            <Button x:Name="PickButton" Content="Choose folder and scan…" Click="Pick_Click" Style="{StaticResource AccentButtonStyle}" />
+            <Button x:Name="DeleteButton" Content="Remove selected" Click="Delete_Click" IsEnabled="False" />
+            <ProgressRing x:Name="Busy" IsActive="False" Width="20" Height="20" />
+            <TextBlock x:Name="StatusText" VerticalAlignment="Center" TextWrapping="Wrap" />
+        </StackPanel>
+        <ListView x:Name="FolderList" Grid.Row="2" ItemsSource="{x:Bind Items}" SelectionMode="Multiple"
+                  SelectionChanged="FolderList_SelectionChanged">
+            <ListView.ItemTemplate>
+                <DataTemplate x:DataType="m:EmptyFolder">
+                    <TextBlock Text="{x:Bind Path}" TextTrimming="CharacterEllipsis" Padding="0,8" />
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

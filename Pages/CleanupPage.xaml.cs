@@ -11,6 +11,9 @@ public sealed partial class CleanupPage : Page
     readonly RegistryCleaner _registry = new();
     readonly JunkCleaner _junk = new();
 
+    /// <summary>Set by the Tools page to open a particular tab (0 registry, 1 junk, 2 restore).</summary>
+    public static int RequestedTab = -1;
+
     public ObservableCollection<RegistryIssue> RegIssues { get; } = new();
     public ObservableCollection<JunkCategory> JunkItems { get; } = new();
     public ObservableCollection<RegistryBackup> Backups { get; } = new();
@@ -22,6 +25,12 @@ public sealed partial class CleanupPage : Page
         RefreshBackups();
         RegHint.Text = Elevation.IsElevated ? "" :
             "Not running as administrator: machine-wide entries are listed but can't be fixed until you restart Guardian as administrator.";
+    }
+
+    protected override void OnNavigatedTo(Microsoft.UI.Xaml.Navigation.NavigationEventArgs e)
+    {
+        base.OnNavigatedTo(e);
+        if (RequestedTab >= 0) { CleanupPivot.SelectedIndex = RequestedTab; RequestedTab = -1; }
     }
 
     // ---- registry ---------------------------------------------------------------------------------

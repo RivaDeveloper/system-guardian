@@ -13,7 +13,7 @@
             <TextBlock Text="Cleanup" Style="{StaticResource TitleTextBlockStyle}" />
         </StackPanel>
 
-        <Pivot Grid.Row="1">
+        <Pivot x:Name="CleanupPivot" Grid.Row="1">
             <PivotItem Header="Registry cleaner">
                 <Grid RowSpacing="10">
                     <Grid.RowDefinitions>

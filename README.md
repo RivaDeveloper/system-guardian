@@ -16,6 +16,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 | **App updates** | Finds and installs updates through `winget`, one at a time or all at once. |
 | **System repair** | DISM `/ScanHealth` and `/RestoreHealth`, `sfc /scannow`, and an online `chkdsk C: /scan`, with live progress and output. |
 | **Cleanup** | Registry cleaner (leftover entries for programs, uninstallers and fonts that no longer exist, every fix backed up and restorable) and a junk-file cleaner for temp files and caches. |
+| **System tools** | A tile hub in the style of classic PC-care suites: startup manager, uninstall manager, process manager, disk space analyzer, duplicate files finder (to the Recycle Bin), empty folders finder and system information, plus shortcuts to the cleanup, driver, update, repair and scan pages. |
 
 ![System repair](docs/repair.png)
 
@@ -39,7 +40,7 @@ dotnet build -p:Platform=x64
 bin\x64\Debug\net9.0-windows10.0.19041.0\win-x64\Guardian.exe
 ```
 
-Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `cleanup`, `repair` or `settings` to open straight to a page.
+Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `cleanup`, `tools`, `repair` or `settings` to open straight to a page.
 
 ## Updates
 

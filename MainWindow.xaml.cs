@@ -168,6 +168,7 @@ public sealed partial class MainWindow : Window
                 "apps" => typeof(AppsPage),
                 "repair" => typeof(RepairPage),
                 "cleanup" => typeof(CleanupPage),
+                "tools" => typeof(ToolsPage),
                 _ => typeof(OverviewPage),
             };
         ContentFrame.Navigate(page);

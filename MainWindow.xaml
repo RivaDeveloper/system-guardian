@@ -63,6 +63,9 @@
                     <NavigationViewItem Content="Cleanup" Tag="cleanup">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xE74D;" /></NavigationViewItem.Icon>
                     </NavigationViewItem>
+                    <NavigationViewItem Content="System tools" Tag="tools">
+                        <NavigationViewItem.Icon><FontIcon Glyph="&#xEC7A;" /></NavigationViewItem.Icon>
+                    </NavigationViewItem>
                     <NavigationViewItem Content="System repair" Tag="repair">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon>
                     </NavigationViewItem>
