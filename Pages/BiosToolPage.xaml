@@ -35,6 +35,13 @@
                         <ProgressRing x:Name="WuBusy" IsActive="False" Width="20" Height="20" />
                     </StackPanel>
                     <TextBlock x:Name="FindStatus" TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" />
+                    <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                               Text="Manufacturer sites block automatic lookups, so Guardian can't see their newest version by itself. Type the latest BIOS version shown on their download page and Guardian compares it with yours." />
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <TextBox x:Name="LatestBox" PlaceholderText="Latest version on the site, e.g. F45" Width="280" KeyDown="LatestBox_KeyDown" />
+                        <Button Content="Compare" Click="Compare_Click" />
+                    </StackPanel>
+                    <TextBlock x:Name="CompareResult" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
 

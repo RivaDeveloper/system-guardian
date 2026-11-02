@@ -129,6 +129,22 @@ public static class BiosService
         return "https://duckduckgo.com/?q=" + q;
     }
 
+    /// <summary>
+    /// Compares versions like "F44b" and "F45": positive when <paramref name="latest"/> is newer, negative when older,
+    /// 0 when equal, int.MinValue when the two don't follow the same pattern.
+    /// </summary>
+    public static int CompareVersions(string installed, string latest)
+    {
+        static System.Text.RegularExpressions.Match Parse(string v) =>
+            System.Text.RegularExpressions.Regex.Match(v.Trim(), @"^([A-Za-z]*)\.?(\d+)([A-Za-z]*)$");
+        var a = Parse(installed);
+        var b = Parse(latest);
+        if (!a.Success || !b.Success || !a.Groups[1].Value.Equals(b.Groups[1].Value, StringComparison.OrdinalIgnoreCase)) return int.MinValue;
+        var n = int.Parse(b.Groups[2].Value).CompareTo(int.Parse(a.Groups[2].Value));
+        if (n != 0) return n;
+        return string.Compare(b.Groups[3].Value, a.Groups[3].Value, StringComparison.OrdinalIgnoreCase);
+    }
+
     public static async Task<FileCheck> CheckFileAsync(string path)
     {
         string hash;

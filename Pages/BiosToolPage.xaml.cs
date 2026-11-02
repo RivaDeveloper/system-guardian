@@ -108,11 +108,30 @@ public sealed partial class BiosToolPage : Page
                                   || u.Title.Contains("BIOS", StringComparison.OrdinalIgnoreCase)
                                   || u.Title.Contains("UEFI", StringComparison.OrdinalIgnoreCase)).ToList();
             FindStatus.Text = fw.Count == 0
-                ? "Windows Update has no firmware for this PC. That's normal for most desktop boards: their BIOS updates come only from the manufacturer."
+                ? "Windows Update has no firmware for this PC. That does not mean your BIOS is up to date: desktop board BIOS updates come only from the manufacturer, so check their site."
                 : "Windows Update offers: " + string.Join("; ", fw.Select(u => u.Title)) + ". Install it from Drivers, Available updates; Windows handles it safely and restarts to apply it.";
         }
         catch (Exception ex) { FindStatus.Text = ex.Message; }
         finally { WuButton.IsEnabled = true; WuBusy.IsActive = false; }
+    }
+
+    void LatestBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter) Compare_Click(sender, e);
+    }
+
+    void Compare_Click(object sender, RoutedEventArgs e)
+    {
+        if (_info == null) return;
+        var latest = LatestBox.Text.Trim();
+        if (latest.Length == 0) { CompareResult.Text = ""; return; }
+        var r = BiosService.CompareVersions(_info.BiosVersion, latest);
+        CompareResult.Text =
+            r == int.MinValue ? $"Guardian can't compare \"{latest}\" with \"{_info.BiosVersion}\" because the naming differs. Compare them by eye, and check the release dates too." :
+            r > 0 ? $"A newer BIOS is available: {latest} (you have {_info.BiosVersion}). Read the release notes on the manufacturer's page, then follow steps 3 to 5." :
+            r == 0 ? $"You already have {_info.BiosVersion}, the version you entered." :
+            $"The version you entered ({latest}) is older than yours ({_info.BiosVersion}). Check you copied the newest entry from the page.";
+        CompareResult.Foreground = r > 0 ? Tones.Warn : r == int.MinValue ? Tones.Neutral : Tones.Good;
     }
 
     async void Restore_Click(object sender, RoutedEventArgs e)
