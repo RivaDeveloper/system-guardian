@@ -7,6 +7,9 @@ public sealed class AppSettings
     public bool AutoCheckUpdates { get; set; } = true;
     public DateTime? LastUpdateCheckUtc { get; set; }
 
+    /// <summary>Scan running programs' memory with YARA during the deep scan. Off by default (anti-cheat risk).</summary>
+    public bool ScanProcessMemory { get; set; }
+
     /// <summary>Keys of deep-scan findings the user chose to ignore.</summary>
     public List<string> Ignored { get; set; } = new();
 }

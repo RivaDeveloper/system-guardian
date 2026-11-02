@@ -84,7 +84,7 @@ public sealed partial class DeepScanner
 
         try
         {
-            Parallel.ForEach(candidates, new ParallelOptions { MaxDegreeOfParallelism = 4, CancellationToken = _ct }, c =>
+            Parallel.ForEach(candidates, new ParallelOptions { MaxDegreeOfParallelism = Math.Clamp(Environment.ProcessorCount / 2, 4, 8), CancellationToken = _ct }, c =>
             {
                 try { AssessCandidate(c); } catch (OperationCanceledException) { throw; } catch { }
                 var n = Interlocked.Increment(ref done);
@@ -210,6 +210,10 @@ public sealed partial class DeepScanner
                 foreach (var (reason, points) in Heuristics.ScriptIndicators(text)) ev.Add(points, reason);
                 var stream = SuspiciousStream(c.Path);
                 if (stream != null) ev.Add(40, $"It has a hidden data stream attached ({stream})");
+                // Scripts go to the signature (YARA) stage too, which adds its evidence to this one.
+                _evidence[c.Path] = ev;
+                try { if (new FileInfo(c.Path).Length <= 2_000_000 && !InstallerTemp.IsMatch(c.Path)) _yaraTargets.TryAdd(c.Path, 0); } catch { }
+
                 ReportAssessed(FindingKind.File, $"Suspicious script: {Path.GetFileName(c.Path)}", c.Path, ev, c.Path,
                     "Open it in a text editor to see what it does. If you don't recognise it, quarantine it.", threshold: 35);
                 break;

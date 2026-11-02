@@ -24,7 +24,15 @@ public sealed partial class ScanPage : Page
         InitializeComponent();
         NavigationCacheMode = NavigationCacheMode.Required; // keep a running scan alive while browsing other tabs
         Overlay.CancelRequested += () => _cts?.Cancel();
+        ScanMemory.IsChecked = SettingsStore.Load().ScanProcessMemory;
         ShowDetails(null);
+    }
+
+    void ScanMemory_Changed(object sender, RoutedEventArgs e)
+    {
+        var settings = SettingsStore.Load();
+        settings.ScanProcessMemory = ScanMemory.IsChecked == true;
+        SettingsStore.Save(settings);
     }
 
     protected override async void OnNavigatedTo(NavigationEventArgs e) => await LoadThreatsAsync();
@@ -42,7 +50,7 @@ public sealed partial class ScanPage : Page
         ShowDetails(null);
 
         var started = DateTime.Now;
-        var scanner = new DeepScanner();
+        var scanner = new DeepScanner { ScanProcessMemory = ScanMemory.IsChecked == true };
         long items = 0;
         List<Finding>? results = null;
         var defenderNote = "";

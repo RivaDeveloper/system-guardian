@@ -27,7 +27,10 @@ public sealed partial class DeepScanner
 
     /// <summary>Stage names in run order, so the progress window can list them before the scan starts.</summary>
     public static readonly string[] StageNames =
-        { "Security settings", "Startup and persistence", "Running processes", "Kernel drivers", "Hiding places" };
+    {
+        "Threat intelligence", "Security settings", "Startup and persistence", "Running processes",
+        "Kernel drivers", "Hiding places", "Signature scan",
+    };
 
     public bool Elevated { get; } = Elevation.IsElevated;
 
@@ -41,11 +44,13 @@ public sealed partial class DeepScanner
 
         var stages = new[]
         {
-            new StageDef(StageNames[0], 5, AuditSecurity),
-            new StageDef(StageNames[1], 15, AuditStartup),
-            new StageDef(StageNames[2], 10, AuditProcesses),
-            new StageDef(StageNames[3], 15, AuditDrivers),
-            new StageDef(StageNames[4], 55, SweepFiles),
+            new StageDef(StageNames[0], 4, UpdateThreatIntel),
+            new StageDef(StageNames[1], 3, AuditSecurity),
+            new StageDef(StageNames[2], 12, AuditStartup),
+            new StageDef(StageNames[3], 8, AuditProcesses),
+            new StageDef(StageNames[4], 10, AuditDrivers),
+            new StageDef(StageNames[5], 40, SweepFiles),
+            new StageDef(StageNames[6], 23, SignatureScan),
         };
         _stageCount = stages.Length;
         var total = stages.Sum(s => s.Weight);
@@ -208,6 +213,25 @@ public sealed partial class DeepScanner
             }
         }
 
+        // Known-bad hashes, and registration for the signature (YARA) stage. Validly signed files from well-known publishers are skipped.
+        if (!(trusted && Authenticode.IsWellKnownPublisher(sig.Signer)))
+        {
+            // Malware is rarely huge; capping the size keeps scans fast on machines full of big unsigned tools and games.
+            var hashes = ThreatIntel.HashFile(path, maxBytes: 12_000_000);
+            var known = hashes is null ? null : ThreatIntel.Lookup(hashes);
+            if (known != null)
+                ev.Add(known.IsVulnerableDriver ? 45 : 100, $"Its fingerprint matches a known {known.Kind}: {known.Name} (from {known.Source})");
+
+            try
+            {
+                // Installer unpack folders (Inno Setup, NSIS, 7-Zip) hold plugin DLLs that signature rules often flag as "tools".
+                if ((isPe || ScriptExtensions.Contains(Path.GetExtension(path))) && new FileInfo(path).Length <= 100_000_000 && !InstallerTemp.IsMatch(path))
+                    _yaraTargets.TryAdd(path, 0);
+            }
+            catch { }
+        }
+
+        _evidence[path] = ev;
         return ev;
     }
 

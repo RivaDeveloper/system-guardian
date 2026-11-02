@@ -1,4 +1,4 @@
-﻿# Guardian
+# Guardian
 
 A Windows system-care app: scan for viruses, find outdated drivers and apps, and repair system files. Built with WinUI 3 on .NET 9, styled after the Lumen apps.
 
@@ -10,7 +10,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 
 | | |
 |---|---|
-| **Deep scan** | Guardian's own scanner. Looks where malware hides and survives a reboot: Run keys, scheduled tasks, services, Winlogon, IFEO debuggers, AppInit DLLs, WMI subscriptions, running programs, kernel drivers (signatures, odd locations, known abused drivers), temp/AppData/ProgramData/Public/Recycle Bin folders and security settings that attackers switch off. Every finding lists the reasons it was flagged. Quarantine is reversible. Your documents, photos and ID scans are never opened. |
+| **Deep scan** | Guardian's own scanner. Looks where malware hides and survives a reboot: Run keys, scheduled tasks, services, Winlogon, IFEO debuggers, AppInit DLLs, WMI subscriptions, running programs, kernel drivers (signatures, odd locations, known abused drivers), temp/AppData/ProgramData/Public/Recycle Bin folders and security settings that attackers switch off. Every finding lists the reasons it was flagged. Known-bad file hashes (LOLDrivers, signature-base) and ~5,000 YARA signature rules (YARA-Forge) are downloaded and matched locally; a rule hit counts as evidence, weighed by the rule's own confidence and the file's signature, never as a verdict by itself. Optional memory scanning refuses to run while an anti-cheat is active. Quarantine is reversible. Your documents, photos and ID scans are never opened. |
 | **Virus scan** | Quick, full or folder scans through Windows Defender (`Start-MpScan`). An optional VirusTotal check hashes the newest executables in a folder and looks the hashes up. Files are never uploaded. |
 | **Drivers** | Lists installed drivers (flags non-Microsoft ones older than 3 years) and asks Windows Update which driver updates are pending. A restore point is attempted before any install. |
 | **App updates** | Finds and installs updates through `winget`, one at a time or all at once. |
@@ -49,7 +49,7 @@ Turn the automatic check off, or check on demand, under **Settings > Updates**. 
 ## Releasing
 
 1. Bump `<Version>` in `Guardian.csproj`.
-2. Run `powershell -File installeruild.ps1` to produce `distGuardian-Setup-<version>.exe`.
+2. Run `powershell -ExecutionPolicy Bypass -File installer\build.ps1`. It fetches the pinned YARA engine, publishes the app and builds `dist\Guardian-Setup-<version>.exe`.
 3. Publish a GitHub release tagged `v<version>` with that file attached. Installed copies pick it up on their own.
 
 ## Project layout
@@ -59,6 +59,8 @@ Turn the automatic check off, or check on demand, under **Settings > Updates**. 
 - `Assets/` holds the fonts and ambient background.
 
 ## Credits and licenses
+
+See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the YARA engine, the YARA-Forge rules, LOLDrivers and the hash lists the deep scan uses.
 
 The Syne and Manrope fonts in `Assets/Fonts` are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org). See the upstream projects for their copyright notices: [Syne](https://github.com/googlefonts/syne) and [Manrope](https://github.com/sharanda/manrope).
 

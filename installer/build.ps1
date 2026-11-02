@@ -11,6 +11,9 @@ $iscc = @("$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe", "${env:ProgramFile
     Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $iscc) { throw 'Inno Setup 6 not found' }
 
+& powershell -NoProfile -ExecutionPolicy Bypass -File tools\fetch-yara.ps1   # the YARA engine that ships with the app
+if ($LASTEXITCODE -ne 0) { throw 'fetching YARA failed' }
+
 if (Test-Path publish) { Remove-Item publish -Recurse -Force }
 dotnet publish Guardian.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o publish
 if ($LASTEXITCODE -ne 0) { throw 'dotnet publish failed' }

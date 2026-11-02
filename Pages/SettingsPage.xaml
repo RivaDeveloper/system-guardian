@@ -2,7 +2,8 @@
     x:Class="Guardian.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="40,28" Spacing="18" MaxWidth="620" HorizontalAlignment="Left">
+    <ScrollViewer>
+    <StackPanel Margin="40,28,40,40" Spacing="18" MaxWidth="700" HorizontalAlignment="Left">
         <StackPanel Spacing="4">
             <TextBlock Text="PREFERENCES" Style="{StaticResource EyebrowStyle}" />
             <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
@@ -37,5 +38,24 @@
                 <TextBlock x:Name="UpdateStatus" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
             </StackPanel>
         </Border>
+
+        <Border Style="{StaticResource GlassCard}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Threat intelligence" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                           Text="Guardian's deep scan checks files against lists of known-bad file hashes and YARA signature rules. Only the data files are downloaded; they are matched on this PC and nothing about your files is sent anywhere." />
+                <TextBlock x:Name="IntelStatus" TextWrapping="Wrap" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button x:Name="IntelButton" Content="Update now" Click="IntelUpdate_Click" Style="{StaticResource AccentButtonStyle}" />
+                    <Button Content="Custom rules folder" Click="CustomRules_Click" />
+                    <Button x:Name="ApplyRulesButton" Content="Apply custom rules" Click="ApplyRules_Click" />
+                    <ProgressRing x:Name="IntelBusy" IsActive="False" Width="20" Height="20" />
+                </StackPanel>
+                <TextBlock x:Name="IntelResult" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                <TextBlock Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap"
+                           Text="Sources: LOLDrivers (Apache-2.0); the known-malware hash list from the signature-base project (Detection Rule License 1.1); YARA-Forge rule packages built from community repositories, where every rule keeps its own author and license; the YARA engine by VirusTotal (BSD-3-Clause). Drop your own .yar files in the custom rules folder and press Apply." />
+            </StackPanel>
+        </Border>
     </StackPanel>
+    </ScrollViewer>
 </Page>

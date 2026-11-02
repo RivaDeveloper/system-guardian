@@ -31,6 +31,8 @@
                         <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12">
                             <Button x:Name="DeepButton" Content="Start deep scan" Click="DeepStart_Click" Style="{StaticResource AccentButtonStyle}" />
                             <CheckBox x:Name="IncludeDefender" Content="Also run a Defender quick scan" IsChecked="True" VerticalAlignment="Center" />
+                            <CheckBox x:Name="ScanMemory" Content="Scan programs' memory" Checked="ScanMemory_Changed" Unchecked="ScanMemory_Changed" VerticalAlignment="Center"
+                                      ToolTipService.ToolTip="Looks inside running programs for known malware. Guardian refuses to do this while EasyAntiCheat, BattlEye, Vanguard or similar is running, because anti-cheat can treat it as cheating and ban the account." />
                             <CheckBox x:Name="ShowLow" Content="Show low-risk items" Checked="ShowLow_Changed" Unchecked="ShowLow_Changed" VerticalAlignment="Center" />
                             <Button Content="Quarantine" Click="ShowQuarantine_Click" />
                         </StackPanel>

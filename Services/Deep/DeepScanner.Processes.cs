@@ -39,6 +39,7 @@ public sealed partial class DeepScanner
         }
 
         var hidden = 0;
+        var memoryCandidates = new List<(int Id, string Name, string Path)>();
         for (var i = 0; i < processes.Count; i++)
         {
             var p = processes[i];
@@ -47,9 +48,11 @@ public sealed partial class DeepScanner
 
             if (string.IsNullOrEmpty(p.Path)) { hidden++; continue; }   // not readable without administrator rights
 
+            var exePath = p.Path.StartsWith(@"\\?\") ? p.Path[4..] : p.Path;   // extended-length prefix
+            memoryCandidates.Add((p.Id, p.Name, exePath));
+
             try
             {
-                var exePath = p.Path.StartsWith(@"\\?\") ? p.Path[4..] : p.Path;   // extended-length prefix
                 var ev = new Evidence();
                 ev.Merge(Assess(exePath, p.Cmd, running: true));
 
@@ -64,6 +67,8 @@ public sealed partial class DeepScanner
             catch (OperationCanceledException) { throw; }
             catch { }
         }
+
+        _processList = memoryCandidates;   // used by the optional memory scan
 
         if (hidden > 25 && !Elevated)
             Add(new Finding
@@ -145,8 +150,16 @@ public sealed partial class DeepScanner
                         || Path.GetDirectoryName(path)!.Equals(Heuristics.WindowsDir, StringComparison.OrdinalIgnoreCase);
                     if (!normalLocation) ev.Add(25, $"Loaded from an unusual place: {Path.GetDirectoryName(path)}");
 
-                    if (Heuristics.IsKnownVulnerableDriver(path))
-                        ev.Add(45, "A known-vulnerable driver. It is legitimately signed (often by hardware tools like MSI Afterburner, CPU-Z or HWiNFO) but is widely abused to take control of the kernel and switch off security software");
+                    // Exact fingerprint first (LOLDrivers / known-malware lists); the name list is the fallback when no data is downloaded.
+                    var hashes = ThreatIntel.HashFile(path);
+                    var known = hashes is null ? null : ThreatIntel.Lookup(hashes);
+                    if (known != null)
+                        ev.Add(known.IsVulnerableDriver ? 45 : 100,
+                            known.IsVulnerableDriver
+                                ? $"This exact driver ({known.Name}) is on the LOLDrivers list. It is legitimately signed (often by hardware tools like MSI Afterburner, CPU-Z or HWiNFO) but is widely abused to take control of the kernel and switch off security software"
+                                : $"This exact file is a known {known.Kind}: {known.Name} (from {known.Source})");
+                    else if (Heuristics.IsKnownVulnerableDriver(path))
+                        ev.Add(35, "Its name matches a driver that is widely abused to take control of the kernel (it is also used legitimately by hardware tools like MSI Afterburner, CPU-Z or HWiNFO)");
                 }
 
                 ReportAssessed(FindingKind.Driver, $"Kernel driver needs attention: {Path.GetFileName(path)}", path, ev, path,

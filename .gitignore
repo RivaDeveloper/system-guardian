@@ -4,3 +4,4 @@ obj/
 *.user
 publish/
 dist/
+Assets/yara/*.exe
