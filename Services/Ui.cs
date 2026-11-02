@@ -1,6 +1,5 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
-using Windows.Storage.Pickers;
 
 namespace Guardian.Services;
 
@@ -38,12 +37,10 @@ public static class Ui
         await new ContentDialog { XamlRoot = root, Title = title, Content = message, CloseButtonText = "OK" }.ShowAsync();
     }
 
-    public static async Task<string?> PickFolderAsync()
-    {
-        var picker = new FolderPicker();
-        picker.FileTypeFilter.Add("*");
-        WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow));
-        var folder = await picker.PickSingleFolderAsync();
-        return folder?.Path;
-    }
+    /// <summary>
+    /// Classic Win32 folder dialog. The WinRT FolderPicker throws inside elevated processes,
+    /// and Guardian is often run as administrator, so it can't be used here.
+    /// </summary>
+    public static Task<string?> PickFolderAsync() =>
+        Task.FromResult(FolderDialog.Pick(WinRT.Interop.WindowNative.GetWindowHandle(App.MainWindow), "Choose a folder"));
 }

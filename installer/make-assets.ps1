@@ -48,13 +48,10 @@ function Spaced($g, $text, $font, $brush, $cx, $y, $tracking) {
 
 # ---- side panel, mastered at 4x (656 x 1256) then resampled ----
 $S = 4; $W = 164 * $S; $H = 314 * $S
-$master = New-Object System.Drawing.Bitmap $W, $H
+. (Join-Path $root 'tools\AmbientLib.ps1')
+$master = [Ambient]::Render($W, $H, 11)   # same banding-free light as the app and website
 $g = [System.Drawing.Graphics]::FromImage($master)
 $g.SmoothingMode = 'AntiAlias'; $g.TextRenderingHint = 'AntiAliasGridFit'; $g.InterpolationMode = 'HighQualityBicubic'
-$g.Clear((Hex '#06070c'))
-Blob $g ($W * .10) ($H * .16) ($W * .95) ($H * .34) '#362079' 255      # violet, top left
-Blob $g ($W * .95) ($H * .86) ($W * .90) ($H * .36) '#981b3a' 255      # rose, bottom right
-Blob $g ($W * .70) ($H * .04) ($W * .60) ($H * .20) '#981b3a' 120
 DrawOrb $g ($W / 2) ($H * .30) (74 * $S)
 $title = New-Object System.Drawing.Font $syne, (18.5 * $S), ([System.Drawing.FontStyle]::Regular), ([System.Drawing.GraphicsUnit]::Pixel)
 $sf = New-Object System.Drawing.StringFormat; $sf.Alignment = 'Center'

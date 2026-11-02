@@ -25,13 +25,24 @@
                            FontFamily="{StaticResource DisplayFont}" FontSize="19" CharacterSpacing="-20" />
             </Grid>
 
-            <InfoBar x:Name="AdminBar" Grid.Row="1" Margin="16,0,16,8" IsOpen="False" IsClosable="False" Severity="Warning"
-                     Title="Not running as administrator"
-                     Message="Driver updates and system file repair need administrator rights.">
-                <InfoBar.ActionButton>
-                    <Button Content="Restart as administrator" Click="Elevate_Click" Style="{StaticResource AccentButtonStyle}" />
-                </InfoBar.ActionButton>
-            </InfoBar>
+            <StackPanel Grid.Row="1" Spacing="8" Margin="16,0,16,8">
+                <InfoBar x:Name="UpdateBar" IsOpen="False" IsClosable="True" Severity="Success" Title="Update available">
+                    <InfoBar.ActionButton>
+                        <Button x:Name="UpdateNowButton" Content="Update now" Click="UpdateNow_Click" Style="{StaticResource AccentButtonStyle}" />
+                    </InfoBar.ActionButton>
+                    <StackPanel Spacing="6" Margin="0,0,0,8">
+                        <ProgressBar x:Name="UpdateProgress" Minimum="0" Maximum="100" Visibility="Collapsed" />
+                        <HyperlinkButton x:Name="NotesLink" Content="What's new" Padding="0" />
+                    </StackPanel>
+                </InfoBar>
+                <InfoBar x:Name="AdminBar" IsOpen="False" IsClosable="False" Severity="Warning"
+                         Title="Not running as administrator"
+                         Message="Driver updates and system file repair need administrator rights.">
+                    <InfoBar.ActionButton>
+                        <Button Content="Restart as administrator" Click="Elevate_Click" Style="{StaticResource AccentButtonStyle}" />
+                    </InfoBar.ActionButton>
+                </InfoBar>
+            </StackPanel>
 
             <NavigationView x:Name="Nav" Grid.Row="2" PaneDisplayMode="Left" IsBackButtonVisible="Collapsed"
                             IsPaneToggleButtonVisible="False" IsSettingsVisible="True" OpenPaneLength="230"

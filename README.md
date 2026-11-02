@@ -39,6 +39,18 @@ bin\x64\Debug\net9.0-windows10.0.19041.0\win-x64\Guardian.exe
 
 Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `repair` or `settings` to open straight to a page.
 
+## Updates
+
+Guardian checks this repo's latest GitHub release at startup (at most every 12 hours) and shows a banner when a newer version exists. **Update now** downloads the installer, verifies its SHA-256 against the checksum GitHub publishes for the release asset, runs it silently and reopens Guardian. Windows asks for permission if the install needs administrator rights.
+
+Turn the automatic check off, or check on demand, under **Settings > Updates**. Releases without a published checksum are never installed automatically.
+
+## Releasing
+
+1. Bump `<Version>` in `Guardian.csproj`.
+2. Run `powershell -File installeruild.ps1` to produce `distGuardian-Setup-<version>.exe`.
+3. Publish a GitHub release tagged `v<version>` with that file attached. Installed copies pick it up on their own.
+
 ## Project layout
 
 - `Services/` runs and parses the underlying tools (`DefenderService`, `DriverService`, `AppUpdateService`, `RepairService`, `VirusTotalService`).

@@ -1,7 +1,10 @@
 ; Build with:  dotnet publish Guardian.csproj -c Release -p:Platform=x64 -r win-x64 --self-contained true -o publish
 ;              ISCC installer\guardian.iss
 #define AppName "Guardian"
-#define AppVersion "1.0.0"
+; installer\build.ps1 passes /DAppVersion=<version from Guardian.csproj>; this default is only a fallback.
+#ifndef AppVersion
+  #define AppVersion "1.1.0"
+#endif
 #define AppExe "Guardian.exe"
 
 [Setup]
@@ -58,6 +61,8 @@ Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 
 [Run]
+; Silent installs come from the in-app updater: reopen Guardian (as the signed-in user, not elevated).
+Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser skipifnotsilent
 Description: "Launch {#AppName}"; Filename: "{app}\{#AppExe}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
