@@ -2,7 +2,7 @@
     x:Class="Guardian.Pages.RepairPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Grid Margin="32,24,32,16" RowSpacing="10">
+    <Grid Margin="40,28,40,20" RowSpacing="14">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
@@ -10,22 +10,36 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <TextBlock Text="System repair" Style="{StaticResource TitleTextBlockStyle}" />
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="WINDOWS" Style="{StaticResource EyebrowStyle}" />
+            <TextBlock Text="System repair" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="620" HorizontalAlignment="Left"
+                       Text="The same tools Microsoft documents for repairing Windows. They only touch protected system files, never your own. DISM can take a few minutes and needs an internet connection." />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10">
             <Button x:Name="FullButton" Content="Run full repair (DISM, then SFC)" Click="Full_Click" Style="{StaticResource AccentButtonStyle}" />
+            <Button x:Name="CancelButton" Content="Cancel" Click="Cancel_Click" IsEnabled="False" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8">
+            <TextBlock Text="Individual steps" Foreground="{StaticResource FaintBrush}" VerticalAlignment="Center" Margin="0,0,6,0" />
             <Button x:Name="DismScanButton" Content="DISM scan" Click="DismScan_Click" />
             <Button x:Name="DismRestoreButton" Content="DISM repair" Click="DismRestore_Click" />
             <Button x:Name="SfcButton" Content="SFC scan" Click="Sfc_Click" />
             <Button x:Name="ChkdskButton" Content="CHKDSK scan" Click="Chkdsk_Click" />
-            <Button x:Name="CancelButton" Content="Cancel" Click="Cancel_Click" IsEnabled="False" />
         </StackPanel>
-        <StackPanel Grid.Row="2" Spacing="4">
-            <TextBlock x:Name="StatusText" TextWrapping="Wrap" />
-            <ProgressBar x:Name="Progress" Minimum="0" Maximum="100" Value="0" />
-        </StackPanel>
-        <TextBlock Grid.Row="3" TextWrapping="Wrap" Opacity="0.7"
-                   Text="These are the same tools Microsoft documents for repairing Windows. They only change protected system files, never your own files. DISM can need a few minutes and an internet connection." />
+
+        <!-- Only appears once a repair has been started -->
+        <Border x:Name="ProgressCard" Grid.Row="3" Style="{StaticResource GlassCard}" Padding="18,14" Visibility="Collapsed">
+            <StackPanel Spacing="10">
+                <TextBlock x:Name="StatusText" FontFamily="{StaticResource DisplayBoldFont}" FontSize="16" TextWrapping="Wrap" />
+                <ProgressBar x:Name="Progress" Minimum="0" Maximum="100" Value="0" />
+            </StackPanel>
+        </Border>
+
         <TextBox x:Name="LogBox" Grid.Row="4" IsReadOnly="True" AcceptsReturn="True" TextWrapping="NoWrap"
-                 FontFamily="Consolas" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="Tool output" />
+                 FontFamily="Consolas" ScrollViewer.VerticalScrollBarVisibility="Auto" PlaceholderText="Tool output appears here" />
     </Grid>
 </Page>

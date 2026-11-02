@@ -2,16 +2,24 @@
     x:Class="Guardian.Pages.SettingsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <StackPanel Margin="32,24" Spacing="12" MaxWidth="560" HorizontalAlignment="Left">
-        <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
-        <TextBlock Text="VirusTotal API key" Style="{StaticResource SubtitleTextBlockStyle}" />
-        <TextBlock TextWrapping="Wrap" Opacity="0.7"
-                   Text="Get a free key from virustotal.com (profile → API key). It is stored encrypted for your Windows user only." />
-        <PasswordBox x:Name="KeyBox" PlaceholderText="Paste API key" />
-        <StackPanel Orientation="Horizontal" Spacing="8">
-            <Button Content="Save" Click="Save_Click" Style="{StaticResource AccentButtonStyle}" />
-            <Button Content="Remove saved key" Click="Clear_Click" />
+    <StackPanel Margin="40,28" Spacing="18" MaxWidth="620" HorizontalAlignment="Left">
+        <StackPanel Spacing="4">
+            <TextBlock Text="PREFERENCES" Style="{StaticResource EyebrowStyle}" />
+            <TextBlock Text="Settings" Style="{StaticResource TitleTextBlockStyle}" />
         </StackPanel>
-        <TextBlock x:Name="StatusText" />
+
+        <Border Style="{StaticResource GlassCard}">
+            <StackPanel Spacing="12">
+                <TextBlock Text="VirusTotal API key" Style="{StaticResource SubtitleTextBlockStyle}" />
+                <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}"
+                           Text="Get a free key from virustotal.com (profile, then API key). It is stored encrypted for your Windows user only, and only file hashes are ever sent." />
+                <PasswordBox x:Name="KeyBox" PlaceholderText="Paste API key" />
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <Button Content="Save" Click="Save_Click" Style="{StaticResource AccentButtonStyle}" />
+                    <Button Content="Remove saved key" Click="Clear_Click" />
+                </StackPanel>
+                <TextBlock x:Name="StatusText" Foreground="{StaticResource MutedBrush}" />
+            </StackPanel>
+        </Border>
     </StackPanel>
 </Page>

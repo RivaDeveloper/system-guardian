@@ -51,6 +51,9 @@
             <FontFamily x:Key="BodyFont">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
             <FontFamily x:Key="ContentControlThemeFontFamily">ms-appx:///Assets/Fonts/#Manrope</FontFamily>
 
+            <x:Double x:Key="PivotHeaderItemFontSize">16</x:Double>
+            <Thickness x:Key="PivotHeaderItemMargin">0,0,24,0</Thickness>
+            <Thickness x:Key="PivotItemMargin">0,12,0,0</Thickness>
             <CornerRadius x:Key="ControlCornerRadius">12</CornerRadius>
             <CornerRadius x:Key="OverlayCornerRadius">16</CornerRadius>
 
@@ -67,9 +70,9 @@
 
             <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
-                <Setter Property="FontSize" Value="40" />
+                <Setter Property="FontSize" Value="32" />
                 <Setter Property="CharacterSpacing" Value="-30" />
-                <Setter Property="LineHeight" Value="44" />
+                <Setter Property="LineHeight" Value="38" />
             </Style>
             <Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource DisplayBoldFont}" />

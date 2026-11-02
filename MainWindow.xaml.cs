@@ -25,7 +25,17 @@ public sealed partial class MainWindow : Window
         bar.ButtonForegroundColor = Windows.UI.Color.FromArgb(255, 238, 240, 247);
 
         AdminBar.IsOpen = !Elevation.IsElevated;
-        Nav.SelectedItem = Nav.MenuItems[0];
+        // GUARDIAN_START_PAGE=scan|drivers|apps|repair|settings opens that page first (handy for screenshots).
+        Nav.Loaded += (_, _) =>
+        {
+            var start = Environment.GetEnvironmentVariable("GUARDIAN_START_PAGE");
+            if (start == "settings") Nav.SelectedItem = Nav.SettingsItem;
+            else
+            {
+                Nav.SelectedItem = Nav.MenuItems[0];
+                if (start != null) NavigateTo(start);
+            }
+        };
     }
 
     public void NavigateTo(string tag)

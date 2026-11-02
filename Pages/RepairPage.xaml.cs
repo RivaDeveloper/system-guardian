@@ -41,6 +41,7 @@ public sealed partial class RepairPage : Page
         if (!await RequireAdminAsync()) return;
         _cts = new CancellationTokenSource();
         SetBusy(true);
+        ProgressCard.Visibility = Visibility.Visible;
         LogBox.Text = "";
         try
         {
