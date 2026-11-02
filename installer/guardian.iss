@@ -22,7 +22,10 @@ OutputDir=..\dist
 OutputBaseFilename=Guardian-Setup-{#AppVersion}
 Compression=lzma2/ultra64
 SolidCompression=yes
-WizardStyle=modern
+WizardStyle=modern dark
+DisableWelcomePage=no
+WizardImageFile=assets\panel-100.bmp,assets\panel-125.bmp,assets\panel-150.bmp,assets\panel-175.bmp,assets\panel-200.bmp
+WizardSmallImageFile=assets\orb-55.png,assets\orb-69.png,assets\orb-83.png,assets\orb-96.png,assets\orb-110.png,assets\orb-138.png
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 MinVersion=10.0.17763
@@ -36,10 +39,17 @@ RestartApplications=no
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Messages]
+WelcomeLabel1=Your PC, in check.
+WelcomeLabel2=Guardian scans for threats, keeps drivers and apps current, and repairs Windows system files.%n%nNothing runs until you start it.
+FinishedHeadingLabel=Guardian is ready.
+FinishedLabel=Open Guardian to check your PC. Driver installs and repairs need it restarted as administrator.
+
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: unchecked
 
 [Files]
+Source: "..\Assets\Fonts\Syne-ExtraBold.ttf"; DestDir: "{tmp}"; Flags: dontcopy
 Source: "..\publish\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
@@ -53,3 +63,29 @@ Description: "Launch {#AppName}"; Filename: "{app}\{#AppExe}"; Flags: nowait pos
 [UninstallDelete]
 ; Saved VirusTotal key (DPAPI-encrypted) for the user who uninstalls.
 Type: filesandordirs; Name: "{localappdata}\Guardian"
+
+[Code]
+// Load the Syne display font for this process only so titles match the app.
+function AddFontResourceEx(lpszFilename: String; fl: DWORD; pdv: DWORD): Integer;
+  external 'AddFontResourceExW@gdi32.dll stdcall';
+
+procedure InitializeWizard;
+begin
+  // Lumen palette (Delphi colours are BGR): page #06070c, header and footer #0b0c14.
+  WizardForm.Color := $140C0B;
+  WizardForm.MainPanel.Color := $140C0B;
+  WizardForm.InnerPage.Color := $0C0706;
+  WizardForm.WelcomePage.Color := $0C0706;
+  WizardForm.FinishedPage.Color := $0C0706;
+
+  ExtractTemporaryFile('Syne-ExtraBold.ttf');
+  if AddFontResourceEx(ExpandConstant('{tmp}\Syne-ExtraBold.ttf'), $10, 0) > 0 then
+  begin
+    WizardForm.WelcomeLabel1.Font.Name := 'Syne ExtraBold';
+    WizardForm.WelcomeLabel1.Font.Size := 17;
+    WizardForm.FinishedHeadingLabel.Font.Name := 'Syne ExtraBold';
+    WizardForm.FinishedHeadingLabel.Font.Size := 17;
+    WizardForm.PageNameLabel.Font.Name := 'Syne ExtraBold';
+    WizardForm.PageNameLabel.Font.Size := 11;
+  end;
+end;

@@ -17,6 +17,8 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 
 ![System repair](docs/repair.png)
 
+![Installer](docs/installer.png)
+
 ## Design rules
 
 - It wraps tools Windows already ships instead of reimplementing them. There is no custom detection engine, so Guardian is **not** a replacement for Defender or another antivirus.
@@ -46,3 +48,4 @@ Set `GUARDIAN_START_PAGE` to `scan`, `drivers`, `apps`, `repair` or `settings` t
 ## Credits and licenses
 
 The Syne and Manrope fonts in `Assets/Fonts` are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org). See the upstream projects for their copyright notices: [Syne](https://github.com/googlefonts/syne) and [Manrope](https://github.com/sharanda/manrope).
+
