@@ -207,7 +207,7 @@ for (const { category, ch } of pendingLater) {
 // ---- channel order inside each category, as written in server.json (new channels land where they belong) ----------
 if (!DRY) {
   const wantedOrder = [];
-  for (const cat of cfg.categories) for (const ch of cat.channels) if (ids[ch.key]) wantedOrder.push({ id: ids[ch.key], position: wantedOrder.length, parent_id: cat._id });
+  for (const cat of cfg.categories) for (const ch of cat.channels) if (ids[ch.key]) wantedOrder.push({ id: ids[ch.key], position: wantedOrder.length });
   await tryApi('channel order', 'PATCH', `/guilds/${GUILD}/channels`, wantedOrder);
 }
 if (community) {
