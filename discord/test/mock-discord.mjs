@@ -30,6 +30,8 @@ http.createServer((req, res) => {
     if (path === '/__state') return send(res, 200, { guild, roles, channels, messages, emojis, automod, webhooks, log });
     if (req.headers.authorization !== 'Bot test-token') return send(res, 401, { message: '401: Unauthorized' });
 
+    if (path === '/users/@me' && req.method === 'GET') return send(res, 200, { id: 'BOT1' });
+    if ((m = path.match(/^\/channels\/(\d+)\/messages\/(\d+)$/)) && req.method === 'DELETE') { messages[m[1]] = (messages[m[1]] || []).filter((x) => x.id !== m[2]); return send(res, 204); }
     if (path === '/guilds/G1' && req.method === 'GET') return send(res, 200, guild);
     if (path === '/guilds/G1' && req.method === 'PATCH') {
       if (body.features?.includes('COMMUNITY') && noCommunity) return send(res, 400, { code: 50035, message: 'Community requirements not met' });
@@ -51,8 +53,8 @@ http.createServer((req, res) => {
       Object.assign(c, Object.fromEntries(Object.entries(body).filter(([, v]) => v !== undefined))); return send(res, 200, c);
     }
     if ((m = path.match(/^\/channels\/(\d+)\/messages$/))) {
-      if (req.method === 'GET') return send(res, 200, (messages[m[1]] || []).slice(-1));
-      const msg = { id: id(), ...body }; (messages[m[1]] ||= []).push(msg); return send(res, 200, msg);
+      if (req.method === 'GET') return send(res, 200, (messages[m[1]] || []).slice(-50));
+      const msg = { id: id(), author: { id: 'BOT1' }, ...body }; (messages[m[1]] ||= []).push(msg); return send(res, 200, msg);
     }
     if (path.match(/^\/channels\/\d+\/pins\/\d+$/) && req.method === 'PUT') return send(res, 204);
     if ((m = path.match(/^\/channels\/(\d+)\/invites$/)) && req.method === 'POST') return send(res, 200, { code: 'abc123' });

@@ -32,16 +32,19 @@ const root = document.getElementById('root');
 function rings(cx, cy, d) { return `<div class="rings">${[.34,.56,.78,1].map((k, i) => `<i style="left:${cx}px;top:${cy}px;width:${d*k}px;height:${d*k}px;${i==2?'border-style:dashed;':''}${i==0?'border-color:rgba(139,107,255,.4);':''}"></i>`).join('')}</div>`; }
 
 function scene(w, h, k) {   // k = scale factor against a 1920x1080 design
+  const card = (x, y, accent, title, sub) => `<div style="position:absolute;left:${x*k}px;top:${y*k}px;width:${470*k}px;padding:${28*k}px ${30*k}px;border-radius:${28*k}px;background:rgba(14,15,28,.82);border:1px solid rgba(255,255,255,.14);box-shadow:0 ${30*k}px ${70*k}px rgba(0,0,0,.5)">
+      <div style="width:${16*k}px;height:${16*k}px;border-radius:50%;background:${accent};box-shadow:0 0 0 ${6*k}px ${accent}33;margin-bottom:${16*k}px"></div>
+      <div class="word" style="font-size:${46*k}px;margin-bottom:${8*k}px">${title}</div>
+      <div style="font-size:${28*k}px;line-height:1.35;color:#cdd1df">${sub}</div></div>`;
   root.innerHTML = `<div class="stage" style="width:${w}px;height:${h}px"><div class="glow"></div>
     ${rings(1500*k, 470*k, 1500*k)}
-    <div class="sweep" style="left:${750*k}px;top:${-280*k}px;width:${1500*k}px;height:${1500*k}px"></div>
-    <div style="position:absolute;left:${1450*k}px;top:${230*k}px;filter:drop-shadow(0 ${24*k}px ${60*k}px rgba(139,107,255,.7))">${shield(320*k, tick)}</div>
-    <div style="position:absolute;left:${130*k}px;top:${120*k}px;display:flex;align-items:center;gap:${24*k}px;white-space:nowrap">${orb(120*k)}<span class="word" style="font-size:${96*k}px">Guardian</span></div>
-    <div class="word grad" style="position:absolute;left:${130*k}px;top:${300*k}px;font-size:${150*k}px;line-height:1;padding-bottom:${16*k}px;white-space:nowrap">The<br>community.</div>
-    <div style="position:absolute;left:${134*k}px;top:${700*k}px;width:${940*k}px;font-size:${42*k}px;line-height:1.35;color:#cdd1df">Help, false positives, feature ideas and a look at how a Windows antivirus is made.</div>
-    <div class="chip" style="font-size:${30*k}px;left:${1130*k}px;top:${110*k}px">Signature verified</div>
-    <div class="chip" style="font-size:${30*k}px;left:${1340*k}px;top:${640*k}px">Quarantine, always reversible</div>
-    <div class="chip" style="font-size:${30*k}px;left:${1230*k}px;top:${840*k}px">Free for Windows 10 &amp; 11</div>
+    <div style="position:absolute;left:${130*k}px;top:${110*k}px;filter:drop-shadow(0 0 ${60*k}px rgba(139,107,255,.7))">${orb(190*k)}</div>
+    <div class="word" style="position:absolute;left:${130*k}px;top:${360*k}px;font-size:${190*k}px;line-height:1;white-space:nowrap">Lumen</div>
+    <div class="word grad" style="position:absolute;left:${134*k}px;top:${610*k}px;font-size:${96*k}px;line-height:1;padding-bottom:${14*k}px;white-space:nowrap">The community.</div>
+    <div style="position:absolute;left:${138*k}px;top:${790*k}px;width:${820*k}px;font-size:${42*k}px;line-height:1.35;color:#cdd1df">Three free apps for Windows, one friendly place for help, ideas and a look behind the scenes.</div>
+    ${card(1300, 110, '#ff2e55', 'Lumen', 'Streaming on your PC, phone and TV.')}
+    ${card(1380, 410, '#8b6bff', 'Lumen Studios', 'A glassy video editor.')}
+    ${card(1300, 710, '#38d0ff', 'Guardian', 'Antivirus and PC care.')}
   </div>`;
 }
 
@@ -54,6 +57,10 @@ else if (mode.startsWith('emoji-')) {
   const n = mode.slice(6); const S = 128;
   const icons = {
     guardian: orb(S),
+    lumen: orb(S),
+    studios: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><rect x="3" y="11" width="26" height="17" rx="3.5" fill="url(#g)"/><path d="M3 11l3-7 5 2-3 5zM11 6l5 2-3 5-5-2zM19 8l5 2-3 5-5-2z" fill="#fff" fill-opacity=".92"/></svg>`,
+    tv: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><rect x="3" y="6" width="26" height="17" rx="3" fill="url(#g)"/><path d="M11 28h10M16 23v5" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/></svg>`,
+    play: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><circle cx="16" cy="16" r="14" fill="url(#g)"/><path d="M13 9.5v13l10-6.5z" fill="#fff"/></svg>`,
     protected: shield(S, tick),
     alert: shield(S, '<path d="M50 30v32" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="50" cy="76" r="5.5" fill="#fff"/>'),
     quarantine: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><rect x="4" y="13" width="24" height="16" rx="4" fill="url(#g)"/><path d="M10 13V10a6 6 0 0 1 12 0v3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="21" r="2.4" fill="#fff"/></svg>`,

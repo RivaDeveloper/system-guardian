@@ -6,7 +6,7 @@ Copy, fill in the brackets, post in `#announcements`. Keep them short: a headlin
 
 ## New release
 
-> **Guardian [version] is out** 🚀
+> **[App] [version] is out** 🚀   (Lumen, Lumen Studios or Guardian)
 >
 > **New**
 > • [One line per big thing, written for people, not for developers]
@@ -15,14 +15,14 @@ Copy, fill in the brackets, post in `#announcements`. Keep them short: a headlin
 > **Fixed**
 > • [...]
 >
-> It installs itself: Guardian will offer the update the next time it starts. Or grab it here:
-> https://github.com/RivaDeveloper/system-guardian/releases/latest
+> The app updates itself the next time it starts. Or grab it here:
+> [Lumen](https://github.com/RivaDeveloper/lumen-releases/releases/latest) · [Lumen Studios](https://github.com/RivaDeveloper/lumen-studios-releases/releases/latest) · [Guardian](https://github.com/RivaDeveloper/system-guardian/releases/latest)
 >
 > Found a problem? Make a post in <#bug-reports>. Questions go in <#help>.
 
 ## Hotfix
 
-> **Guardian [version]: quick fix** 🔧
+> **[App] [version]: quick fix** 🔧
 > [What was broken, in plain words.] If you saw "[the error text]", update to [version] and it's gone. Sorry about that.
 > Installs of [old version] update automatically.
 
@@ -36,8 +36,8 @@ Copy, fill in the brackets, post in `#announcements`. Keep them short: a headlin
 
 > **Heads up** 🛡️
 > [What people should know: a scam going around, a fake download site, a new threat that Guardian detects.]
-> The only official downloads are on GitHub: https://github.com/RivaDeveloper/system-guardian/releases
-> Guardian staff will never DM you first or ask for a password.
+> The only official downloads are the GitHub releases linked in <#welcome>.
+> Staff will never DM you first or ask for a password or API key.
 
 ## Detection update
 

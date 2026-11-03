@@ -20,8 +20,8 @@ node setup.mjs --dry-run
 $go = Read-Host "`nBuild the server now? (y/n)"
 if ($go -ne 'y') { Write-Host 'Nothing was changed.'; Read-Host 'Press Enter to close'; exit 0 }
 
-$gh = Read-Host 'Also add the release webhook to the GitHub repo with the gh CLI? (y/n)'
-if ($gh -eq 'y') { node setup.mjs --github } else { node setup.mjs }
+$refresh = Read-Host 'Replace the bot''s earlier welcome/rules/FAQ messages with the current texts? (y/n)'
+if ($refresh -eq 'y') { node setup.mjs --refresh } else { node setup.mjs }
 
 # the token only lived in this window
 Remove-Item Env:\DISCORD_TOKEN, Env:\GUILD_ID -ErrorAction SilentlyContinue

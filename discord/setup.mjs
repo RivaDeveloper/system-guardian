@@ -1,11 +1,13 @@
 #!/usr/bin/env node
-// Builds the whole Guardian Discord server from server.json: roles, categories, channels, permissions, forum channels
+// Builds the whole Discord server from server.json (the Lumen community: Lumen, Lumen Studios and Guardian): roles, categories, channels, permissions, forum channels
 // with tags, the first messages, AutoMod rules, emoji, the release webhook and a permanent invite.
 //
-//   DISCORD_TOKEN=<bot token> GUILD_ID=<server id> node setup.mjs [--dry-run] [--github] [--skip-emoji]
+//   DISCORD_TOKEN=<bot token> GUILD_ID=<server id> node setup.mjs [--dry-run] [--refresh] [--webhook] [--github] [--skip-emoji]
+//   --refresh  also replaces the bot's earlier first messages (use it after changing the texts in server.json)
+//   --webhook  also creates a bot-owned release webhook (it is deleted if the bot is removed: prefer making your own)
 //
-// It is safe to run again: roles, channels and emoji are matched by name and reused, and a message is only posted
-// into a channel that has no messages yet. See README.md for how to get a bot token and the server id.
+// It is safe to run again: roles, channels and emoji are matched by name (or by an earlier name listed under "was", so a
+// rename is applied instead of duplicating) and reused, and a message is only posted into a channel that has no messages yet. See README.md for how to get a bot token and the server id.
 
 import { readFileSync, existsSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
@@ -18,7 +20,7 @@ const DRY = args.has('--dry-run');
 const API = process.env.DISCORD_API || 'https://discord.com/api/v10';
 const TOKEN = process.env.DISCORD_TOKEN || '';
 const GUILD = process.env.GUILD_ID || '';
-const cfg = JSON.parse(readFileSync(join(here, 'server.json'), 'utf8'));
+const cfg = JSON.parse(readFileSync(process.env.SERVER_CONFIG || join(here, 'server.json'), 'utf8'));
 
 if (!DRY && (!TOKEN || !GUILD)) {
   console.error('Set DISCORD_TOKEN and GUILD_ID first (see README.md), or use --dry-run to only print the plan.');
@@ -71,6 +73,7 @@ const dataUri = (file) => `data:image/png;base64,${readFileSync(join(here, 'asse
 
 // ---- helpers ------------------------------------------------------------------------------------------------
 const plain = (name) => name.toLowerCase().replace(/^[^\p{L}\p{N}]+/u, '').replace(/^[｜|]+/u, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
+const matches = (existingName, item) => [item.name, ...(item.was || [])].some((n) => plain(n) === plain(existingName));
 const ids = {};          // channel key -> id
 const roleIds = {};      // role key -> id
 
@@ -101,7 +104,7 @@ await api('PATCH', `/guilds/${GUILD}`, { name: cfg.name, ...cfg.settings, icon: 
 // ---- 2. roles --------------------------------------------------------------------------------------------------
 step('Roles');
 for (const r of cfg.roles) {
-  const found = existingRoles.find((x) => x.name === r.name);
+  const found = existingRoles.find((x) => x.id !== everyone && !x.managed && [r.name, ...(r.was || [])].includes(x.name));
   const body = { name: r.name, color: colorInt(r.color), hoist: r.hoist, mentionable: r.mentionable, permissions: bits(r.permissions) };
   if (found) { roleIds[r.key] = found.id; await api('PATCH', `/guilds/${GUILD}/roles/${found.id}`, body); console.log('  updated ' + r.name); }
   else { const made = await api('POST', `/guilds/${GUILD}/roles`, body); roleIds[r.key] = made.id; console.log('  created ' + r.name); }
@@ -131,7 +134,7 @@ step('Categories and channels');
 let position = 0;
 const pendingLater = [];   // forums and announcement channels, created once Community is on
 for (const cat of cfg.categories) {
-  let category = existingChannels.find((c) => c.type === TYPE.category && plain(c.name) === plain(cat.name));
+  let category = existingChannels.find((c) => c.type === TYPE.category && matches(c.name, cat));
   const catOverwrites = cat.private ? [
     { id: everyone, type: 0, allow: '0', deny: bits(['VIEW_CHANNEL']) },
     ...cat.private.map((k) => ({ id: roleIds[k], type: 0, allow: bits(['VIEW_CHANNEL', 'SEND_MESSAGES', 'READ_MESSAGE_HISTORY']), deny: '0' })).filter((x) => x.id),
@@ -140,11 +143,15 @@ for (const cat of cfg.categories) {
     category = await api('POST', `/guilds/${GUILD}/channels`, { name: cat.name, type: TYPE.category, position: position++, permission_overwrites: catOverwrites });
     console.log('  + category ' + cat.name);
     existingChannels.push(category);
-  } else console.log('  = category ' + cat.name);
+  } else {
+    if (category.name !== cat.name) await api('PATCH', `/channels/${category.id}`, { name: cat.name, ...(catOverwrites.length ? { permission_overwrites: catOverwrites } : {}) });
+    console.log('  = category ' + cat.name);
+  }
+  cat._id = category.id;
 
   for (const ch of cat.channels) {
     if (ch.type === 'forum') { pendingLater.push({ cat, category, ch }); continue; }
-    let found = existingChannels.find((c) => (c.type === TYPE.text || c.type === TYPE.voice || c.type === TYPE.announcement) && plain(c.name) === plain(ch.name));
+    let found = existingChannels.find((c) => (c.type === TYPE.text || c.type === TYPE.voice || c.type === TYPE.announcement) && matches(c.name, ch));
     const body = {
       name: ch.name, type: TYPE[ch.type], parent_id: category.id, topic: ch.topic, rate_limit_per_user: ch.slowmode || 0,
       permission_overwrites: cat.private ? [] : overwrites(cat, ch),
@@ -174,13 +181,18 @@ if (ids.general) await tryApi('system channel', 'PATCH', `/guilds/${GUILD}`, { s
 step('Forums and announcements');
 for (const { category, ch } of pendingLater) {
   const asForum = community;
-  let found = existingChannels.find((c) => (c.type === TYPE.forum || c.type === TYPE.text) && c.parent_id === category.id && plain(c.name) === plain(ch.name));
+  let found = existingChannels.find((c) => (c.type === TYPE.forum || c.type === TYPE.text) && matches(c.name, ch));
   const body = {
     name: ch.name, type: asForum ? TYPE.forum : TYPE.text, parent_id: category.id, topic: ch.topic,
     ...(asForum ? { available_tags: (ch.tags || []).map((t) => ({ name: t })), default_reaction_emoji: null, rate_limit_per_user: 0 } : {}),
   };
   if (!found) { found = await api('POST', `/guilds/${GUILD}/channels`, body); console.log(`  + ${ch.name} (${asForum ? 'forum' : 'text'})`); }
-  else console.log(`  = ${ch.name}`);
+  else {
+    const upd = { name: ch.name, topic: ch.topic, parent_id: category.id };
+    if (found.type === TYPE.forum) upd.available_tags = (ch.tags || []).map((t) => { const old = (found.available_tags || []).find((o) => o.name === t); return old ? { id: old.id, name: t } : { name: t }; });
+    await api('PATCH', `/channels/${found.id}`, upd);
+    console.log(`  = ${ch.name}`);
+  }
   ids[ch.key] = found.id;
 }
 if (community) {
@@ -190,19 +202,25 @@ if (community) {
   }
 }
 
+if (!DRY) await tryApi('category order', 'PATCH', `/guilds/${GUILD}/channels`, cfg.categories.filter((c) => c._id).map((c, i) => ({ id: c._id, position: i })));
+
 // ---- 6. first messages (only into empty channels) -------------------------------------------------------------
 step('Messages');
-const postInto = { welcome: 'welcome', rules: 'rules', faq: 'faq', roadmap: 'roadmap', howitworks: 'howitworks', contributing: 'contributing', announcements: 'announcements', releases: 'releasesinfo' };
-for (const [channelKey, messageKey] of Object.entries(postInto)) {
-  const channelId = ids[channelKey];
-  const embeds = cfg.messages[messageKey];
+const me = DRY || !args.has('--refresh') ? { id: '' } : await api('GET', '/users/@me');
+for (const cat of cfg.categories) for (const ch of cat.channels) {
+  const channelId = ids[ch.key];
+  const embeds = ch.post && cfg.messages[ch.post];
   if (!channelId || !embeds) continue;
-  const existing = DRY ? [] : await api('GET', `/channels/${channelId}/messages?limit=1`);
-  if (existing.length) { console.log(`  = #${channelKey} already has messages`); continue; }
+  let existing = DRY ? [] : await api('GET', `/channels/${channelId}/messages?limit=50`);
+  if (args.has('--refresh')) {
+    for (const m of existing.filter((x) => x.author?.id === me.id)) await tryApi('delete old message', 'DELETE', `/channels/${channelId}/messages/${m.id}`);
+    existing = existing.filter((x) => x.author?.id !== me.id);
+  }
+  if (existing.length) { console.log(`  = #${ch.key} already has messages`); continue; }
   for (const e of embeds) {
     const msg = await api('POST', `/channels/${channelId}/messages`, { embeds: [fillEmbed(e)], allowed_mentions: { parse: [] } });
-    if (msg.id && ['welcome', 'rules', 'faq'].includes(channelKey)) await tryApi('pin', 'PUT', `/channels/${channelId}/pins/${msg.id}`);
-    console.log(`  + posted into #${channelKey}`);
+    if (msg.id && ch.pin) await tryApi('pin', 'PUT', `/channels/${channelId}/pins/${msg.id}`);
+    console.log(`  + posted into #${ch.key}`);
   }
 }
 
@@ -235,7 +253,8 @@ if (!args.has('--skip-emoji')) {
 // ---- 9. release webhook and invite ---------------------------------------------------------------------------
 step('Release webhook');
 let hookUrl = '';
-if (ids.releases) {
+if (!args.has('--webhook')) console.log('  Skipped. Create your own webhook (Server Settings > Integrations > Webhooks > New Webhook, channel #releases) and add it to each GitHub repo; see README.md. Use --webhook to make a bot-owned one anyway.');
+if (args.has('--webhook') && ids.releases) {
   const hooks = DRY ? [] : (await tryApi('listing webhooks', 'GET', `/channels/${ids.releases}/webhooks`)) || [];
   let hook = hooks.find((h) => h.name === 'Guardian Releases');
   if (!hook) hook = await tryApi('webhook', 'POST', `/channels/${ids.releases}/webhooks`, { name: 'Guardian Releases', avatar: dataUri('icon.png') });
@@ -243,7 +262,7 @@ if (ids.releases) {
 }
 if (hookUrl) {
   console.log('  Note: this webhook is owned by the bot and Discord deletes it when the bot is removed. Create your own in Server Settings > Integrations > Webhooks before you remove the bot, and use that URL for GitHub.');
-  const github = cfg.links.github.replace('https://github.com/', '');
+  const github = (cfg.links.guardianRepo || cfg.links.github).replace('https://github.com/', '');
   if (args.has('--github')) {
     const gh = spawnSync('gh', ['api', '-X', 'POST', `repos/${github}/hooks`, '--input', '-'], {
       input: JSON.stringify({ name: 'web', active: true, events: ['release'], config: { url: hookUrl + '/github', content_type: 'json' } }), encoding: 'utf8',
