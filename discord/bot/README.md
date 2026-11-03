@@ -50,7 +50,7 @@ Strikes last 30 days: 1st a warning, 2nd a 10 minute timeout, 3rd an hour, 4th a
    npm start -- --check     # logs in, shows what it can see and do, posts nothing
    npm start                # dry run: look at what it logs while people chat
    ```
-8. **Go live.** Set `DRY_RUN=0` in `.env` and start it again.
+8. **Go live.** Type `/bot mode live` in Discord (admins only), or set `DRY_RUN=0` in `.env` and restart. `/bot mode test` switches back, `/bot chat on|off` controls unprompted answers and `/bot status` shows both. These choices are saved in `data/settings.json` and win over `.env`.
 
 ## Keep it running
 

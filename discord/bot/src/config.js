@@ -1,5 +1,5 @@
 // Settings come from environment variables (a .env file is read if present, see .env.example). Nothing secret is ever written to disk by the bot.
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -14,11 +14,26 @@ function loadDotEnv(file) {
 }
 loadDotEnv(join(here, '..', '.env'));
 
+/** Settings changed from Discord with /bot are kept next to the database and win over the .env file. */
+const SWITCHES = ['dryRun', 'autoAnswer'];
+const switchFile = (cfg) => join(dirname(cfg.dbFile), 'settings.json');
+
+export function saveSwitch(cfg, key, value) {
+  if (!SWITCHES.includes(key)) throw new Error(`Unknown switch ${key}`);
+  cfg[key] = value;
+  const file = switchFile(cfg);
+  let saved = {};
+  try { saved = JSON.parse(readFileSync(file, 'utf8')); } catch { /* none yet */ }
+  saved[key] = value;
+  mkdirSync(dirname(file), { recursive: true });
+  writeFileSync(file, JSON.stringify(saved, null, 2));
+}
+
 const bool = (v, d) => (v === undefined || v === '' ? d : /^(1|true|yes|on)$/i.test(v));
 
 export function loadConfig(env = process.env) {
   const server = JSON.parse(readFileSync(join(here, '..', '..', 'server.json'), 'utf8'));
-  return {
+  const cfg = {
     token: env.DISCORD_TOKEN || '',
     guildId: env.GUILD_ID || '',
     /** log what the bot would do, but delete, timeout and reply to nothing */
@@ -41,4 +56,9 @@ export function loadConfig(env = process.env) {
     aiEnabled: !!env.ANTHROPIC_API_KEY,
     server,
   };
+  try {
+    const saved = JSON.parse(readFileSync(switchFile(cfg), 'utf8'));
+    for (const k of SWITCHES) if (typeof saved[k] === 'boolean') cfg[k] = saved[k];
+  } catch { /* nothing saved from Discord yet */ }
+  return cfg;
 }

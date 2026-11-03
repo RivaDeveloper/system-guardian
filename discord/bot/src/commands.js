@@ -2,6 +2,7 @@
 import { SlashCommandBuilder, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
 import { escalate, STRIKE_WINDOW_DAYS } from './escalation.js';
 import { clip } from './util.js';
+import { saveSwitch } from './config.js';
 
 const mod = PermissionFlagsBits.ModerateMembers;
 
@@ -23,6 +24,12 @@ export const definitions = [
     .addIntegerOption((o) => o.setName('count').setDescription('How many (1 to 100)').setRequired(true).setMinValue(1).setMaxValue(100)),
   new SlashCommandBuilder().setName('slowmode').setDescription('Set slowmode in this channel (moderators)').setDefaultMemberPermissions(PermissionFlagsBits.ManageChannels)
     .addIntegerOption((o) => o.setName('seconds').setDescription('0 turns it off').setRequired(true).setMinValue(0).setMaxValue(21600)),
+  new SlashCommandBuilder().setName('bot').setDescription('Bot settings (admins)').setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
+    .addSubcommand((s) => s.setName('status').setDescription('Show what the bot is doing right now'))
+    .addSubcommand((s) => s.setName('mode').setDescription('Live = it deletes, times out and answers. Test = it only writes to its log')
+      .addStringOption((o) => o.setName('mode').setDescription('live or test').setRequired(true).addChoices({ name: 'live', value: 'live' }, { name: 'test', value: 'test' })))
+    .addSubcommand((s) => s.setName('chat').setDescription('Answer clear questions in the chat channels without being asked')
+      .addStringOption((o) => o.setName('state').setDescription('on or off').setRequired(true).addChoices({ name: 'on', value: 'on' }, { name: 'off', value: 'off' }))),
 ].map((c) => c.toJSON());
 
 export async function handleCommand(interaction, { store, moderator, answerer, resolver, cfg }) {
@@ -35,6 +42,19 @@ export async function handleCommand(interaction, { store, moderator, answerer, r
     const res = await answerer.answer(q, { userId: interaction.user.id });
     if (!res.text) return interaction.editReply({ content: answerer.noAnswerText(resolver.render, resolver.channelIds), allowedMentions: { parse: [] } });
     return interaction.editReply({ embeds: [answerer.toEmbed(res, resolver.render, resolver.channelIds)], allowedMentions: { parse: [] } });
+  }
+
+  if (name === 'bot') {
+    if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) return reply('Only admins can change the bot settings.');
+    const sub = interaction.options.getSubcommand();
+    if (sub === 'mode') saveSwitch(cfg, 'dryRun', interaction.options.getString('mode', true) === 'test');
+    if (sub === 'chat') saveSwitch(cfg, 'autoAnswer', interaction.options.getString('state', true) === 'on');
+    return reply([
+      `**Mode:** ${cfg.dryRun ? 'test (nothing is deleted or answered, it only logs)' : 'live (deleting, timing out and answering)'}`,
+      `**Unprompted answers in chat:** ${cfg.autoAnswer ? 'on' : 'off'}`,
+      `**Questions in #${cfg.askChannel} and /ask:** ${cfg.dryRun ? 'only /ask works in test mode' : 'on'}`,
+    ].join('
+'));
   }
 
   // everything below is for staff
