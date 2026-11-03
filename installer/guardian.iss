@@ -102,3 +102,12 @@ begin
     WizardForm.PageNameLabel.Font.Size := 11;
   end;
 end;
+
+{ Guardian can keep running in the taskbar corner with its window hidden; ask any running copy to end so its files can be replaced. }
+function PrepareToInstall(var NeedsRestart: Boolean): String;
+var
+  ResultCode: Integer;
+begin
+  Exec(ExpandConstant('{sys}\taskkill.exe'), '/F /IM Guardian.exe', '', SW_HIDE, ewWaitUntilTerminated, ResultCode);
+  Result := '';
+end;

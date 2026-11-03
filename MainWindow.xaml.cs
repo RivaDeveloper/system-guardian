@@ -14,6 +14,12 @@ public sealed partial class MainWindow : Window
     {
         InitializeComponent();
         OpenAtComfortableSize();
+        AppWindow.Closing += (_, e) =>
+        {
+            var p = SettingsStore.Load().Protection;
+            if (!App.Exiting && p.RunInBackground && p.RealtimeEnabled) { e.Cancel = true; AppWindow.Hide(); }
+            else if (!App.Exiting) { App.PrepareExit(); }
+        };
         Title = Elevation.IsElevated ? "Guardian (administrator)" : "Guardian";
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "guardian.ico"));
 
@@ -149,6 +155,7 @@ public sealed partial class MainWindow : Window
             UpdateBar.Message = "Guardian will close and reopen by itself.";
             UpdateProgress.IsIndeterminate = true;
             UpdateService.LaunchInstaller(installer);
+            App.PrepareExit();
             Application.Current.Exit();
         }
         catch (Exception ex)
@@ -177,6 +184,7 @@ public sealed partial class MainWindow : Window
             ? typeof(SettingsPage)
             : (args.SelectedItemContainer?.Tag as string) switch
             {
+                "protection" => typeof(ProtectionPage),
                 "scan" => typeof(ScanPage),
                 "drivers" => typeof(DriversPage),
                 "apps" => typeof(AppsPage),

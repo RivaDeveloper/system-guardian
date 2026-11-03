@@ -12,6 +12,28 @@ public sealed class AppSettings
 
     /// <summary>Keys of deep-scan findings the user chose to ignore.</summary>
     public List<string> Ignored { get; set; } = new();
+
+    /// <summary>Real-time protection options. Every feature has its own switch.</summary>
+    public ProtectionSettings Protection { get; set; } = new();
+}
+
+public sealed class ProtectionSettings
+{
+    /// <summary>Master switch: when off, nothing below runs.</summary>
+    public bool RealtimeEnabled { get; set; } = true;
+    public bool WatchFiles { get; set; } = true;
+    public bool WatchStartup { get; set; } = true;
+    public bool ScanUsb { get; set; } = true;
+    /// <summary>Move serious threats into quarantine without asking. Off means Guardian only alerts.</summary>
+    public bool AutoQuarantine { get; set; }
+    /// <summary>Look up the hash of new unsigned programs on VirusTotal (needs the API key; only the hash is sent).</summary>
+    public bool CloudCheck { get; set; }
+    public bool Notify { get; set; } = true;
+    public bool RunInBackground { get; set; }
+    public bool StartWithWindows { get; set; }
+    /// <summary>"Off", "Daily" or "Weekly".</summary>
+    public string Schedule { get; set; } = "Off";
+    public List<string> Exclusions { get; set; } = new();
 }
 
 /// <summary>Small per-user settings file in %LOCALAPPDATA%\Guardian.</summary>

@@ -1,6 +1,7 @@
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Security.Principal;
+using Guardian;
 
 namespace Guardian.Services;
 
@@ -21,6 +22,7 @@ public static class Elevation
         try
         {
             Process.Start(new ProcessStartInfo(Environment.ProcessPath!) { UseShellExecute = true, Verb = "runas" });
+            App.PrepareExit();
             Microsoft.UI.Xaml.Application.Current.Exit();
             return true;
         }

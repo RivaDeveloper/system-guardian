@@ -51,6 +51,9 @@
                     <NavigationViewItem Content="Overview" Tag="overview">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xE80F;" /></NavigationViewItem.Icon>
                     </NavigationViewItem>
+                    <NavigationViewItem Content="Protection" Tag="protection">
+                        <NavigationViewItem.Icon><FontIcon Glyph="&#xE83D;" /></NavigationViewItem.Icon>
+                    </NavigationViewItem>
                     <NavigationViewItem Content="Virus scan" Tag="scan">
                         <NavigationViewItem.Icon><FontIcon Glyph="&#xEA18;" /></NavigationViewItem.Icon>
                     </NavigationViewItem>
