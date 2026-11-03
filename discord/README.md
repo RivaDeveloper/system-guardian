@@ -13,6 +13,7 @@ built earlier (for example the first, Guardian-only version) in place.
 | `render-animated.ps1` | Redraws the two animated GIFs (needs the .NET SDK, Python and ffmpeg). Every frame is a pure function of time, so the loop is seamless. |
 | `announcements.md` | Ready-to-post templates: new release, hotfix, beta call, security note, event. |
 | `test/` | A fake Discord server and tests, including an upgrade from the old Guardian-only design. |
+| `bot/` | The moderation and Q&A bot (Node.js). See `bot/README.md`. |
 
 ## What you get
 

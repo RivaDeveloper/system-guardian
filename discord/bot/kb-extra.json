@@ -1,0 +1,219 @@
+[
+  {
+    "q": [
+      "How do I update Guardian?",
+      "update guardian new version",
+      "how do updates work guardian"
+    ],
+    "source": "faq",
+    "topic": "Guardian",
+    "a": "Guardian checks its GitHub releases when it starts, verifies the installer's SHA-256 checksum and offers to install the update. You can also run the newest installer over the old one. The checks can be turned off in Settings."
+  },
+  {
+    "q": [
+      "How do I uninstall Lumen, Lumen Studios or Guardian?",
+      "remove uninstall app"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "Use Windows Settings → Apps → Installed apps, find the app and choose Uninstall. Your settings stay in your user folders (Guardian: `%LOCALAPPDATA%\\Guardian`) in case you reinstall."
+  },
+  {
+    "q": [
+      "Which Lumen app should I use?",
+      "difference between lumen lumen studios guardian"
+    ],
+    "source": "welcome",
+    "topic": "General",
+    "a": "**Lumen** is the streaming app (movies, series, anime from your own addons and accounts), **Lumen Studios** is a video editor, and **Guardian** is an antivirus and PC-care app. They are separate apps made by the same developer and all free for Windows. See <#{welcome}>."
+  },
+  {
+    "q": [
+      "Is it safe? Is it a virus? Why does my antivirus flag it?",
+      "antivirus warning false positive installer"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "The installers aren't code-signed yet, so Windows SmartScreen and some antivirus programs don't recognise them at first. Choose **More info → Run anyway**. Every release is published on GitHub with a checksum. If Guardian itself flags something that you think is fine, report it in <#{falsepositives}> with the file's SHA-256."
+  },
+  {
+    "q": [
+      "How do I become a beta tester?",
+      "beta tester role test new versions"
+    ],
+    "source": "contributing",
+    "topic": "Community",
+    "a": "Ask a moderator for the **Beta Tester** role. You will be pinged when there is something to try, and feedback goes in <#{bugs}>."
+  },
+  {
+    "q": [
+      "Where do I report a bug?",
+      "bug report problem crash error"
+    ],
+    "source": "help",
+    "topic": "Support",
+    "a": "Make a post in <#{bugs}> and pick the app in the tags. Say which app and version you use, what you expected, what happened and how to make it happen again. For Guardian, attach the end of `%LOCALAPPDATA%\\Guardian\\errors.log` if there is an error."
+  },
+  {
+    "q": [
+      "Where can I suggest a feature?",
+      "feature request idea suggestion"
+    ],
+    "source": "features",
+    "topic": "Support",
+    "a": "Post it in <#{features}>: one idea per post, pick the app in the tags and say what problem it solves. The <#{roadmap}> lists what might come next, with no promises."
+  },
+  {
+    "q": [
+      "Is there a Mac, Linux, iPhone or web version?",
+      "mac linux ios iphone macos"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "Not at the moment. Lumen is for Windows 10 and 11, Android phones and Samsung smart TVs (plus a Roku channel). Lumen Studios and Guardian are for Windows 10 and 11, 64-bit. Mac and Linux versions are on the <#{roadmap}> as ideas, with no dates."
+  },
+  {
+    "q": [
+      "Can you help me find movies or shows for free?",
+      "free movies shows download stream torrent link"
+    ],
+    "source": "rules",
+    "topic": "Rules",
+    "a": "No, sorry: this server doesn't help find free copies of anything, and Lumen doesn't host or provide any content (see rule 3 in <#{rules}>). Lumen plays what the addons you add can find, and you are responsible for how you use them. For setting the app up see <#{lumenguide}>."
+  },
+  {
+    "q": [
+      "I posted my Real-Debrid key or token by mistake",
+      "leaked api key posted"
+    ],
+    "source": "lumenguide",
+    "topic": "Safety",
+    "a": "Delete the message and create a new key right away in the service's own settings (Real-Debrid, TorBox or the addon's page), then update it in Lumen under **Settings → Real-Debrid & Usenet**. Anyone who saw the old key could use your account."
+  },
+  {
+    "q": [
+      "Why was my message deleted?",
+      "message removed deleted moderation bot"
+    ],
+    "source": "rules",
+    "topic": "Rules",
+    "a": "The bot removes messages that break the rules: executable or archive files, keys and tokens, scam text, invite links, piracy links and floods. Read <#{rules}>. If you think it was a mistake, ask a moderator."
+  },
+  {
+    "q": [
+      "How do I get help from a person?",
+      "talk to moderator admin staff human"
+    ],
+    "source": "help",
+    "topic": "Support",
+    "a": "Make a post in <#{help}> with the app in the tags, or mention a moderator for urgent things like scams. Staff never DM you first."
+  },
+  {
+    "q": [
+      "Is Guardian a kernel driver or a real antivirus?",
+      "kernel driver real antivirus replace defender"
+    ],
+    "source": "faq",
+    "topic": "Guardian",
+    "a": "Guardian has its own scan engine and real-time protection, and works with or without Windows Defender. It isn't a kernel driver: it runs in user mode, so it can pause a risky program but can't stop it before its first instruction. See <#{howitworks}>."
+  },
+  {
+    "q": [
+      "How do I add addons in Lumen?",
+      "add addons install addon paste link get addons"
+    ],
+    "source": "lumenguide",
+    "topic": "Lumen",
+    "a": "Open **Addons** in Lumen. Under **Get addons**, catalog addons with an **Add** button install in one click; ones that need an account or key show **Set up** and open their setup page inside Lumen. You can also paste the link of an addon you already use. Full steps are in <#{lumenguide}>."
+  },
+  {
+    "q": [
+      "How do I link Real-Debrid in Lumen?",
+      "link real debrid account api key settings"
+    ],
+    "source": "lumenguide",
+    "topic": "Lumen",
+    "a": "Open **Settings → Real-Debrid & Usenet** and press **Link Real-Debrid**, then follow the prompts. You need your own Real-Debrid account, which is a separate paid service. Torrent addons such as Comet keep a key in their own setup; update it from the same Settings page. Steps are in <#{lumenguide}>."
+  },
+  {
+    "q": [
+      "Are Lumen, Lumen Studios and Guardian free?",
+      "is it free price cost paid ads"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "Yes, all three are free, with no ads and no watermark on your videos. For Lumen, Real-Debrid and some addons are separate services with their own prices."
+  },
+  {
+    "q": [
+      "What is Lumen?",
+      "what is lumen how does it work"
+    ],
+    "source": "lumenhow",
+    "topic": "Lumen",
+    "a": "Lumen is a home screen and player for movies, series and anime. It doesn't come with any content: it shows what the Stremio-compatible addons you add can find, and plays what your own accounts allow. It runs on Windows, Android and Samsung TV. See <#{lumenhow}>."
+  },
+  {
+    "q": [
+      "Does Lumen come with movies or content?",
+      "lumen content provide host movies shows"
+    ],
+    "source": "faq",
+    "topic": "Lumen",
+    "a": "No. Lumen doesn't host or provide any content. It only plays what the addons you add can find, and you are responsible for how you use them."
+  },
+  {
+    "q": [
+      "What can Lumen Studios do?",
+      "studios features effects transitions captions templates export"
+    ],
+    "source": "studioschat",
+    "topic": "Lumen Studios",
+    "a": "A multi-track timeline, twelve text styles and about a hundred stickers, 75+ effects, 94 transitions, 19 colour looks plus adjust sliders, automatic captions that run offline on your PC, 32 templates and frame-accurate MP4 export. Free, no account and no watermark. See <#{studioschat}> and <#{studioseffects}>."
+  },
+  {
+    "q": [
+      "How do I make captions in Lumen Studios?",
+      "captions subtitles speech generate srt vtt"
+    ],
+    "source": "studioschat",
+    "topic": "Lumen Studios",
+    "a": "Use the Captions tool: generate captions from speech offline on your PC (the 148 MB speech model downloads the first time you use it) or import `.srt` and `.vtt` files. Style them once and export them back out."
+  },
+  {
+    "q": [
+      "What can Guardian do?",
+      "guardian features scan protection tools"
+    ],
+    "source": "guardianchat",
+    "topic": "Guardian",
+    "a": "Quick, folder and deep scans with its own engine, real-time protection (new files, startup entries, USB drives and programs as they start), quarantine you can always undo, plus tools for registry repair, cleanup, drivers, debloat and a safe BIOS update assistant. See <#{guardianchat}>."
+  },
+  {
+    "q": [
+      "Does Guardian work without administrator rights?",
+      "administrator admin rights elevated"
+    ],
+    "source": "faq",
+    "topic": "Guardian",
+    "a": "Yes, but some parts need administrator rights: checking programs as they start, driver installs and system repair. Use **Restart as administrator** in the banner at the top of Guardian."
+  },
+  {
+    "q": [
+      "Which Windows versions are supported?",
+      "windows 10 11 requirements system requirements 64-bit arm"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "Windows 10 and 11 (64-bit). Lumen also has an ARM64 build for Snapdragon laptops, plus Android 8 or newer and Samsung smart TVs from 2019 on."
+  },
+  {
+    "q": [
+      "Where do I download the apps?",
+      "download install official links releases github"
+    ],
+    "source": "welcome",
+    "topic": "General",
+    "a": "Only from the official GitHub releases linked in <#{welcome}>: [Lumen]({lumenDownload}), [Lumen Studios]({studiosDownload}) and [Guardian]({guardianDownload}). Staff never send installers by DM."
+  }
+]
