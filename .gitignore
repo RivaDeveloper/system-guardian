@@ -5,3 +5,4 @@ obj/
 publish/
 dist/
 Assets/yara/*.exe
+.wrangler/
