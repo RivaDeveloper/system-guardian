@@ -1,0 +1,198 @@
+{
+  "name": "Guardian",
+  "links": {
+    "website": "https://guardian-antivirus.lumendeploy.workers.dev",
+    "github": "https://github.com/RivaDeveloper/system-guardian",
+    "download": "https://github.com/RivaDeveloper/system-guardian/releases/latest",
+    "issues": "https://github.com/RivaDeveloper/system-guardian/issues",
+    "lumen": "https://getlumen.pages.dev"
+  },
+  "settings": {
+    "verification_level": 2,
+    "explicit_content_filter": 2,
+    "default_message_notifications": 1
+  },
+  "roles": [
+    { "key": "dev",         "name": "Guardian Dev",  "color": "#ff2e55", "hoist": true,  "mentionable": false, "permissions": [] },
+    { "key": "mod",         "name": "Moderator",     "color": "#ffb84a", "hoist": true,  "mentionable": true,  "permissions": ["VIEW_AUDIT_LOG", "KICK_MEMBERS", "BAN_MEMBERS", "MODERATE_MEMBERS", "MANAGE_MESSAGES", "MANAGE_THREADS", "MANAGE_NICKNAMES", "MENTION_EVERYONE"] },
+    { "key": "contributor", "name": "Contributor",   "color": "#8b6bff", "hoist": true,  "mentionable": false, "permissions": [] },
+    { "key": "researcher",  "name": "Researcher",    "color": "#3ddc84", "hoist": true,  "mentionable": false, "permissions": [] },
+    { "key": "beta",        "name": "Beta Tester",   "color": "#38d0ff", "hoist": true,  "mentionable": true,  "permissions": [] }
+  ],
+  "categories": [
+    {
+      "name": "📌 START HERE",
+      "channels": [
+        { "key": "welcome",       "name": "👋｜welcome",       "type": "text", "readonly": true, "topic": "Start here: what Guardian is, how to get it and where to find everything." },
+        { "key": "rules",         "name": "📜｜rules",         "type": "text", "readonly": true, "topic": "Short and simple. Please read before you post." },
+        { "key": "announcements", "name": "📣｜announcements", "type": "text", "announcement": true, "readonly": true, "topic": "News about Guardian. Follow this channel to get it in your own server." },
+        { "key": "releases",      "name": "🚀｜releases",      "type": "text", "readonly": true, "topic": "Every new Guardian version, posted automatically from GitHub." },
+        { "key": "roadmap",       "name": "🗺️｜roadmap",       "type": "text", "readonly": true, "topic": "What Guardian does today and what might come next. Ideas, not promises." },
+        { "key": "faq",           "name": "❓｜faq",           "type": "text", "readonly": true, "topic": "Quick answers to the questions people ask most." }
+      ]
+    },
+    {
+      "name": "💬 COMMUNITY",
+      "channels": [
+        { "key": "general",       "name": "💬｜general",       "type": "text", "slowmode": 2,  "topic": "Chat about Guardian, PC care and anything related." },
+        { "key": "introductions", "name": "🙋｜introductions", "type": "text", "slowmode": 30, "topic": "Say hi. What do you use Guardian for?" },
+        { "key": "showcase",      "name": "📸｜showcase",      "type": "text", "slowmode": 15, "topic": "Screenshots of your scans, your setups, your clean PCs." },
+        { "key": "gaming",        "name": "🎮｜gaming",        "type": "text", "topic": "Games, anti-cheat, performance tweaks and keeping a gaming PC safe." },
+        { "key": "offtopic",      "name": "☕｜off-topic",     "type": "text", "slowmode": 3,  "topic": "Everything else. Keep it friendly." }
+      ]
+    },
+    {
+      "name": "🛠 SUPPORT",
+      "channels": [
+        { "key": "help",            "name": "🆘｜help",            "type": "forum", "topic": "Something not working? Make a post with your Guardian version, your Windows version, whether you ran it as administrator and what you clicked. Attach the end of %LOCALAPPDATA%\\Guardian\\errors.log if there is an error.", "tags": ["Install", "Scans", "Protection", "Drivers and tools", "Updates", "Other", "Solved"] },
+        { "key": "falsepositives",  "name": "🧪｜false-positives", "type": "forum", "topic": "Guardian flagged something that is fine? Post the file name, the program's publisher, where you got it, the SHA-256 and the 'why it was flagged' text. Do NOT upload files that hold personal data.", "tags": ["Open", "Fixed", "Not a false positive", "Needs more info"] },
+        { "key": "bugs",            "name": "🐞｜bug-reports",     "type": "forum", "topic": "Found a bug? Say what you expected, what happened, and how to make it happen again. Screenshots help.", "tags": ["Open", "Confirmed", "Fixed", "Can't reproduce", "Won't fix"] },
+        { "key": "features",        "name": "💡｜feature-requests", "type": "forum", "topic": "Have an idea? One idea per post, and say what problem it solves. Vote with a reaction.", "tags": ["Idea", "Planned", "Done", "Not planned"] }
+      ]
+    },
+    {
+      "name": "🔬 SECURITY LAB",
+      "channels": [
+        { "key": "threat",   "name": "🛡️｜threat-talk",    "type": "text", "topic": "How malware hides, how detection works, defensive research. Hashes and names only: never post live malware or links to it." },
+        { "key": "yara",     "name": "🧬｜yara-and-rules", "type": "text", "topic": "Share and review YARA rules and detection ideas. Guardian can load your own rules." },
+        { "key": "howitworks","name": "⚙️｜how-it-works",  "type": "text", "readonly": true, "topic": "How Guardian's engine works, step by step." }
+      ]
+    },
+    {
+      "name": "⚙️ DEVELOPMENT",
+      "channels": [
+        { "key": "changelog",    "name": "📝｜dev-log",      "type": "text", "readonly": true, "topic": "Behind-the-scenes notes from the developer." },
+        { "key": "contributing", "name": "🤝｜contributing", "type": "text", "topic": "Want to help? Code, rules, translations, testing. Start here." },
+        { "key": "devchat",      "name": "🔧｜dev-chat",     "type": "text", "access": ["dev", "mod", "contributor"], "topic": "For Contributors: talk code with the developer." }
+      ]
+    },
+    {
+      "name": "🔊 VOICE",
+      "channels": [
+        { "key": "hangout",  "name": "🔊｜Hangout",   "type": "voice" },
+        { "key": "helpdesk", "name": "🎧｜Help desk", "type": "voice" }
+      ]
+    },
+    {
+      "name": "🔒 STAFF",
+      "private": ["dev", "mod"],
+      "channels": [
+        { "key": "modchat", "name": "🛡️｜mod-chat", "type": "text", "topic": "Staff only." },
+        { "key": "modlog",  "name": "🚨｜mod-log",  "type": "text", "topic": "Automatic alerts from AutoMod and the release webhook checks." }
+      ]
+    }
+  ],
+  "messages": {
+    "welcome": [
+      {
+        "title": "Welcome to Guardian",
+        "color": 16723541,
+        "description": "**Guardian** is a free antivirus and system-care app for Windows 10 and 11, made by one developer and built in the open.\n\nIt watches new files, startup entries, USB drives and (as administrator) every program the moment it starts. It checks them with its own engine, tells you *why* it flagged something, and never removes anything you can't undo.",
+        "fields": [
+          { "name": "Get Guardian", "value": "**[Download for Windows]({download})**\n[Website]({website}) · [GitHub]({github})", "inline": false },
+          { "name": "New here?", "value": "1. Read the <#{rules}>\n2. Say hi in <#{introductions}>\n3. Install Guardian and run a quick scan\n4. Stuck? Make a post in <#{help}>", "inline": false },
+          { "name": "Find your way around", "value": "<#{announcements}> news · <#{releases}> new versions\n<#{help}> help · <#{falsepositives}> false positives · <#{bugs}> bugs · <#{features}> ideas\n<#{threat}> and <#{yara}> for the security nerds\n<#{showcase}> show off your PC", "inline": false },
+          { "name": "Good to know", "value": "Guardian works with or without Windows Defender. It runs in user mode, not as a kernel driver, and it isn't code-signed yet, so Windows SmartScreen may warn you the first time: choose *More info*, then *Run anyway*.", "inline": false }
+        ],
+        "footer": "Guardian · made by the developer of Lumen"
+      }
+    ],
+    "rules": [
+      {
+        "title": "Server rules",
+        "color": 16723541,
+        "description": "**1. Be decent.** No harassment, hate or personal attacks. Disagree with ideas, not people.\n\n**2. Use the right channel.** Support goes in <#{help}>, bugs in <#{bugs}>, ideas in <#{features}>.\n\n**3. No malware, cracks, keygens or cheats.** Not as files, not as links. Talk about samples with hashes and names only.\n\n**4. Defensive security only.** Discuss how to detect and stop threats, not how to attack other people.\n\n**5. No piracy.** No requests, no help, no links.\n\n**6. Protect your privacy.** Never post passwords, tokens, API keys (including your VirusTotal key) or personal files. Never upload documents, photos or ID scans when reporting a false positive.\n\n**7. No spam and no self-promotion** without asking staff first. No unsolicited invites or DMs.\n\n**8. Keep it in English** in the main channels so everyone can follow.\n\n**9. Follow the [Discord Terms](https://discord.com/terms) and [Guidelines](https://discord.com/guidelines).**\n\n**10. Staff have the final say.** If you think a decision was wrong, ask a moderator politely in private.",
+        "fields": [
+          { "name": "Scam warning", "value": "Guardian staff will **never** DM you first, ask for a password, or ask you to download something outside the official [GitHub releases]({download}). If someone does, report them in <#{help}> or to a moderator.", "inline": false }
+        ]
+      }
+    ],
+    "faq": [
+      {
+        "title": "Frequently asked questions",
+        "color": 9161727,
+        "fields": [
+          { "name": "Is Guardian free?", "value": "Yes. No ads, no account, no watermark." },
+          { "name": "Do I need Windows Defender?", "value": "No. Real-time protection, the quick, folder and deep scans, the hash lists and the signature rules all work without it. If Defender is on, the two work side by side." },
+          { "name": "Is it a kernel-level antivirus?", "value": "No. Guardian has no kernel driver. With administrator rights it listens to Windows' own kernel process events, so it sees every program within moments of it starting and can pause a risky one, but it can't stop a program before its first instruction. That needs a Microsoft-signed driver and a paid certificate." },
+          { "name": "Windows says 'Windows protected your PC'", "value": "Guardian isn't code-signed yet. Choose **More info**, then **Run anyway**. Every release shows a SHA-256 checksum on GitHub, and Guardian checks it before it updates itself." },
+          { "name": "Does it upload my files?", "value": "Never. The optional VirusTotal check sends only a file's SHA-256 fingerprint, and only if you turn it on and add your own key." },
+          { "name": "Can it delete a good file by mistake?", "value": "It never deletes. Quarantine moves a file aside and you can restore it from Virus scan → Quarantine. 'It's fine' stops a file being raised again." },
+          { "name": "Programs as they start says 'not running'", "value": "That shield needs administrator rights. Use **Restart as administrator** in the banner at the top of Guardian." },
+          { "name": "Where are its files?", "value": "Settings, history and quarantine live in `%LOCALAPPDATA%\\Guardian`. If something breaks, the end of `errors.log` in that folder is what we need." },
+          { "name": "How do updates work?", "value": "Guardian checks GitHub releases, verifies the installer's checksum, installs silently and reopens. You can turn the check off in Settings." }
+        ]
+      }
+    ],
+    "roadmap": [
+      {
+        "title": "What Guardian does today",
+        "color": 3652740,
+        "description": "A short history of what has shipped.",
+        "fields": [
+          { "name": "Scanning", "value": "Guardian's own deep scan with signatures, behaviour checks, 9,000+ known-bad hashes and 5,000+ YARA rules. Quick scans and folder scans. Windows Defender and VirusTotal scans as extras." },
+          { "name": "Real-time protection", "value": "Watches new files, startup entries, USB drives and programs as they start. Optional auto-quarantine and an optional pause for high-risk programs." },
+          { "name": "PC care", "value": "Registry repair, disk cleanup, debloat, tracks eraser, shortcut fixer, startup and process managers, driver manager and backups, manufacturer driver checks, performance tweaks and a BIOS update assistant that never flashes firmware." },
+          { "name": "Updates", "value": "Self-updating installer with checksum verification." }
+        ]
+      },
+      {
+        "title": "Ideas on the table",
+        "color": 16756810,
+        "description": "These are ideas people ask for. They are **not promises** and have no dates.",
+        "fields": [
+          { "name": "A code-signed installer", "value": "Would remove the SmartScreen warning. Needs a paid certificate." },
+          { "name": "A real kernel driver", "value": "Would let Guardian block programs before they start. Needs a Microsoft-signed driver, which needs a paid certificate." },
+          { "name": "A Linux version", "value": "Asked for often. The app would need a new interface and a lot of the Windows-only parts rewritten." },
+          { "name": "Your idea", "value": "Post it in <#{features}>." }
+        ]
+      }
+    ],
+    "howitworks": [
+      {
+        "title": "How Guardian works",
+        "color": 9161727,
+        "description": "Four steps, every time something new shows up on your PC.",
+        "fields": [
+          { "name": "1. Catch", "value": "Watchers see new files in Downloads, the desktop, temp and startup folders, new startup entries, USB drives and, as administrator, every program the moment it starts (through Windows' own kernel process events)." },
+          { "name": "2. Inspect", "value": "The engine checks the digital signature, where the file lives and how it behaves, then 9,000+ known-bad fingerprints and 5,000+ YARA rules. All of it runs on your PC. A rule match counts as evidence weighed against the rule's confidence and the file's signature, never as a verdict by itself." },
+          { "name": "3. Decide", "value": "Anything medium-risk or worse becomes an alert with the reasons in plain words. Optionally Guardian quarantines serious threats or pauses a high-risk program until you decide." },
+          { "name": "4. Undo", "value": "Quarantine moves a file aside and never deletes it. Restore it any time. Every alert stays in your history." }
+        ],
+        "footer": "Guardian never opens your documents, photos or ID scans, and never uploads your files."
+      }
+    ],
+    "contributing": [
+      {
+        "title": "Want to help?",
+        "color": 9161727,
+        "description": "Guardian is a one-person project that is happy to have company.",
+        "fields": [
+          { "name": "Test", "value": "Try new versions, run scans on odd setups, tell us what breaks. Ask a moderator for the **Beta Tester** role." },
+          { "name": "Report", "value": "Bugs in <#{bugs}>, wrongly flagged files in <#{falsepositives}>." },
+          { "name": "Write rules", "value": "Share YARA rules in <#{yara}>. Guardian loads your own rules from `%LOCALAPPDATA%\\Guardian\\intel\\custom`." },
+          { "name": "Code", "value": "Guardian is C# on .NET 9 with WinUI 3. Look at the [GitHub repo]({github}) and open an issue before a big change." }
+        ]
+      }
+    ],
+    "announcements": [
+      {
+        "title": "The Guardian community is open",
+        "color": 16723541,
+        "description": "Welcome! This is the place for help, false-positive reports, ideas and a look at how a Windows antivirus is made.\n\nNew versions are posted in <#{releases}>. If you only read one thing, read the <#{rules}>.\n\n**[Download Guardian]({download})**"
+      }
+    ],
+    "releasesinfo": [
+      {
+        "title": "New versions land here",
+        "color": 3652740,
+        "description": "Every GitHub release of Guardian is posted in this channel automatically, with its notes. The installer updates itself, so you usually don't have to do anything."
+      }
+    ]
+  },
+  "automod": {
+    "mentionLimit": 6,
+    "keywords": ["free nitro", "discord.gift/", "steam gift", "claim your prize", "airdrop"]
+  },
+  "emoji": ["guardian", "protected", "alert", "quarantine", "scan", "paused", "clean", "usb"]
+}

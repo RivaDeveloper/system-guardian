@@ -41,27 +41,59 @@ public sealed partial class ScanPage : Page
     //  Deep scan
     // =====================================================================
 
-    async void DeepStart_Click(object sender, RoutedEventArgs e)
+    enum GuardianScan { Quick, Folder, Deep }
+
+    async void QuickStart_Click(object sender, RoutedEventArgs e) => await RunGuardianScanAsync(GuardianScan.Quick, null);
+
+    async void DeepStart_Click(object sender, RoutedEventArgs e) => await RunGuardianScanAsync(GuardianScan.Deep, null);
+
+    async void FolderScan_Click(object sender, RoutedEventArgs e)
+    {
+        var folder = await Ui.PickFolderAsync();
+        if (folder != null) await RunGuardianScanAsync(GuardianScan.Folder, folder);
+    }
+
+    void SetGuardianButtons(bool enabled) => DeepButton.IsEnabled = QuickScanButton.IsEnabled = FolderScanButton.IsEnabled = enabled;
+
+    /// <summary>Runs Guardian's own engine in one of its three shapes and lists what it found.</summary>
+    async Task RunGuardianScanAsync(GuardianScan kind, string? folder)
     {
         _cts = new CancellationTokenSource();
-        DeepButton.IsEnabled = false;
+        SetGuardianButtons(false);
         DeepSummary.Text = "";
         Findings.Clear();
         ShowDetails(null);
 
         var started = DateTime.Now;
-        var scanner = new DeepScanner { ScanProcessMemory = ScanMemory.IsChecked == true };
+        var scanner = new DeepScanner { ScanProcessMemory = kind == GuardianScan.Deep && ScanMemory.IsChecked == true };
         long items = 0;
         List<Finding>? results = null;
         var defenderNote = "";
+        var label = kind switch
+        {
+            GuardianScan.Quick => "Quick scan",
+            GuardianScan.Folder => "Folder scan",
+            _ => "Deep scan",
+        };
+        var stages = kind switch
+        {
+            GuardianScan.Quick => DeepScanner.QuickStageNames,
+            GuardianScan.Folder => DeepScanner.FolderStageNames,
+            _ => DeepScanner.StageNames,
+        };
 
-        Overlay.Begin("Deep scan", DeepScanner.StageNames, percentKnown: true);
+        Overlay.Begin(label, stages, percentKnown: true);
         try
         {
             var progress = new Progress<ScanProgress>(p => { items = p.ItemsChecked; Overlay.Update(p); });
-            results = await scanner.RunAsync(progress, _cts.Token);
+            results = kind switch
+            {
+                GuardianScan.Quick => await scanner.RunQuickAsync(progress, _cts.Token),
+                GuardianScan.Folder => await scanner.ScanFolderAsync(folder!, progress, _cts.Token),
+                _ => await scanner.RunAsync(progress, _cts.Token),
+            };
 
-            if (IncludeDefender.IsChecked == true && _defenderUsable)
+            if (kind == GuardianScan.Deep && IncludeDefender.IsChecked == true && _defenderUsable)
             {
                 Overlay.Begin("Windows Defender quick scan", new[] { "Quick scan" }, percentKnown: false,
                     note: "Defender doesn't report a percentage while it scans, so Guardian shows how long it has been running. A quick scan usually takes a few minutes.");
@@ -78,7 +110,7 @@ public sealed partial class ScanPage : Page
         finally
         {
             Overlay.End();
-            DeepButton.IsEnabled = true;
+            SetGuardianButtons(true);
         }
 
         if (results is null) return;
@@ -87,9 +119,12 @@ public sealed partial class ScanPage : Page
         _all = results.Where(f => !ignored.Contains(f.Key)).ToList();
         _lastItems = items;
         _lastElapsed = DateTime.Now - started;
+        _scanLabel = kind == GuardianScan.Folder ? $"Folder scan of {folder}" : label;
         _defenderNote = defenderNote;
         ApplyFilter();
     }
+
+    string _scanLabel = "Scan";
 
     List<Finding> _all = new();
     long _lastItems;
@@ -113,7 +148,7 @@ public sealed partial class ScanPage : Page
         var attention = _all.Count(f => f.Severity >= Severity.Medium);
         var hidden = _all.Count - visible.Count;
         var worst = _all.Count(f => f.Severity >= Severity.High);
-        var checkedText = $"Checked {_lastItems:N0} items in {_lastElapsed:mm\\:ss}.";
+        var checkedText = $"{_scanLabel} checked {_lastItems:N0} items in {_lastElapsed:mm\\:ss}.";
         DeepSummary.Text = attention == 0
             ? $"Nothing suspicious found. {checkedText}{(hidden > 0 ? $" {hidden} low-risk notes are hidden." : "")}{_defenderNote}"
             : $"{checkedText} {attention} item{(attention == 1 ? "" : "s")} worth a look{(worst > 0 ? $", {worst} of them high priority" : "")}.{(hidden > 0 ? $" {hidden} low-risk notes are hidden." : "")}{_defenderNote}";
@@ -300,7 +335,7 @@ public sealed partial class ScanPage : Page
     void SetScanning(bool scanning)
     {
         QuickButton.IsEnabled = FullButton.IsEnabled = FolderButton.IsEnabled = !scanning && _defenderUsable;
-        DeepButton.IsEnabled = !scanning;
+        SetGuardianButtons(!scanning);
     }
 
     async Task RunScanAsync(DefenderScanType type, string? path)

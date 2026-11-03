@@ -1,0 +1,67 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Guardian Discord art</title>
+<!-- Rendered to PNG by discord/render-assets.ps1. ?m=icon (512x512), ?m=banner (960x540), ?m=splash (1920x1080) or ?m=emoji-<name> (128x128, transparent). -->
+<style>
+@font-face { font-family: 'Syne'; font-weight: 800; src: url('../../Assets/Fonts/Syne-ExtraBold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 700; src: url('../../Assets/Fonts/Manrope-Bold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 400; src: url('../../Assets/Fonts/Manrope-Regular.ttf'); }
+* { box-sizing: border-box; margin: 0; }
+html, body { overflow: hidden; background: transparent; font-family: 'Manrope', sans-serif; color: #f1f2f8; }
+.stage { position: relative; overflow: hidden; background: #05060b; }
+.glow { position: absolute; inset: 0;
+  background: radial-gradient(60% 55% at 12% 0%, rgba(139,107,255,.6), transparent 70%), radial-gradient(55% 60% at 100% 35%, rgba(255,46,85,.45), transparent 70%), radial-gradient(60% 50% at 55% 120%, rgba(56,208,255,.3), transparent 70%); }
+.rings i { position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,.09); transform: translate(-50%, -50%); }
+.sweep { position: absolute; border-radius: 50%; background: conic-gradient(from 20deg, transparent 0deg, transparent 285deg, rgba(61,220,132,.14) 335deg, rgba(61,220,132,.4) 360deg); -webkit-mask-image: radial-gradient(closest-side, transparent 12%, #000 13%, #000 96%, transparent); }
+.word { font-family: 'Syne'; font-weight: 800; letter-spacing: -.04em; line-height: .95; }
+.grad { background: linear-gradient(100deg, #fff 0%, #ffd5de 30%, #ff2e55 62%, #8b6bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.chip { position: absolute; display: flex; align-items: center; gap: .55em; padding: .5em .9em; border-radius: 999px; font: 700 1em 'Manrope'; white-space: nowrap; background: rgba(14,15,28,.86); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 .9em 2.4em rgba(0,0,0,.5); }
+.chip::before { content: ""; width: .6em; height: .6em; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 .25em rgba(61,220,132,.2); }
+svg { display: block; }
+</style></head>
+<body>
+<defs-holder style="display:none"></defs-holder>
+<div id="root"></div>
+<script>
+const q = new URLSearchParams(location.search); const mode = q.get('m') || 'banner';
+const GRAD = '<linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff2e55"/><stop offset=".55" stop-color="#8b6bff"/><stop offset="1" stop-color="#38d0ff"/></linearGradient>';
+const orb = (size) => `<svg width="${size}" height="${size}" viewBox="0 0 32 32"><defs>${GRAD}</defs><circle cx="16" cy="16" r="14" fill="url(#g)"/><ellipse cx="12" cy="16" rx="10" ry="14" fill="#fff" fill-opacity=".28"/><circle cx="16" cy="16" r="8" fill="#fff" fill-opacity=".2"/><circle cx="16" cy="16" r="6" fill="#fff" fill-opacity=".9"/></svg>`;
+const shield = (size, inner) => `<svg width="${size}" viewBox="0 0 100 116"><defs>${GRAD}</defs><path d="M50 3 93 19v36c0 31-19 50-43 58C26 105 7 86 7 55V19z" fill="url(#g)"/><path d="M50 3 93 19v36c0 31-19 50-43 58z" fill="#fff" fill-opacity=".14"/>${inner}</svg>`;
+const tick = '<circle cx="50" cy="55" r="24" fill="#fff" fill-opacity=".2"/><path d="M36 56l10 10 19-21" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>';
+const root = document.getElementById('root');
+
+function rings(cx, cy, d) { return `<div class="rings">${[.34,.56,.78,1].map((k, i) => `<i style="left:${cx}px;top:${cy}px;width:${d*k}px;height:${d*k}px;${i==2?'border-style:dashed;':''}${i==0?'border-color:rgba(139,107,255,.4);':''}"></i>`).join('')}</div>`; }
+
+function scene(w, h, k) {   // k = scale factor against a 1920x1080 design
+  root.innerHTML = `<div class="stage" style="width:${w}px;height:${h}px"><div class="glow"></div>
+    ${rings(1500*k, 470*k, 1500*k)}
+    <div class="sweep" style="left:${750*k}px;top:${-280*k}px;width:${1500*k}px;height:${1500*k}px"></div>
+    <div style="position:absolute;left:${1450*k}px;top:${230*k}px;filter:drop-shadow(0 ${24*k}px ${60*k}px rgba(139,107,255,.7))">${shield(320*k, tick)}</div>
+    <div style="position:absolute;left:${130*k}px;top:${120*k}px;display:flex;align-items:center;gap:${24*k}px;white-space:nowrap">${orb(120*k)}<span class="word" style="font-size:${96*k}px">Guardian</span></div>
+    <div class="word grad" style="position:absolute;left:${130*k}px;top:${300*k}px;font-size:${150*k}px;line-height:1;padding-bottom:${16*k}px;white-space:nowrap">The<br>community.</div>
+    <div style="position:absolute;left:${134*k}px;top:${700*k}px;width:${940*k}px;font-size:${42*k}px;line-height:1.35;color:#cdd1df">Help, false positives, feature ideas and a look at how a Windows antivirus is made.</div>
+    <div class="chip" style="font-size:${30*k}px;left:${1130*k}px;top:${110*k}px">Signature verified</div>
+    <div class="chip" style="font-size:${30*k}px;left:${1340*k}px;top:${640*k}px">Quarantine, always reversible</div>
+    <div class="chip" style="font-size:${30*k}px;left:${1230*k}px;top:${840*k}px">Free for Windows 10 &amp; 11</div>
+  </div>`;
+}
+
+if (mode === 'icon') {
+  root.innerHTML = `<div class="stage" style="width:512px;height:512px"><div class="glow"></div>${rings(256, 256, 560)}
+    <div style="position:absolute;left:96px;top:96px;filter:drop-shadow(0 0 60px rgba(139,107,255,.8))">${orb(320)}</div></div>`;
+} else if (mode === 'banner') scene(960, 540, .5);
+else if (mode === 'splash') scene(1920, 1080, 1);
+else if (mode.startsWith('emoji-')) {
+  const n = mode.slice(6); const S = 128;
+  const icons = {
+    guardian: orb(S),
+    protected: shield(S, tick),
+    alert: shield(S, '<path d="M50 30v32" stroke="#fff" stroke-width="9" stroke-linecap="round"/><circle cx="50" cy="76" r="5.5" fill="#fff"/>'),
+    quarantine: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><rect x="4" y="13" width="24" height="16" rx="4" fill="url(#g)"/><path d="M10 13V10a6 6 0 0 1 12 0v3" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/><circle cx="16" cy="21" r="2.4" fill="#fff"/></svg>`,
+    scan: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><circle cx="14" cy="14" r="9" fill="none" stroke="url(#g)" stroke-width="3.4"/><path d="M21 21l7 7" stroke="url(#g)" stroke-width="4" stroke-linecap="round"/></svg>`,
+    paused: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><circle cx="16" cy="16" r="14" fill="url(#g)"/><rect x="10.5" y="9" width="4" height="14" rx="1.5" fill="#fff"/><rect x="17.5" y="9" width="4" height="14" rx="1.5" fill="#fff"/></svg>`,
+    clean: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><path d="M6 9h20M12 9V6h8v3M8 9l1.4 18h13.2L24 9" fill="none" stroke="url(#g)" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+    usb: `<svg width="${S}" viewBox="0 0 32 32"><defs>${GRAD}</defs><rect x="10" y="3" width="12" height="16" rx="2.5" fill="url(#g)"/><rect x="13" y="6" width="2.4" height="4" rx=".6" fill="#fff"/><rect x="16.8" y="6" width="2.4" height="4" rx=".6" fill="#fff"/><path d="M16 19v10" stroke="url(#g)" stroke-width="3" stroke-linecap="round"/></svg>`,
+  };
+  root.innerHTML = `<div style="width:${S}px;height:${S}px;display:grid;place-items:center">${icons[n] || icons.guardian}</div>`;
+}
+</script></body></html>

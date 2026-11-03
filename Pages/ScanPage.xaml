@@ -18,7 +18,7 @@
 
             <Pivot Grid.Row="1">
                 <!-- ============ Guardian deep scan ============ -->
-                <PivotItem Header="Deep scan">
+                <PivotItem Header="Guardian scan">
                     <Grid RowSpacing="12">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -27,14 +27,20 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
                         <TextBlock TextWrapping="Wrap" Foreground="{StaticResource MutedBrush}" MaxWidth="900" HorizontalAlignment="Left"
-                                   Text="Guardian's own scanner looks where malware hides and where it survives a reboot: startup entries, scheduled tasks, services, running programs, kernel drivers, temp and AppData folders, and security settings that attackers switch off. It never opens your documents, photos or ID scans, never uploads anything, and never removes anything on its own." />
-                        <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="12">
-                            <Button x:Name="DeepButton" Content="Start deep scan" Click="DeepStart_Click" Style="{StaticResource AccentButtonStyle}" />
-                            <CheckBox x:Name="IncludeDefender" Content="Also run a Defender quick scan" IsChecked="True" VerticalAlignment="Center" />
-                            <CheckBox x:Name="ScanMemory" Content="Scan programs' memory" Checked="ScanMemory_Changed" Unchecked="ScanMemory_Changed" VerticalAlignment="Center"
-                                      ToolTipService.ToolTip="Looks inside running programs for known malware. Guardian refuses to do this while EasyAntiCheat, BattlEye, Vanguard or similar is running, because anti-cheat can treat it as cheating and ban the account." />
-                            <CheckBox x:Name="ShowLow" Content="Show low-risk items" Checked="ShowLow_Changed" Unchecked="ShowLow_Changed" VerticalAlignment="Center" />
-                            <Button Content="Quarantine" Click="ShowQuarantine_Click" />
+                                   Text="Guardian's own scanner, with no need for Windows Defender. A quick scan checks startup entries, running programs and the places malware lands first, in a few minutes. A folder scan checks one folder you pick, such as Downloads or a USB drive. The deep scan also covers kernel drivers, security settings and every hiding place. None of them opens your documents, photos or ID scans, uploads anything, or removes anything on its own." />
+                        <StackPanel Grid.Row="1" Spacing="10">
+                            <StackPanel Orientation="Horizontal" Spacing="12">
+                                <Button x:Name="QuickScanButton" Content="Quick scan" Click="QuickStart_Click" Style="{StaticResource AccentButtonStyle}" />
+                                <Button x:Name="FolderScanButton" Content="Scan a folder…" Click="FolderScan_Click" />
+                                <Button x:Name="DeepButton" Content="Deep scan" Click="DeepStart_Click" />
+                                <Button Content="Quarantine" Click="ShowQuarantine_Click" />
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal" Spacing="16">
+                                <CheckBox x:Name="IncludeDefender" Content="With the deep scan, also run a Defender quick scan" IsChecked="True" VerticalAlignment="Center" />
+                                <CheckBox x:Name="ScanMemory" Content="Scan programs' memory" Checked="ScanMemory_Changed" Unchecked="ScanMemory_Changed" VerticalAlignment="Center"
+                                          ToolTipService.ToolTip="Deep scan only. Looks inside running programs for known malware. Guardian refuses to do this while EasyAntiCheat, BattlEye, Vanguard or similar is running, because anti-cheat can treat it as cheating and ban the account." />
+                                <CheckBox x:Name="ShowLow" Content="Show low-risk items" Checked="ShowLow_Changed" Unchecked="ShowLow_Changed" VerticalAlignment="Center" />
+                            </StackPanel>
                         </StackPanel>
                         <TextBlock x:Name="DeepSummary" Grid.Row="2" TextWrapping="Wrap" />
 

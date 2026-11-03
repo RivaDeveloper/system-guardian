@@ -241,6 +241,15 @@ section { position: relative; z-index: 3; }
 .t-a .shot img { position: absolute; inset: 0; width: 100%; height: 100%; aspect-ratio: auto; object-position: left top; }
 .t-b { grid-column: span 3; grid-row: span 2; }
 .t-b .shot img { aspect-ratio: 16 / 10; }
+.t-h { grid-column: span 6; }
+.scans { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; margin-top: 20px; }
+.scans div { padding: 16px; border-radius: 16px; background: rgba(255,255,255,.04); border: 1px solid var(--line); transition: border-color .3s, transform .4s var(--ease); }
+.scans div:hover { border-color: rgba(255,255,255,.22); transform: translateY(-3px); }
+.scans b { display: block; font-family: var(--display); font-size: 18px; letter-spacing: -.02em; margin-bottom: 4px; }
+.scans span { display: block; color: var(--muted); font-size: 13.5px; line-height: 1.45; }
+.scans em { display: inline-block; margin-bottom: 8px; font: 700 10.5px var(--mono); letter-spacing: .1em; text-transform: uppercase; font-style: normal; color: var(--accent); }
+@media (max-width: 1100px) { .scans { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .scans { grid-template-columns: 1fr; } }
 .t-c, .t-d, .t-e { grid-column: span 2; }
 .t-f, .t-g { grid-column: span 3; }
 .tile .chip { display: inline-block; margin-bottom: 14px; padding: 5px 10px; border-radius: 999px; font: 700 11px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--ink); background: rgba(255,255,255,.08); }
@@ -309,7 +318,7 @@ footer { position: relative; z-index: 3; padding: 50px 0 60px; border-top: 1px s
   .chapter { min-height: 0; opacity: 1; margin-bottom: 70px; }
   .chapter img { display: block; margin-top: 24px; border-radius: 16px; border: 1px solid var(--line); aspect-ratio: 16 / 10; object-fit: cover; object-position: top; width: 100%; }
   .bento { grid-template-columns: repeat(2, 1fr); }
-  .t-a, .t-b, .t-c, .t-d, .t-e, .t-f, .t-g { grid-column: span 2; grid-row: auto; }
+  .t-a, .t-b, .t-c, .t-d, .t-e, .t-f, .t-g, .t-h { grid-column: span 2; grid-row: auto; }
   .t-a { display: block; }
   .t-a .shot { min-height: 0; }
   .t-a .shot img { position: static; height: auto; aspect-ratio: 16 / 9; }
@@ -327,7 +336,7 @@ footer { position: relative; z-index: 3; padding: 50px 0 60px; border-top: 1px s
   .btn { height: 52px; padding: 0 20px; }
   .hero .cta .btn { flex: 1 1 100%; justify-content: center; }
   .bento { grid-template-columns: 1fr; }
-  .t-a, .t-b, .t-c, .t-d, .t-e, .t-f, .t-g { grid-column: auto; }
+  .t-a, .t-b, .t-c, .t-d, .t-e, .t-f, .t-g, .t-h { grid-column: auto; }
   .num-row { grid-template-columns: 1fr 1fr; }
   .foot { grid-template-columns: 1fr; }
   .final .cta .btn { flex: 1 1 100%; justify-content: center; }
@@ -420,7 +429,7 @@ footer { position: relative; z-index: 3; padding: 50px 0 60px; border-top: 1px s
         <div class="chapters">
           <article class="chapter on" data-tint="rgba(61,220,132,.3)"><span class="num">01 / 05</span><h3>Watch new files.</h3><p>Checks every new program or script that lands in Downloads, the desktop, temp and startup folders. Documents and photos are never opened.</p><img src="media/protection.jpg" alt="The Protection page" loading="lazy"></article>
           <article class="chapter" data-tint="rgba(255,46,85,.35)"><span class="num">02 / 05</span><h3>Catch what survives a restart.</h3><p>Alerts you when something new is set to start with Windows, a favourite hiding place for malware, checks every USB stick the moment you plug it in, and (as administrator) every program within moments of it starting.</p><img src="media/protection-2.jpg" alt="The Protection page: what Guardian watches and what it does about it" loading="lazy"></article>
-          <article class="chapter" data-tint="rgba(139,107,255,.4)"><span class="num">03 / 05</span><h3>A deep scan of its own.</h3><p>Looks where malware hides: startup entries, scheduled tasks, services, running programs, kernel drivers and temp folders. Run it yourself, or daily or weekly in the background.</p><img src="media/overview.jpg" alt="The Overview page" loading="lazy"></article>
+          <article class="chapter" data-tint="rgba(139,107,255,.4)"><span class="num">03 / 05</span><h3>Scan the way you like.</h3><p>Run a quick scan of the places malware lands first, scan a single folder, or go deep into startup entries, services, drivers and every hiding place. Daily or weekly scans can run in the background.</p><img src="media/overview.jpg" alt="The Overview page" loading="lazy"></article>
           <article class="chapter" data-tint="rgba(56,208,255,.3)"><span class="num">04 / 05</span><h3>Clean up, too.</h3><p>A toolbox for the rest of your PC: registry repair, debloat, tracks eraser, startup and process managers, disk analyzer and a safe BIOS update assistant.</p><img src="media/tools.jpg" alt="System tools" loading="lazy"></article>
           <article class="chapter" data-tint="rgba(255,46,85,.35)"><span class="num">05 / 05</span><h3>Drivers that stay current.</h3><p>Finds outdated drivers, backs them up and restores them, and compares chipset, audio, LAN, GPU and CPU drivers with your manufacturer's download list.</p><img src="media/drivers.jpg" alt="The Drivers page" loading="lazy"></article>
         </div>
@@ -477,6 +486,15 @@ footer { position: relative; z-index: 3; padding: 50px 0 60px; border-top: 1px s
         <article class="tile t-e rv d2"><span class="chip">Privacy</span><div class="big-num grad">0</div><h3>Files uploaded</h3><p>The optional VirusTotal check sends only a SHA-256 fingerprint, and only with your own key.</p></article>
         <article class="tile t-f rv"><span class="chip">For gamers</span><h3>Anti-cheat aware</h3><p>Optional memory scanning refuses to run while EasyAntiCheat, BattlEye or Vanguard is active, so it can't put your account at risk. The watcher runs at low priority.</p></article>
         <article class="tile t-g rv d1"><span class="chip">Undo</span><h3>It never deletes</h3><p>Quarantine moves a file aside and you can restore it any time. "It's fine" stops a file being raised again. Every alert stays in your history with its reasons.</p></article>
+        <article class="tile t-h rv"><span class="chip">Your choice</span><h3>Scan your way</h3><p>The deep scan is the most thorough, but you never have to run it. On the Virus scan page pick whatever fits the moment. The first three are Guardian's own and need no Windows Defender.</p>
+          <div class="scans">
+            <div><em>Guardian engine</em><b>Quick scan</b><span>Startup entries, running programs and the places malware lands first: Downloads, temp folders, AppData. A few minutes.</span></div>
+            <div><em>Guardian engine</em><b>Folder scan</b><span>Pick one folder, like Downloads or a USB stick, and check just that, subfolders included.</span></div>
+            <div><em>Guardian engine</em><b>Deep scan</b><span>Everything above plus kernel drivers, security settings and every hiding place, with signature rules on top.</span></div>
+            <div><em>Windows Defender</em><b>Defender scans</b><span>Quick, full or folder scans through Windows Defender, available whenever Defender is switched on.</span></div>
+            <div><em>VirusTotal</em><b>Hash check</b><span>Looks up the fingerprints of the newest programs in a folder. Files are never uploaded.</span></div>
+          </div>
+          <p style="margin-top:16px;font-size:13.5px;color:var(--faint)">Real-time protection runs the whole time, whichever scan you pick.</p></article>
       </div>
     </div>
   </section>

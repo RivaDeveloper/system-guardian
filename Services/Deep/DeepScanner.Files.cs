@@ -77,6 +77,12 @@ public sealed partial class DeepScanner
             catch { }
         }
 
+        CheckCandidates(candidates);
+    }
+
+    /// <summary>Assesses every candidate file in parallel and reports progress from 10 to 100% of the current stage.</summary>
+    void CheckCandidates(List<Candidate> candidates)
+    {
         CandidateCount = candidates.Count;
         var total = Math.Max(1, candidates.Count);
         long done = 0;
@@ -133,7 +139,7 @@ public sealed partial class DeepScanner
     void Walk(string dir, int depth, bool recurse, List<Candidate> output)
     {
         _ct.ThrowIfCancellationRequested();
-        if (!Directory.Exists(dir) || depth > 12) return;
+        if (!Directory.Exists(dir) || depth > _maxDepth) return;
         var hotDir = Heuristics.IsHotZone(dir + "\\");
         var tight = Heuristics.IsTightHotZone(dir + "\\");
 

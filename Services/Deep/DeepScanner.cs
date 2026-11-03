@@ -37,12 +37,12 @@ public sealed partial class DeepScanner
     /// <summary>How many files the hiding-place sweep chose to look at (for diagnostics).</summary>
     public int CandidateCount { get; private set; }
 
-    public async Task<List<Finding>> RunAsync(IProgress<ScanProgress>? progress, CancellationToken ct)
-    {
-        _progress = progress;
-        _ct = ct;
+    /// <summary>How deep the hiding-place walk goes. A quick scan uses a shallow one.</summary>
+    int _maxDepth = 12;
 
-        var stages = new[]
+    /// <summary>The deep scan: every stage.</summary>
+    public Task<List<Finding>> RunAsync(IProgress<ScanProgress>? progress, CancellationToken ct) =>
+        RunStagesAsync(new[]
         {
             new StageDef(StageNames[0], 4, UpdateThreatIntel),
             new StageDef(StageNames[1], 3, AuditSecurity),
@@ -51,7 +51,12 @@ public sealed partial class DeepScanner
             new StageDef(StageNames[4], 10, AuditDrivers),
             new StageDef(StageNames[5], 40, SweepFiles),
             new StageDef(StageNames[6], 23, SignatureScan),
-        };
+        }, progress, ct);
+
+    async Task<List<Finding>> RunStagesAsync(StageDef[] stages, IProgress<ScanProgress>? progress, CancellationToken ct)
+    {
+        _progress = progress;
+        _ct = ct;
         _stageCount = stages.Length;
         var total = stages.Sum(s => s.Weight);
         double accumulated = 0;
