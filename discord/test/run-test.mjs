@@ -58,7 +58,7 @@ await withMock(8801, [], async () => {
   // pictures, custom emoji and forum starter posts
   const welcomeCh = s.channels.find((c) => c.name.includes('welcome'));
   const welcomeEmbeds = s.messages[welcomeCh.id].flatMap((m) => m.embeds);
-  assert.ok(welcomeEmbeds.some((e) => e.image?.url?.endsWith('/banner.png')), 'welcome has the banner picture');
+  assert.ok(welcomeEmbeds.some((e) => /\/banner\.png\?v=\w+$/.test(e.image?.url || '')), 'welcome has the banner picture');
   assert.ok(welcomeEmbeds.filter((e) => e.thumbnail?.url).length >= 3, 'project cards have icons');
   assert.ok(/<:lumen:\d+>/.test(text), 'custom emoji turned into <:name:id>');
   assert.ok(!/(?<![<\w]):[a-z]+:(?!\d)/.test(text.replace(/https?:\/\/\S+/g, '')), 'no leftover :emoji: tokens');

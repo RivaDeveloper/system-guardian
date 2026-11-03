@@ -79,6 +79,7 @@ const matches = (existingName, item) => [item.name, ...(item.was || [])].some((n
 const ids = {};          // channel key -> id
 const roleIds = {};      // role key -> id
 
+const RUN = Date.now().toString(36);   // picture cache-buster, see fillEmbed
 const emojiIds = {};     // emoji name -> id, filled in once the emoji exist
 function fill(text) {
   return String(text)
@@ -91,7 +92,9 @@ function fillEmbed(embed) {
   for (const k of ['title', 'description', 'url']) if (e[k]) e[k] = fill(e[k]);
   if (e.fields) e.fields = e.fields.map((f) => ({ ...f, value: fill(f.value), name: fill(f.name) }));
   if (e.footer && typeof e.footer === 'string') e.footer = { text: fill(e.footer) };
-  for (const k of ['image', 'thumbnail']) if (typeof e[k] === 'string') e[k] = { url: fill(e[k]) };
+  // Discord keeps its own copy of every picture URL it has seen, so a picture that changed on a website would still show the
+  // old one. A new ?v= on each run makes Discord fetch the current file.
+  for (const k of ['image', 'thumbnail']) if (typeof e[k] === 'string') { const u = fill(e[k]); e[k] = { url: u + (u.includes('?') ? '&' : '?') + 'v=' + RUN }; }
   return e;
 }
 const toBody = (entry) => ({ embeds: (entry.embeds || [entry]).map(fillEmbed), allowed_mentions: { parse: [] } });
