@@ -9,7 +9,8 @@ built earlier (for example the first, Guardian-only version) in place.
 | `setup.mjs` | Builds or upgrades the server from `server.json` through Discord's API. Safe to run again. |
 | `server.json` | The server's design: roles, channels, permissions, forum tags, first messages, AutoMod. Edit this to change anything. |
 | `run-setup.ps1` | A double-click helper that asks for the server ID and bot token and runs the script from the right folder. |
-| `assets/` | Server icon, banner, invite splash and 12 custom emoji (drawn from `art.html`). |
+| `assets/` | Server icon, banner, invite splash and 12 custom emoji (drawn from `art.html`), plus an animated icon and banner (`icon-animated.gif`, `banner-animated.gif`, drawn from `art-anim.html`). |
+| `render-animated.ps1` | Redraws the two animated GIFs (needs the .NET SDK, Python and ffmpeg). Every frame is a pure function of time, so the loop is seamless. |
 | `announcements.md` | Ready-to-post templates: new release, hotfix, beta call, security note, event. |
 | `test/` | A fake Discord server and tests, including an upgrade from the old Guardian-only design. |
 
@@ -79,8 +80,9 @@ Remove `--refresh` to leave all existing messages alone.
 * **Welcome screen** (Server Settings → Community): add `welcome`, `help`, `showcase` and `roadmap` with one-line blurbs.
 * **Server description:** *Lumen: a glassy streaming app, a video editor and an antivirus, all free for Windows. Help, ideas and
   a look behind the scenes.*
-* **Banner and splash** need Boost levels 2 and 1; run the script again after boosting, or upload `assets/banner.png` and
-  `assets/splash.png` by hand.
+* **Boost perks:** the animated icon needs Boost level 1, the invite splash level 1, a banner level 2 and an *animated* banner
+  level 3. The script tries them in that order and keeps whatever the server can have; run it again after boosting, or upload
+  `assets/banner-animated.gif` by hand in Server Settings → Overview.
 
 ## Running the server
 

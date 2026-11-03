@@ -71,7 +71,7 @@ async function tryApi(label, method, path, body) {
 }
 
 const step = (t) => console.log(`\n== ${t}`);
-const dataUri = (file) => `data:image/png;base64,${readFileSync(join(here, 'assets', file)).toString('base64')}`;
+const dataUri = (file) => `data:image/${file.endsWith('.gif') ? 'gif' : 'png'};base64,${readFileSync(join(here, 'assets', file)).toString('base64')}`;
 
 // ---- helpers ------------------------------------------------------------------------------------------------
 const plain = (name) => name.toLowerCase().replace(/^[^\p{L}\p{N}]+/u, '').replace(/^[｜|]+/u, '').replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '');
@@ -312,7 +312,12 @@ if (ids.welcome) {
 
 // ---- 10. banner and splash (need server boosts; harmless if they fail) ---------------------------------------
 step('Banner and invite splash');
-await tryApi('banner (needs Boost level 2)', 'PATCH', `/guilds/${GUILD}`, { banner: dataUri('banner.png') });
+// The animated versions need more boosts (icon: level 1, banner: level 3); the still ones are the fallback.
+const animatedIcon = existsSync(join(here, 'assets', 'icon-animated.gif')) && await tryApi('animated icon (needs Boost level 1)', 'PATCH', `/guilds/${GUILD}`, { icon: dataUri('icon-animated.gif') });
+if (animatedIcon) console.log('  animated icon set');
+const animatedBanner = existsSync(join(here, 'assets', 'banner-animated.gif')) && await tryApi('animated banner (needs Boost level 3)', 'PATCH', `/guilds/${GUILD}`, { banner: dataUri('banner-animated.gif') });
+if (animatedBanner) console.log('  animated banner set');
+else await tryApi('banner (needs Boost level 2)', 'PATCH', `/guilds/${GUILD}`, { banner: dataUri('banner.png') });
 await tryApi('invite splash (needs Boost level 1)', 'PATCH', `/guilds/${GUILD}`, { splash: dataUri('splash.png') });
 
 console.log(`\nDone${DRY ? ' (dry run)' : ` in ${calls} requests`}. Next: read README.md "After the script" for the few things only the Discord app can do.`);

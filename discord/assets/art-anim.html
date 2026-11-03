@@ -1,0 +1,97 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Lumen animated art</title>
+<!-- Renders the animated server icon and banner. Every frame is a pure function of t (0..1), so the loop is seamless:
+     discord/render-animated.ps1 captures frames with window.__setT(t) and ffmpeg turns them into GIFs.
+     ?m=icon (square) or ?m=banner (960x540). -->
+<style>
+@font-face { font-family: 'Syne'; font-weight: 800; src: url('../../Assets/Fonts/Syne-ExtraBold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 700; src: url('../../Assets/Fonts/Manrope-Bold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 400; src: url('../../Assets/Fonts/Manrope-Regular.ttf'); }
+* { box-sizing: border-box; margin: 0; }
+html, body { overflow: hidden; background: #05060b; font-family: 'Manrope', sans-serif; color: #f1f2f8; }
+#root { position: relative; overflow: hidden; background: #05060b; }
+.abs { position: absolute; }
+.blob { position: absolute; border-radius: 50%; filter: blur(var(--blur, 60px)); will-change: transform; }
+.ring { position: absolute; border-radius: 50%; transform: translate(-50%, -50%); }
+.word { font-family: 'Syne'; font-weight: 800; letter-spacing: -.04em; line-height: 1; white-space: nowrap; }
+.card { position: absolute; border-radius: 28px; background: rgba(14,15,28,.84); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 30px 70px rgba(0,0,0,.5); }
+.card i { display: block; border-radius: 50%; }
+svg { display: block; overflow: visible; }
+</style></head>
+<body><div id="root"></div>
+<script>
+const q = new URLSearchParams(location.search);
+const mode = q.get('m') || 'banner';
+const TAU = Math.PI * 2;
+const root = document.getElementById('root');
+const mix = (a, b, k) => a + (b - a) * k;
+const rgba = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${n >> 16},${(n >> 8) & 255},${n & 255},${a})`; };
+
+// the Lumen orb; its gradient turns once per loop, the core breathes
+function orb(size, t) {
+  const a = t * TAU, cx = 16 + 16 * Math.cos(a), cy = 16 + 16 * Math.sin(a);
+  const breathe = 1 + 0.07 * Math.sin(a), glow = 0.78 + 0.18 * Math.sin(a);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 32 32"><defs>
+    <linearGradient id="og" gradientUnits="userSpaceOnUse" x1="${32 - cx}" y1="${32 - cy}" x2="${cx}" y2="${cy}"><stop offset="0" stop-color="#ff2e55"/><stop offset=".55" stop-color="#8b6bff"/><stop offset="1" stop-color="#38d0ff"/></linearGradient>
+    <radialGradient id="oc" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+    <circle cx="16" cy="16" r="14" fill="url(#og)"/>
+    <ellipse cx="${12 + 1.2 * Math.sin(a)}" cy="16" rx="10" ry="14" fill="#fff" fill-opacity=".26"/>
+    <circle cx="16" cy="16" r="${8 * breathe}" fill="#fff" fill-opacity=".2"/>
+    <circle cx="16" cy="16" r="${10 * breathe}" fill="url(#oc)" fill-opacity="${glow * 0.35}"/>
+    <circle cx="16" cy="16" r="${6 * breathe}" fill="#fff" fill-opacity=".92"/></svg>`;
+}
+
+// expanding rings that fade as they grow, evenly spaced in time so the loop has no jump
+function pulses(cx, cy, maxD, t, n = 3) {
+  let out = '';
+  for (let i = 0; i < n; i++) {
+    const p = (t + i / n) % 1, d = maxD * (0.25 + 0.75 * p), alpha = 0.55 * (1 - p) * Math.min(1, p * 6);
+    out += `<div class="ring" style="left:${cx}px;top:${cy}px;width:${d}px;height:${d}px;border:${Math.max(1, maxD / 220)}px solid ${rgba(i % 2 ? '#ff2e55' : '#8b6bff', alpha)}"></div>`;
+  }
+  return out;
+}
+
+function drifting(w, h, t, k) {
+  const a = t * TAU, b = (s) => Math.sin(a + s), c = (s) => Math.cos(a + s);
+  return `
+    <div class="blob" style="--blur:${70 * k}px;width:${w * .62}px;height:${w * .62}px;left:${-w * .12 + w * .06 * c(0)}px;top:${-h * .35 + h * .06 * b(0)}px;background:${rgba('#8b6bff', .42)}"></div>
+    <div class="blob" style="--blur:${70 * k}px;width:${w * .55}px;height:${w * .55}px;left:${w * .62 + w * .05 * c(2)}px;top:${h * .05 + h * .08 * b(2)}px;background:${rgba('#ff2e55', .30)}"></div>
+    <div class="blob" style="--blur:${70 * k}px;width:${w * .5}px;height:${w * .5}px;left:${w * .25 + w * .07 * c(4)}px;top:${h * .62 + h * .05 * b(4)}px;background:${rgba('#38d0ff', .16)}"></div>`;
+}
+
+function sweep(cx, cy, d, t) {
+  return `<div class="abs" style="left:${cx - d / 2}px;top:${cy - d / 2}px;width:${d}px;height:${d}px;border-radius:50%;
+    background:conic-gradient(from ${t * 360}deg, transparent 0deg, transparent 292deg, rgba(61,220,132,.05) 325deg, rgba(61,220,132,.2) 352deg, transparent 360deg);
+    -webkit-mask-image:radial-gradient(closest-side, transparent 12%, #000 13%, #000 96%, transparent)"></div>`;
+}
+
+function draw(t) {
+  if (mode === 'icon') {
+    const S = 256;
+    root.style.cssText = `width:${S}px;height:${S}px`;
+    root.innerHTML = drifting(S, S, t, 0.5) + pulses(S / 2, S / 2, S * 1.05, t) + sweep(S / 2, S / 2, S * 1.1, t) +
+      `<div class="abs" style="left:${S * .19}px;top:${S * .19}px;filter:drop-shadow(0 0 ${S * .1}px rgba(139,107,255,${0.55 + 0.25 * Math.sin(t * TAU)}))">${orb(S * .62, t)}</div>`;
+    return;
+  }
+  // banner 960x540, designed at 1920x1080 and scaled
+  const W = 960, H = 540, k = .5, a = t * TAU;
+  const px = (n) => n * k + 'px';
+  const bob = (i) => 10 * Math.sin(a + (i * TAU) / 3);
+  const shine = -40 + 200 * t;   // the highlight crosses the wordmark once per loop
+  const card = (x, y, accent, title, sub, i) => `<div class="card" style="left:${px(x)};top:${px(y + bob(i))};width:${px(470)};padding:${px(28)} ${px(30)}">
+      <i style="width:${px(16)};height:${px(16)};background:${accent};box-shadow:0 0 0 ${px(6 + 2 * Math.sin(a + i))} ${accent}33;margin-bottom:${px(16)}"></i>
+      <div class="word" style="font-size:${px(46)};margin-bottom:${px(8)};white-space:normal">${title}</div>
+      <div style="font-size:${px(28)};line-height:1.35;color:#cdd1df">${sub}</div></div>`;
+  root.style.cssText = `width:${W}px;height:${H}px`;
+  root.innerHTML = drifting(W, H, t, 1) + pulses(px(1500).slice(0, -2) * 1, px(470).slice(0, -2) * 1, 1500 * k, t, 4) + sweep(750 * k + 750 * k, 470 * k, 1500 * k, t) +
+    `<div class="abs" style="left:${px(130)};top:${px(110)};filter:drop-shadow(0 0 ${px(60)} rgba(139,107,255,.7))">${orb(190 * k, t)}</div>
+     <div class="word" style="position:absolute;left:${px(130)};top:${px(360)};font-size:${px(190)};background:linear-gradient(100deg,#f1f2f8 0%,#f1f2f8 ${shine - 22}%,#ffd5de ${shine - 8}%,#ff2e55 ${shine}%,#8b6bff ${shine + 10}%,#f1f2f8 ${shine + 24}%,#f1f2f8 100%);-webkit-background-clip:text;background-clip:text;color:transparent">Lumen</div>
+     <div class="word" style="position:absolute;left:${px(134)};top:${px(610)};font-size:${px(96)};padding-bottom:${px(14)};background:linear-gradient(100deg,#fff 0%,#ffd5de 30%,#ff2e55 62%,#8b6bff 100%);-webkit-background-clip:text;background-clip:text;color:transparent">The community.</div>
+     <div class="abs" style="left:${px(138)};top:${px(790)};width:${px(820)};font-size:${px(42)};line-height:1.35;color:#cdd1df">Three free apps for Windows, one friendly place for help, ideas and a look behind the scenes.</div>` +
+    card(1300, 110, '#ff2e55', 'Lumen', 'Streaming on your PC, phone and TV.', 0) +
+    card(1380, 410, '#8b6bff', 'Lumen Studios', 'A glassy video editor.', 1) +
+    card(1300, 710, '#38d0ff', 'Guardian', 'Antivirus and PC care.', 2);
+}
+window.__setT = (t) => draw(t);
+draw(parseFloat(q.get('t') || '0'));
+</script></body></html>
