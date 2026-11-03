@@ -12,7 +12,7 @@ export class Answerer {
   constructor({ cfg, kb = new Knowledge(), env = process.env, fetchImpl = fetch }) {
     this.cfg = cfg; this.kb = kb; this.env = env; this.fetchImpl = fetchImpl;
     this.budget = new AiBudget(Number(env.AI_PER_USER_PER_HOUR || 6));
-    this.lastInChannel = new Map(); this.lastForUser = new Map();
+    this.lastInChannel = new Map(); this.lastForUser = new Map(); this.lastAsk = new Map();
   }
 
   /**
@@ -71,6 +71,19 @@ export class Answerer {
     if (!isSure(best)) return null;
     this.lastInChannel.set(message.channel.id, now); this.lastForUser.set(message.author.id, now);
     return { text: best.text, title: best.title, source: best.source, usedAi: false, confident: true, related: [] };
+  }
+
+  // ---- the ask-the-bot channel: every message there is a question -----------------------------------------------------------
+
+  /** True when this message should be answered because it is in the ask channel. One answer per person every 4 seconds. */
+  shouldAnswerAskChannel(message, now = Date.now()) {
+    if (message.author.bot || !message.guild) return false;
+    if (plain(message.channel?.name ?? '') !== plain(this.cfg.askChannel ?? 'ask-the-bot')) return false;
+    if ((message.content ?? '').trim().length < 3) return false;
+    if (message.reference?.messageId) return false;                       // a person replying to a person
+    if (now - (this.lastAsk.get(message.author.id) ?? 0) < 4000) return false;
+    this.lastAsk.set(message.author.id, now);
+    return true;
   }
 
   // ---- forum posts ----------------------------------------------------------------------------------------------------

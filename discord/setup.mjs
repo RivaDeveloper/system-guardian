@@ -127,7 +127,7 @@ const READ_ONLY_DENY = ['SEND_MESSAGES', 'CREATE_PUBLIC_THREADS', 'SEND_MESSAGES
 
 function overwrites(cat, ch) {
   const o = [];
-  const staff = ['dev', 'mod'].map((k) => roleIds[k]).filter(Boolean);
+  const staff = (cfg.staff || ['dev', 'mod']).map((k) => roleIds[k]).filter(Boolean);
   const hidden = cat.private || ch.access;
   if (hidden) {
     o.push({ id: everyone, type: 0, allow: '0', deny: bits(['VIEW_CHANNEL']) });

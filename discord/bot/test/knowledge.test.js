@@ -84,3 +84,15 @@ test('forum replies carry a checklist and only a confident answer', () => {
   const none = a.forumReply('bug-reports', 'Crash', 'It crashes sometimes.');
   assert.equal(none.best, null);
 });
+
+test('the ask channel answers every message, once every few seconds per person', () => {
+  const a = new Answerer({ cfg: { askChannel: 'ask-the-bot' }, kb, env: {} });
+  const m = (content, extra = {}) => ({ content, author: { id: 'u1', bot: false }, guild: {}, channel: { name: '🤖｜ask-the-bot' }, reference: null, ...extra });
+  assert.equal(a.shouldAnswerAskChannel(m('how do i link real debrid'), 10_000), true);
+  assert.equal(a.shouldAnswerAskChannel(m('and what about addons?'), 11_000), false, 'too soon after the last one');
+  assert.equal(a.shouldAnswerAskChannel(m('and what about addons?'), 15_000), true);
+  assert.equal(a.shouldAnswerAskChannel(m('ok'), 30_000), false, 'too short to be a question');
+  assert.equal(a.shouldAnswerAskChannel(m('thanks for that', { reference: { messageId: '9' } }), 40_000), false, 'replying to a person');
+  assert.equal(a.shouldAnswerAskChannel(m('how do i link real debrid', { channel: { name: 'general' } }), 50_000), false, 'another channel');
+  assert.equal(a.shouldAnswerAskChannel(m('hello?', { author: { id: 'b', bot: true } }), 60_000), false, 'bots are ignored');
+});

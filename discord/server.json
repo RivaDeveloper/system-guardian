@@ -22,12 +22,45 @@
   },
   "roles": [
     {
+      "key": "owner",
+      "name": "Owner",
+      "color": "#ffd166",
+      "hoist": true,
+      "mentionable": false,
+      "permissions": [
+        "ADMINISTRATOR"
+      ]
+    },
+    {
+      "key": "coowner",
+      "name": "Co-owner",
+      "color": "#ff9f43",
+      "hoist": true,
+      "mentionable": false,
+      "permissions": [
+        "ADMINISTRATOR"
+      ]
+    },
+    {
       "key": "dev",
       "name": "Lumen Dev",
-      "was": [
-        "Guardian Dev"
-      ],
       "color": "#ff2e55",
+      "hoist": true,
+      "mentionable": false,
+      "permissions": []
+    },
+    {
+      "key": "devstudios",
+      "name": "Lumen Studios Dev",
+      "color": "#b388ff",
+      "hoist": true,
+      "mentionable": false,
+      "permissions": []
+    },
+    {
+      "key": "devguardian",
+      "name": "Guardian Dev",
+      "color": "#2dd4bf",
       "hoist": true,
       "mentionable": false,
       "permissions": []
@@ -301,6 +334,15 @@
       "name": "🛠 SUPPORT",
       "channels": [
         {
+          "key": "askbot",
+          "name": "🤖｜ask-the-bot",
+          "type": "text",
+          "slowmode": 5,
+          "post": "askbot",
+          "pin": true,
+          "topic": "Ask the Lumen Helper bot anything about Lumen, Lumen Studios or Guardian. It answers from the server guides. Not sure? It points you to the help forum."
+        },
+        {
           "key": "help",
           "name": "🆘｜help",
           "type": "forum",
@@ -386,7 +428,11 @@
           "name": "🔧｜dev-chat",
           "type": "text",
           "access": [
+            "owner",
+            "coowner",
             "dev",
+            "devstudios",
+            "devguardian",
             "mod",
             "contributor"
           ],
@@ -417,7 +463,11 @@
     {
       "name": "🔒 STAFF",
       "private": [
+        "owner",
+        "coowner",
         "dev",
+        "devstudios",
+        "devguardian",
         "mod"
       ],
       "channels": [
@@ -459,5 +509,13 @@
     "studios",
     "tv",
     "play"
+  ],
+  "staff": [
+    "owner",
+    "coowner",
+    "dev",
+    "devstudios",
+    "devguardian",
+    "mod"
   ]
 }

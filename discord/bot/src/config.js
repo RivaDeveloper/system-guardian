@@ -26,7 +26,9 @@ export function loadConfig(env = process.env) {
     autoAnswer: bool(env.AUTO_ANSWER, true),
     forumAnswers: bool(env.FORUM_ANSWERS, true),
     dbFile: env.DB_FILE || join(here, '..', 'data', 'bot.db'),
-    staffRoles: (env.STAFF_ROLES || 'Lumen Dev,Moderator').split(',').map((s) => s.trim()).filter(Boolean),
+    staffRoles: (env.STAFF_ROLES || 'Owner,Co-owner,Lumen Dev,Lumen Studios Dev,Guardian Dev,Moderator').split(',').map((s) => s.trim()).filter(Boolean),
+    /** the channel where every message is treated as a question for the bot */
+    askChannel: env.ASK_CHANNEL || 'ask-the-bot',
     modLogChannel: env.MOD_LOG_CHANNEL || 'mod-log',
     /** channels (by name, without the emoji) where the bot may answer a clear question unprompted */
     answerChannels: (env.ANSWER_CHANNELS || 'general,lumen-chat,studios-chat,guardian-chat,android-and-tv,gaming,introductions').split(',').map((s) => s.trim()),

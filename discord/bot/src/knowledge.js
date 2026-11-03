@@ -24,7 +24,10 @@ function clean(text) {
 /** Flattens content.mjs and the extra file into small searchable pieces. */
 export function buildDocs() {
   const docs = [];
+  // the ask-the-bot post lists example questions; indexing it would make the bot answer a question with another question
+  const SKIP = new Set(['askbot']);
   for (const [source, list] of Object.entries(messages)) {
+    if (SKIP.has(source)) continue;
     for (const entry of list) {
       for (const e of entry.embeds || [entry]) {
         const topic = e.title || '';

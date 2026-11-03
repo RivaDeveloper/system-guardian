@@ -240,6 +240,20 @@ export const messages = {
   ],
 
 
+
+  askbot: [
+    {
+      title: 'Ask the bot', color: VIOLET, thumbnail: '{assetBase}/emoji-lumen.png',
+      description: 'Type your question here in plain words and the **Lumen Helper** bot answers from the server guides, usually in a few seconds. It covers :lumen: Lumen, :studios: Lumen Studios and :guardian: Guardian.',
+      fields: [
+        { name: 'Good questions', value: '• How do I link Real-Debrid in Lumen?\n• Do I need Windows Defender for Guardian?\n• Does Lumen Studios put a watermark on my videos?\n• Windows says "protected your PC", what do I do?' },
+        { name: 'When it doesn\'t know', value: 'It says so and points you to <#{help}>, where a person will help. Bugs go in <#{bugs}>, wrongly flagged files in <#{falsepositives}>.' },
+        { name: 'Please', value: 'One question per message. Never post passwords, API keys or addon links: the bot removes them, and you should create a new key if you did. No piracy talk (see the <#{rules}>). You can also type `/ask` in any channel.' },
+      ],
+      footer: 'The bot can be wrong. A moderator can always correct it.',
+    },
+  ],
+
   // ------------------------------------------------------------------------------------------------ Lumen guides
   lumenhow: [
     {

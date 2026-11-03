@@ -47,12 +47,18 @@ client.once(Events.ClientReady, async () => {
 });
 
 // ---- moderation --------------------------------------------------------------------------------------------------------
-const moderate = async (m) => { try { await moderator.handle(m.partial ? await m.fetch() : m); } catch (e) { say('moderation error:', e.message); } };
+const moderate = async (m) => { try { return await moderator.handle(m.partial ? await m.fetch() : m); } catch (e) { say('moderation error:', e.message); return null; } };
 
 client.on(Events.MessageCreate, async (message) => {
-  await moderate(message);
-  if (message.author.bot || !message.guild || !resolver) return;
+  const acted = await moderate(message);
+  if (acted?.deleted === true || message.author.bot || !message.guild || !resolver) return;
   try {
+    // the ask-the-bot channel: every message is a question (answered even in dry run, since it only replies)
+    if (answerer.shouldAnswerAskChannel(message)) {
+      await message.channel.sendTyping().catch(() => {});
+      const res = await answerer.answer(message.content.slice(0, 300), { userId: message.author.id });
+      return void message.reply({ ...(res.text ? { embeds: [answerer.toEmbed(res, resolver.render, resolver.channelIds)] } : { content: answerer.noAnswerText(resolver.render, resolver.channelIds) }), allowedMentions: { repliedUser: false } });
+    }
     // mention the bot to ask a question
     if (message.mentions.has(client.user) && !message.mentions.everyone) {
       const question = message.content.replace(/<@!?\d+>/g, '').trim();
