@@ -21,6 +21,8 @@ const API = process.env.DISCORD_API || 'https://discord.com/api/v10';
 const TOKEN = process.env.DISCORD_TOKEN || '';
 const GUILD = process.env.GUILD_ID || '';
 const cfg = JSON.parse(readFileSync(process.env.SERVER_CONFIG || join(here, 'server.json'), 'utf8'));
+const content = cfg.messages ? { messages: cfg.messages, seeds: {} } : await import('./content.mjs');
+cfg.messages = content.messages;
 
 if (!DRY && (!TOKEN || !GUILD)) {
   console.error('Set DISCORD_TOKEN and GUILD_ID first (see README.md), or use --dry-run to only print the plan.');
@@ -77,18 +79,22 @@ const matches = (existingName, item) => [item.name, ...(item.was || [])].some((n
 const ids = {};          // channel key -> id
 const roleIds = {};      // role key -> id
 
+const emojiIds = {};     // emoji name -> id, filled in once the emoji exist
 function fill(text) {
-  return text
+  return String(text)
     .replace(/<#\{(\w+)\}>/g, (_, k) => (ids[k] ? `<#${ids[k]}>` : '#' + k))
-    .replace(/\{(\w+)\}/g, (_, k) => cfg.links[k] ?? `{${k}}`);
+    .replace(/\{(\w+)\}/g, (_, k) => cfg.links[k] ?? `{${k}}`)
+    .replace(/(?<![<\w]):([a-z]+):(?!\d)/g, (m, n) => (emojiIds[n] ? `<:${n}:${emojiIds[n]}>` : ''));
 }
 function fillEmbed(embed) {
   const e = JSON.parse(JSON.stringify(embed));
-  if (e.description) e.description = fill(e.description);
+  for (const k of ['title', 'description', 'url']) if (e[k]) e[k] = fill(e[k]);
   if (e.fields) e.fields = e.fields.map((f) => ({ ...f, value: fill(f.value), name: fill(f.name) }));
-  if (e.footer && typeof e.footer === 'string') e.footer = { text: e.footer };
+  if (e.footer && typeof e.footer === 'string') e.footer = { text: fill(e.footer) };
+  for (const k of ['image', 'thumbnail']) if (typeof e[k] === 'string') e[k] = { url: fill(e[k]) };
   return e;
 }
+const toBody = (entry) => ({ embeds: (entry.embeds || [entry]).map(fillEmbed), allowed_mentions: { parse: [] } });
 
 // ---- 0. what we are starting from ------------------------------------------------------------------------------
 console.log(DRY ? 'DRY RUN: nothing will be sent to Discord.' : `Setting up server ${GUILD}`);
@@ -204,6 +210,18 @@ if (community) {
 
 if (!DRY) await tryApi('category order', 'PATCH', `/guilds/${GUILD}/channels`, cfg.categories.filter((c) => c._id).map((c, i) => ({ id: c._id, position: i })));
 
+// ---- emoji (before the messages, which use them) ----------------------------------------------------------------
+if (!args.has('--skip-emoji')) {
+  step('Emoji');
+  const haveEmoji = DRY ? [] : await api('GET', `/guilds/${GUILD}/emojis`);
+  for (const name of cfg.emoji) {
+    if (haveEmoji.some((e) => e.name === name)) { console.log('  = :' + name + ':'); continue; }
+    const made = await tryApi('emoji ' + name, 'POST', `/guilds/${GUILD}/emojis`, { name, image: dataUri(`emoji-${name}.png`) });
+    if (made) console.log('  + :' + name + ':');
+  }
+}
+for (const e of DRY ? [] : await api('GET', `/guilds/${GUILD}/emojis`)) emojiIds[e.name] = e.id;
+
 // ---- 6. first messages (only into empty channels) -------------------------------------------------------------
 step('Messages');
 const me = DRY || !args.has('--refresh') ? { id: '' } : await api('GET', '/users/@me');
@@ -218,10 +236,29 @@ for (const cat of cfg.categories) for (const ch of cat.channels) {
   }
   if (existing.length) { console.log(`  = #${ch.key} already has messages`); continue; }
   for (const e of embeds) {
-    const msg = await api('POST', `/channels/${channelId}/messages`, { embeds: [fillEmbed(e)], allowed_mentions: { parse: [] } });
+    const msg = await api('POST', `/channels/${channelId}/messages`, toBody(e));
     if (msg.id && ch.pin) await tryApi('pin', 'PUT', `/channels/${channelId}/pins/${msg.id}`);
     console.log(`  + posted into #${ch.key}`);
   }
+}
+
+
+// ---- 6b. a pinned first post in every forum -----------------------------------------------------------------------
+step('Forum starter posts');
+let threads = [];
+if (!DRY) threads = (await tryApi('listing threads', 'GET', `/guilds/${GUILD}/threads/active`))?.threads || [];
+for (const cat of cfg.categories) for (const ch of cat.channels) {
+  if (ch.type !== 'forum' || !ch.seed || !content.seeds?.[ch.seed] || !ids[ch.key]) continue;
+  const seed = content.seeds[ch.seed];
+  const have = threads.find((t) => t.parent_id === ids[ch.key] && t.name === seed.title);
+  if (have) { console.log(`  = ${seed.title}`); continue; }
+  const forum = DRY ? { available_tags: [] } : existingChannels.find((c) => c.id === ids[ch.key]) || {};
+  const live = DRY ? forum : await api('GET', `/channels/${ids[ch.key]}`);
+  const tagIds = (seed.tags || []).map((t) => (live.available_tags || []).find((x) => x.name === t)?.id).filter(Boolean);
+  const made = await tryApi('forum post ' + seed.title, 'POST', `/channels/${ids[ch.key]}/threads`, {
+    name: seed.title, applied_tags: tagIds, message: toBody(seed),
+  });
+  if (made?.id) { console.log(`  + ${seed.title}`); await tryApi('pin forum post', 'PATCH', `/channels/${made.id}`, { flags: 2 }); }
 }
 
 // ---- 7. AutoMod ------------------------------------------------------------------------------------------------
@@ -237,17 +274,6 @@ for (const r of rules) {
   if (haveRules.some((x) => x.name === r.name)) { console.log('  = ' + r.name); continue; }
   const made = await tryApi(r.name, 'POST', `/guilds/${GUILD}/auto-moderation/rules`, r);
   if (made) console.log('  + ' + r.name);
-}
-
-// ---- 8. emoji --------------------------------------------------------------------------------------------------
-if (!args.has('--skip-emoji')) {
-  step('Emoji');
-  const haveEmoji = DRY ? [] : await api('GET', `/guilds/${GUILD}/emojis`);
-  for (const name of cfg.emoji) {
-    if (haveEmoji.some((e) => e.name === name)) { console.log('  = :' + name + ':'); continue; }
-    const made = await tryApi('emoji ' + name, 'POST', `/guilds/${GUILD}/emojis`, { name, image: dataUri(`emoji-${name}.png`) });
-    if (made) console.log('  + :' + name + ':');
-  }
 }
 
 // ---- 9. release webhook and invite ---------------------------------------------------------------------------

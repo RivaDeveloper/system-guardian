@@ -12,6 +12,7 @@ const roles = [{ id: 'G1', name: '@everyone', permissions: '0' }];
 const channels = [];
 const messages = {};       // channelId -> [msg]
 const emojis = [];
+const threads = [];
 const automod = [];
 const webhooks = {};       // channelId -> [hook]
 const log = [];
@@ -27,9 +28,19 @@ http.createServer((req, res) => {
     const path = url.pathname.replace(/^\/api\/v10/, '');
     log.push(`${req.method} ${path}`);
     let m;
-    if (path === '/__state') return send(res, 200, { guild, roles, channels, messages, emojis, automod, webhooks, log });
+    if (path === '/__state') return send(res, 200, { guild, roles, channels, messages, emojis, automod, webhooks, log, threads });
     if (req.headers.authorization !== 'Bot test-token') return send(res, 401, { message: '401: Unauthorized' });
 
+    if (path === '/guilds/G1/threads/active') return send(res, 200, { threads });
+    if ((m = path.match(/^\/channels\/(\d+)\/threads$/)) && req.method === 'POST') {
+      const parent = channels.find((c) => c.id === m[1]);
+      if (!parent || parent.type !== 15) return send(res, 400, { message: 'threads can only be started in forum channels here' });
+      if (!body.message?.embeds?.length) return send(res, 400, { message: 'a forum post needs a message' });
+      const t = { id: id(), parent_id: parent.id, name: body.name, applied_tags: body.applied_tags || [], flags: 0 };
+      threads.push(t); messages[t.id] = [{ id: id(), author: { id: 'BOT1' }, ...body.message }]; return send(res, 200, t);
+    }
+    if ((m = path.match(/^\/channels\/(\d+)$/)) && req.method === 'GET') { const c = channels.find((x) => x.id === m[1]); return c ? send(res, 200, c) : send(res, 404, { message: 'Unknown Channel' }); }
+    if ((m = path.match(/^\/channels\/(\d+)$/)) && req.method === 'PATCH' && threads.some((t) => t.id === m[1])) { Object.assign(threads.find((t) => t.id === m[1]), body); return send(res, 200, {}); }
     if (path === '/users/@me' && req.method === 'GET') return send(res, 200, { id: 'BOT1' });
     if ((m = path.match(/^\/channels\/(\d+)\/messages\/(\d+)$/)) && req.method === 'DELETE') { messages[m[1]] = (messages[m[1]] || []).filter((x) => x.id !== m[2]); return send(res, 204); }
     if (path === '/guilds/G1' && req.method === 'GET') return send(res, 200, guild);
