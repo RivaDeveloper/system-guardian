@@ -53,8 +53,7 @@ export async function handleCommand(interaction, { store, moderator, answerer, r
       `**Mode:** ${cfg.dryRun ? 'test (nothing is deleted or answered, it only logs)' : 'live (deleting, timing out and answering)'}`,
       `**Unprompted answers in chat:** ${cfg.autoAnswer ? 'on' : 'off'}`,
       `**Questions in #${cfg.askChannel} and /ask:** ${cfg.dryRun ? 'only /ask works in test mode' : 'on'}`,
-    ].join('
-'));
+    ].join('\n'));
   }
 
   // everything below is for staff
