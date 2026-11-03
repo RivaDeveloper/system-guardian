@@ -32,6 +32,8 @@ public sealed partial class ProtectionPage : Page
         FilesSwitch.IsOn = p.WatchFiles;
         StartupSwitch.IsOn = p.WatchStartup;
         UsbSwitch.IsOn = p.ScanUsb;
+        ProgramsSwitch.IsOn = p.WatchPrograms;
+        PauseSwitch.IsOn = p.PausePrograms;
         AutoSwitch.IsOn = p.AutoQuarantine;
         CloudSwitch.IsOn = p.CloudCheck;
         NotifySwitch.IsOn = p.Notify;
@@ -56,6 +58,9 @@ public sealed partial class ProtectionPage : Page
         StatusSub.Text = on
             ? (open > 0 ? $"{open} alert(s) in the history below are waiting for your decision." : "Guardian is watching for new files, startup changes and USB drives.")
             : "Real-time protection is switched off. Guardian still scans when you ask it to.";
+        var problem = ProtectionService.ProgramWatchProblem;
+        ProgramNote.Text = problem.Length > 0 ? "Not running: " + problem + (Elevation.IsElevated ? "" : " Restart Guardian as administrator to use it.") : "";
+        ProgramNote.Visibility = problem.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         var s = ProtectionService.State;
         CheckedText.Text = s.FilesChecked.ToString("N0");
         ThreatsText.Text = s.ThreatsFound.ToString("N0");
@@ -95,6 +100,8 @@ public sealed partial class ProtectionPage : Page
             case "files": Save(p => p.WatchFiles = on); break;
             case "startup": Save(p => p.WatchStartup = on); break;
             case "usb": Save(p => p.ScanUsb = on); break;
+            case "programs": Save(p => p.WatchPrograms = on); break;
+            case "pause": Save(p => p.PausePrograms = on); break;
             case "auto": Save(p => p.AutoQuarantine = on); break;
             case "cloud": Save(p => p.CloudCheck = on); break;
             case "notify": Save(p => p.Notify = on); break;
@@ -151,6 +158,7 @@ public sealed partial class ProtectionPage : Page
         // "It's fine" excludes that one file's folder entry so it isn't raised again.
         var dir = Path.GetDirectoryName(ev.Path);
         if (!string.IsNullOrEmpty(dir) && !Exclusions.Contains(ev.Path)) { Exclusions.Add(ev.Path); Save(p => p.Exclusions = Exclusions.ToList()); }
+        ProtectionService.ResumeFromEvent(ev);
         ev.Action = "Allowed";
         var i = Events.IndexOf(ev);
         if (i >= 0) { Events.RemoveAt(i); Events.Insert(i, ev); }

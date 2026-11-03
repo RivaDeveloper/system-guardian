@@ -18,9 +18,11 @@ public sealed partial class ProtectionEvent
     public string Severity { get; set; } = "Info";
     /// <summary>"Alert" (needs a decision), "Quarantined", "Allowed" or "Info".</summary>
     public string Action { get; set; } = "Info";
+    /// <summary>The process behind a "Paused" alert (only meaningful while Guardian keeps it paused).</summary>
+    public int ProcessId { get; set; }
     public string WhenText => When.ToString("MMM d, HH:mm");
-    public bool CanQuarantine => Action == "Alert" && Path.Length > 0 && File.Exists(Path);
-    public string ActionText => Action switch { "Alert" => "Needs a look", "Quarantined" => "Quarantined", "Allowed" => "Allowed", _ => "" };
+    public bool CanQuarantine => (Action == "Alert" || Action == "Paused") && Path.Length > 0 && File.Exists(Path);
+    public string ActionText => Action switch { "Alert" => "Needs a look", "Paused" => "Paused until you decide", "Quarantined" => "Quarantined", "Allowed" => "Allowed", _ => "" };
 }
 
 /// <summary>What Guardian's own protection has done since it was installed (kept in %LOCALAPPDATA%\Guardian).</summary>
@@ -110,6 +112,7 @@ public static class ProtectionService
         thread.Start();
 
         if (_settings.WatchFiles) StartFileWatchers();
+        if (_settings.WatchPrograms) ProgramWatcher.Start();
         _poll = new Timer(_ => Poll(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(20));
         StatsChanged?.Invoke();
     }
@@ -119,6 +122,7 @@ public static class ProtectionService
         lock (Gate)
         {
             StopWatchers();
+            ProgramWatcher.Stop(resumeAll: true);   // never leave a program paused when Guardian closes
             Running = false;
             SaveState(force: true);
         }
@@ -127,6 +131,7 @@ public static class ProtectionService
     static void StopWatchers()
     {
         _poll?.Dispose(); _poll = null;
+        ProgramWatcher.Stop(resumeAll: false);
         foreach (var w in Watchers) { try { w.EnableRaisingEvents = false; w.Dispose(); } catch { } }
         Watchers.Clear();
         _cts?.Cancel();
@@ -265,6 +270,44 @@ public static class ProtectionService
         catch { return null; }
     }
 
+
+    // ---- programs as they start (see ProgramWatcher) ----------------------------------------------------
+
+    internal static bool PauseRiskyPrograms => _settings.PausePrograms;
+    internal static void CountChecked() { Interlocked.Increment(ref _checkedCounter); _state.FilesChecked = Interlocked.Read(ref _checkedCounter); SaveState(); }
+
+    internal static bool IsExcluded(string path)
+    {
+        foreach (var ex in _settings.Exclusions)
+            if (path.StartsWith(ex.TrimEnd('\\') + "\\", StringComparison.OrdinalIgnoreCase) || path.Equals(ex, StringComparison.OrdinalIgnoreCase)) return true;
+        return false;
+    }
+
+    internal static void RaiseProgram(Finding f, string path, int pid, bool paused)
+    {
+        var ev = new ProtectionEvent
+        {
+            Title = $"Program started: {Path.GetFileName(path)}", Path = path, Sha256 = f.Sha256, Severity = f.Severity.ToString(),
+            Action = paused ? "Paused" : "Alert", ProcessId = pid,
+            Detail = string.Join("\n", f.Reasons.Take(4).Select(r => "• " + r)) + (paused ? "\n• Guardian paused it. Quarantine it to end it, or mark it as fine to let it continue." : ""),
+        };
+        _state.ThreatsFound++;
+        Log(ev);
+        Notify(paused ? "Guardian paused a risky program" : "A suspicious program just started",
+            $"{Path.GetFileName(path)}: {f.Reasons.FirstOrDefault() ?? f.Title}");
+    }
+
+    /// <summary>The user said a paused program is fine: let it continue.</summary>
+    public static void ResumeFromEvent(ProtectionEvent e)
+    {
+        if (e.Action != "Paused") return;
+        ProgramWatcher.Resume(e.ProcessId);
+    }
+
+    /// <summary>"Watching programs as they start" is on in settings but can't run (no administrator rights, or Windows refused).</summary>
+    public static string ProgramWatchProblem => !_settings.WatchPrograms || !_settings.RealtimeEnabled ? "" : ProgramWatcher.Running ? "" : ProgramWatcher.LastError;
+    public static bool ProgramWatchRunning => ProgramWatcher.Running;
+
     // ---- reacting to a finding --------------------------------------------------------------------
 
     static void Raise(Finding f, string path)
@@ -313,6 +356,7 @@ public static class ProtectionService
     /// <summary>Quarantines the file behind an alert, at the user's request.</summary>
     public static void QuarantineFromEvent(ProtectionEvent e)
     {
+        if (e.Action == "Paused") { ProgramWatcher.Terminate(e.ProcessId); Thread.Sleep(300); }
         Quarantine.Add(e.Path, e.Sha256, e.Title);
         e.Action = "Quarantined";
         _state.Quarantined++;

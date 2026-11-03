@@ -24,6 +24,10 @@ public sealed class ProtectionSettings
     public bool WatchFiles { get; set; } = true;
     public bool WatchStartup { get; set; } = true;
     public bool ScanUsb { get; set; } = true;
+    /// <summary>Check programs as they start, through Windows' kernel event feed (administrator only).</summary>
+    public bool WatchPrograms { get; set; } = true;
+    /// <summary>Pause a high-risk program the moment it starts, until the user decides. Off by default: a false alarm would freeze a good program.</summary>
+    public bool PausePrograms { get; set; }
     /// <summary>Move serious threats into quarantine without asking. Off means Guardian only alerts.</summary>
     public bool AutoQuarantine { get; set; }
     /// <summary>Look up the hash of new unsigned programs on VirusTotal (needs the API key; only the hash is sent).</summary>

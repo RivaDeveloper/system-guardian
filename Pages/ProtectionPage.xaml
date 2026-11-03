@@ -50,6 +50,12 @@
                         <StackPanel><TextBlock Text="Check USB drives" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Looks at the programs and scripts on a USB stick or other removable drive when you plug it in." /></StackPanel>
                         <ToggleSwitch x:Name="UsbSwitch" Grid.Column="1" Tag="usb" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
                     <Grid Padding="0,8" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel><TextBlock Text="Watch programs as they start" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Uses Windows' own kernel event feed to check every program within moments of it starting. Needs administrator rights." /><TextBlock x:Name="ProgramNote" FontSize="12" TextWrapping="Wrap" Foreground="{StaticResource WarnBrush}" Visibility="Collapsed" /></StackPanel>
+                        <ToggleSwitch x:Name="ProgramsSwitch" Grid.Column="1" Tag="programs" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
+                    <Grid Padding="0,8" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                        <StackPanel><TextBlock Text="Pause high-risk programs until I decide" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Off by default. On: a program Guardian rates high-risk is paused right after it starts, and stays paused until you quarantine it or mark it as fine. A false alarm would freeze a good program." /></StackPanel>
+                        <ToggleSwitch x:Name="PauseSwitch" Grid.Column="1" Tag="pause" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
+                    <Grid Padding="0,8" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                         <StackPanel><TextBlock Text="Quarantine serious threats automatically" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Off: Guardian only alerts you and you decide. On: high-risk files are moved to quarantine straight away (always reversible)." /></StackPanel>
                         <ToggleSwitch x:Name="AutoSwitch" Grid.Column="1" Tag="auto" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
                     <Grid Padding="0,8" ColumnSpacing="12"><Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
@@ -70,7 +76,7 @@
                         <StackPanel><TextBlock Text="Start Guardian with Windows" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Starts quietly in the taskbar corner when you sign in, so you are protected from the start." /></StackPanel>
                         <ToggleSwitch x:Name="AutoStartSwitch" Grid.Column="1" Tag="autostart" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
                     <TextBlock Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"
-                               Text="Guardian protects your PC on its own and does not need Windows Defender. Its protection works in user mode: it checks files right after they appear, not before they run. With Defender on as well you get two independent layers." />
+                               Text="Guardian protects your PC on its own and does not need Windows Defender. Its protection works in user mode, not as a kernel driver: it checks files right after they appear and, as administrator, programs the moment they start. It can pause a risky program but cannot stop one before it begins. With Defender on as well you get two independent layers." />
                 </StackPanel>
             </Border>
 
