@@ -13,7 +13,7 @@ public sealed partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
-        AppWindow.Resize(new SizeInt32(1240, 820));
+        OpenAtComfortableSize();
         Title = Elevation.IsElevated ? "Guardian (administrator)" : "Guardian";
         AppWindow.SetIcon(Path.Combine(AppContext.BaseDirectory, "Assets", "guardian.ico"));
 
@@ -38,6 +38,20 @@ public sealed partial class MainWindow : Window
             }
             _ = AutoCheckForUpdatesAsync();
         };
+    }
+
+    [System.Runtime.InteropServices.DllImport("user32.dll")]
+    static extern uint GetDpiForWindow(IntPtr hwnd);
+
+    /// <summary>Opens large enough that no page is cut off (1400 x 940 at 100% scaling), centred, and never bigger than 92% of the screen.</summary>
+    void OpenAtComfortableSize()
+    {
+        var scale = GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this)) / 96.0;
+        if (scale < 1) scale = 1;
+        var area = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Primary).WorkArea;
+        var w = Math.Min((int)(1400 * scale), (int)(area.Width * 0.92));
+        var h = Math.Min((int)(940 * scale), (int)(area.Height * 0.92));
+        AppWindow.MoveAndResize(new RectInt32(area.X + (area.Width - w) / 2, area.Y + (area.Height - h) / 2, w, h));
     }
 
     /// <summary>Shows an unexpected error without closing the app (details go to errors.log).</summary>

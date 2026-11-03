@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Guardian.Services;
 using Guardian.Services.Cleanup;
+using Guardian.Services.Tools;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -21,6 +22,88 @@ public sealed partial class DriversPage : Page
         InitializeComponent();
         NavigationCacheMode = Microsoft.UI.Xaml.Navigation.NavigationCacheMode.Required;
         foreach (var b in _backup.List()) Backups.Add(b);
+    }
+
+    // ---- manufacturer drivers ---------------------------------------------------------------------
+
+    public ObservableCollection<DriverCheck> Checks { get; } = new();
+    List<DetectedDriver> _detected = new();
+    BiosInfo? _board;
+
+    void PasteBox_TextChanged(object sender, TextChangedEventArgs e) =>
+        CompareButton.IsEnabled = PasteBox.Text.Trim().Length > 0;
+
+    async void Detect_Click(object sender, RoutedEventArgs e)
+    {
+        DetectButton.IsEnabled = false;
+        DetectBusy.IsActive = true;
+        DetectStatus.Text = "Looking at installed drivers…";
+        try
+        {
+            _detected = await ManufacturerDrivers.DetectAsync();
+            Checks.Clear();
+            foreach (var d in _detected)
+                Checks.Add(new DriverCheck { Category = d.Category, Title = d.Name, Installed = d.Version + (d.Date.Length > 0 ? $" ({d.Date})" : ""), State = DriverState.Detected });
+            GpuCpuButton.IsEnabled = _detected.Any(d => d.Category.StartsWith("Graphics") || d.Category == "Processor");
+            DetectStatus.Text = $"{_detected.Count} driver groups detected. Now open the maker's page, copy its table and paste it above to compare.";
+        }
+        catch (Exception ex) { DetectStatus.Text = ex.Message; }
+        finally { DetectButton.IsEnabled = true; DetectBusy.IsActive = false; }
+    }
+
+    void GpuCpuPages_Click(object sender, RoutedEventArgs e)
+    {
+        var pages = ManufacturerDrivers.VendorPages(_detected);
+        foreach (var url in pages) System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+        DetectStatus.Text = pages.Count == 0 ? "Guardian doesn't recognise the GPU or CPU maker." :
+            "Opened the official driver page(s). Copy the newest driver version from there and type it into the GPU box to compare.";
+    }
+
+    void GpuLatestBox_KeyDown(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (e.Key == Windows.System.VirtualKey.Enter) CompareGpu_Click(sender, e);
+    }
+
+    void CompareGpu_Click(object sender, RoutedEventArgs e)
+    {
+        var gpu = _detected.FirstOrDefault(d => d.Category == "Graphics" && d.Comparable) ?? _detected.FirstOrDefault(d => d.Category == "Graphics");
+        if (gpu == null) { DetectStatus.Text = "Press \"Detect my drivers\" first."; return; }
+        var m = System.Text.RegularExpressions.Regex.Match(GpuLatestBox.Text, @"\d+(\.\d+)+");
+        if (!m.Success) { DetectStatus.Text = "Type a version number such as 566.36 or 25.10.42."; return; }
+        if (!gpu.Comparable) { DetectStatus.Text = $"Windows shows {gpu.Name} as {gpu.Version}, which isn't the number on the vendor's page. Install the vendor's software (for example AMD Software) so Guardian can read its version, or compare by eye."; return; }
+        var c = ManufacturerDrivers.CompareDotted(gpu.Version, m.Value);
+        DetectStatus.Text = c > 0 ? $"A newer {gpu.Vendor} graphics driver is available: {m.Value} (you have {gpu.Version})." :
+            c == 0 ? $"Your {gpu.Vendor} graphics driver {gpu.Version} is the version you entered." :
+            $"You have {gpu.Version}, which is newer than {m.Value}.";
+    }
+
+    async void VendorPage_Click(object sender, RoutedEventArgs e)
+    {
+        _board ??= await BiosService.ReadAsync();
+        var url = BiosService.SupportSearchUrl(_board, "driver");
+        if (url == null)
+        {
+            DetectStatus.Text = "Guardian doesn't recognise this manufacturer. Open their support site and find your model's driver page yourself.";
+            return;
+        }
+        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(url) { UseShellExecute = true });
+        DetectStatus.Text = $"Opened a search for {_board.SearchModel} on the manufacturer's site. Open your model's Support page, Driver tab, set OS to All, then Ctrl+A and Ctrl+C.";
+    }
+
+    async void CompareDrivers_Click(object sender, RoutedEventArgs e)
+    {
+        if (_detected.Count == 0) _detected = await ManufacturerDrivers.DetectAsync();
+        var entries = ManufacturerDrivers.ParsePaste(PasteBox.Text);
+        if (entries.Count == 0)
+        {
+            DetectStatus.Text = "Guardian couldn't find any driver rows in that text. Copy the whole page (Ctrl+A, Ctrl+C) from the Driver tab and paste again.";
+            return;
+        }
+        Checks.Clear();
+        var results = ManufacturerDrivers.Compare(_detected, entries);
+        foreach (var c in results) Checks.Add(c);
+        var newer = results.Count(c => c.State == DriverState.Newer);
+        DetectStatus.Text = $"Read {entries.Count} rows from the page. " + (newer == 0 ? "Nothing newer found for the drivers Guardian can compare." : $"{newer} driver(s) have a newer version on the site.");
     }
 
     void BackupsList_SelectionChanged(object sender, SelectionChangedEventArgs e) =>

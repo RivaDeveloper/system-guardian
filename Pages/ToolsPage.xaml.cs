@@ -28,6 +28,7 @@ public sealed partial class ToolsPage : Page
 
     public ObservableCollection<ToolTile> Speed { get; } = new()
     {
+        new("performance", "Performance tweaks", "Safe, reversible settings for a faster PC", ""),
         new("startup", "Startup manager", "Choose what starts with Windows", ""),
         new("processes", "Process manager", "See what's running and end what's stuck", ""),
         new("diskspace", "Disk space analyzer", "See which folders take the most space", ""),
@@ -66,6 +67,7 @@ public sealed partial class ToolsPage : Page
 
         Type? page = tile.Key switch
         {
+            "performance" => typeof(PerformanceToolPage),
             "startup" => typeof(StartupToolPage),
             "uninstall" => typeof(UninstallToolPage),
             "processes" => typeof(ProcessToolPage),

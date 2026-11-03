@@ -120,12 +120,12 @@ public static class BiosService
     };
 
     /// <summary>A web search limited to the maker's official site, or null when the maker isn't recognised.</summary>
-    public static string? SupportSearchUrl(BiosInfo info)
+    public static string? SupportSearchUrl(BiosInfo info, string topic = "BIOS")
     {
         var vendor = info.SearchVendor;
         var domain = Domains.FirstOrDefault(d => vendor.Contains(d.Key, StringComparison.OrdinalIgnoreCase)).Value;
         if (domain == null || string.IsNullOrWhiteSpace(info.SearchModel)) return null;
-        var q = Uri.EscapeDataString($"site:{domain} {info.SearchModel} BIOS download");
+        var q = Uri.EscapeDataString($"site:{domain} {info.SearchModel} {topic} download");
         return "https://duckduckgo.com/?q=" + q;
     }
 

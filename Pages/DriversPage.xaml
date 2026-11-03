@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:m="using:Guardian.Services"
-    xmlns:c="using:Guardian.Services.Cleanup">
+    xmlns:c="using:Guardian.Services.Cleanup"
+    xmlns:t="using:Guardian.Services.Tools">
     <Grid Margin="40,28,40,20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
@@ -77,6 +78,54 @@
                     </ListView>
                 </Grid>
             </PivotItem>
+            <PivotItem Header="Manufacturer drivers">
+                <Grid RowSpacing="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" MaxWidth="760" HorizontalAlignment="Left"
+                               Text="Windows Update misses drivers that makers list on their own pages (chipset, audio, LAN, Wi-Fi, Bluetooth, graphics). Detect what you have, open your maker's driver page, copy it (Ctrl+A, Ctrl+C) and paste it below. Sites block automatic lookups, so the copy comes from your browser." />
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="8">
+                        <Button x:Name="DetectButton" Content="1. Detect my drivers" Click="Detect_Click" Style="{StaticResource AccentButtonStyle}" />
+                        <Button x:Name="VendorPageButton" Content="2. Open the maker's driver page" Click="VendorPage_Click" />
+                        <Button x:Name="CompareButton" Content="3. Compare with pasted table" Click="CompareDrivers_Click" IsEnabled="False" />
+                        <Button x:Name="GpuCpuButton" Content="GPU and CPU driver pages" Click="GpuCpuPages_Click" IsEnabled="False" />
+                        <ProgressRing x:Name="DetectBusy" IsActive="False" Width="20" Height="20" />
+                    </StackPanel>
+                    <TextBox x:Name="PasteBox" Grid.Row="2" AcceptsReturn="True" TextWrapping="Wrap" Height="64"
+                             PlaceholderText="Paste the driver table copied from the manufacturer's page here" TextChanged="PasteBox_TextChanged" />
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" Spacing="8">
+                        <TextBox x:Name="GpuLatestBox" PlaceholderText="Latest GPU driver version from the vendor page, e.g. 566.36" Width="420" KeyDown="GpuLatestBox_KeyDown" />
+                        <Button Content="Compare GPU" Click="CompareGpu_Click" />
+                    </StackPanel>
+                    <TextBlock x:Name="DetectStatus" Grid.Row="4" TextWrapping="Wrap" />
+                    <ListView Grid.Row="5" ItemsSource="{x:Bind Checks}" SelectionMode="None">
+                        <ListView.ItemTemplate>
+                            <DataTemplate x:DataType="t:DriverCheck">
+                                <Grid Padding="0,6" ColumnSpacing="12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="100" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="150" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="{x:Bind Category}" FontWeight="SemiBold" VerticalAlignment="Center" />
+                                    <StackPanel Grid.Column="1">
+                                        <TextBlock Text="{x:Bind Title}" TextTrimming="CharacterEllipsis" />
+                                        <TextBlock Text="{x:Bind Subtitle}" Opacity="0.6" FontSize="12" TextWrapping="Wrap" />
+                                    </StackPanel>
+                                    <TextBlock Grid.Column="2" Text="{x:Bind StatusText}" Foreground="{x:Bind StatusBrush}" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </PivotItem>
+
             <PivotItem Header="Backup and restore">
                 <Grid RowSpacing="10">
                     <Grid.RowDefinitions>
