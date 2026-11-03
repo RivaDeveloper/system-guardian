@@ -50,6 +50,7 @@ http.createServer((req, res) => {
       if ((body.banner || body.splash)) return send(res, 400, { code: 30000, message: 'Server needs more boosts' });
       Object.assign(guild, body); return send(res, 200, guild);
     }
+    if (path === '/guilds/G1/channels' && req.method === 'PATCH') { for (const o of body) { const c = channels.find((x) => x.id === o.id); if (c) { c.position = o.position; if (o.parent_id) c.parent_id = o.parent_id; } } return send(res, 204); }
     if (path === '/guilds/G1/roles' && req.method === 'GET') return send(res, 200, roles);
     if (path === '/guilds/G1/roles' && req.method === 'POST') { const r = { id: id(), ...body }; roles.push(r); return send(res, 200, r); }
     if (path === '/guilds/G1/roles' && req.method === 'PATCH') return send(res, 200, roles);

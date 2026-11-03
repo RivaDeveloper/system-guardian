@@ -187,6 +187,24 @@
       "name": "🎞 LUMEN",
       "channels": [
         {
+          "key": "lumenhow",
+          "name": "📖｜how-lumen-works",
+          "type": "text",
+          "readonly": true,
+          "post": "lumenhow",
+          "pin": true,
+          "topic": "How Lumen works: addons, Real-Debrid and the app, in plain words."
+        },
+        {
+          "key": "lumenguide",
+          "name": "🔑｜real-debrid-and-addons",
+          "type": "text",
+          "readonly": true,
+          "post": "lumenguide",
+          "pin": true,
+          "topic": "Step-by-step: add addons, link Real-Debrid, press play. Never post your keys. Lumen doesn't host or provide any content."
+        },
+        {
           "key": "lumenchat",
           "name": "🎞｜lumen-chat",
           "type": "text",

@@ -37,7 +37,7 @@ export const messages = {
         {
           color: RED,
           fields: [
-            { name: ':play: New here?', value: '1. Read the <#{rules}>\n2. Say hi in <#{introductions}>\n3. Chat about your app in <#{lumenchat}>, <#{studioschat}> or <#{guardianchat}>\n4. Stuck? Make a post in <#{help}> and pick the app in the tags' },
+            { name: ':play: New here?', value: '1. Read the <#{rules}>\n2. Say hi in <#{introductions}>\n3. New to Lumen? Read <#{lumenhow}>, then set it up with <#{lumenguide}>\n4. Chat about your app in <#{lumenchat}>, <#{studioschat}> or <#{guardianchat}>\n5. Stuck? Make a post in <#{help}> and pick the app in the tags' },
             { name: ':scan: Find your way around', value: '<#{announcements}> news · <#{releases}> new versions of all three apps\n<#{help}> help · <#{bugs}> bugs · <#{features}> ideas · <#{falsepositives}> Guardian false positives\n<#{showcase}> and <#{studiosshowcase}> for what you make · <#{faq}> quick answers' },
             { name: ':alert: Good to know', value: 'The installers aren\'t code-signed yet, so Windows SmartScreen may warn you the first time: choose *More info*, then *Run anyway*. All three apps update themselves.' },
           ],
@@ -237,6 +237,62 @@ export const messages = {
       title: 'Lumen for Samsung TV', thumbnail: '{assetBase}/emoji-tv.png',
       description: ':tv: Lumen on your living-room TV, made for the remote. Samsung\'s own player plays 4K, HDR and Dolby, and signing in with a QR code on your phone brings your profiles and addons in seconds. For Samsung Tizen TVs from 2019 on.\n\n**Install:** it isn\'t in Samsung\'s app store. You sign it once on a PC: turn on Developer mode on the TV (Apps, then type 1 2 3 4 5), install Samsung\'s free Tizen Studio, create a free Samsung TV certificate, sign the Lumen file from the TV release, install it, and sign in with the QR code. The TV release page lists every step.\n\n**The remote:** arrows move, OK opens or pauses, Back goes back, left and right skip 10 seconds while playing, media keys just work.\n\n**Different from the PC:** Samsung TVs have no DTS, so DTS-only sources are marked. Google and MyAnimeList sign-in, addon setup pages, clips and Play on TV are set up on the PC.\n\n**Roku TV?** Lumen for Windows can send what you are watching to the Lumen channel on Roku: choose *Play on TV* in the player.',
     }, ['{lumenMedia}/tv-home.jpg', '{lumenMedia}/tv-detail.jpg', '{lumenMedia}/tv-anime.jpg', '{lumenMedia}/tv-rows.jpg']),
+  ],
+
+
+  // ------------------------------------------------------------------------------------------------ Lumen guides
+  lumenhow: [
+    {
+      title: 'How Lumen works', color: RED, thumbnail: '{assetBase}/emoji-lumen.png', url: '{lumenSite}',
+      description: ':lumen: Lumen is a **home screen and a player**. It doesn\'t come with movies or shows. It shows what the **addons** you add can find and plays what your own accounts allow. Three layers:',
+      fields: [
+        { name: '1 · Addons: where everything comes from', value: 'Lumen works with Stremio-compatible addons. **Catalog** addons fill your rows (popular titles, Top 10, anime lists). **Stream** addons supply the sources you pick from when you press Play. **Subtitle** addons add subtitles; OpenSubtitles is installed from the start.' },
+        { name: '2 · Real-Debrid (optional): torrent sources', value: 'Real-Debrid is a separate paid service with its own account. Link yours and the torrent sources your addons find can be played, and the files already in your Real-Debrid account appear in Library. It is optional; Lumen works without it.' },
+        { name: '3 · Lumen: the part you see', value: 'A home built from your catalogs (a featured title, Continue watching, a Top 10), sources ranked by quality with your usual pick marked, and a player with subtitles, audio languages, skip intro and next episode. On Windows it also fixes Dolby and DTS sound as it plays.' },
+        { name: 'Your data', value: 'Everything works without an account. A free Lumen account only keeps your profiles, lists, Continue watching and addons the same on every PC, phone and TV. Your addons are encrypted with your PIN before they leave your device, and your Real-Debrid key stays on the device.' },
+        { name: 'Your responsibility', value: 'Lumen doesn\'t host or provide any content. You choose the addons and you are responsible for how you use them. The <#{rules}> apply here: no piracy talk.' },
+      ],
+    },
+    {
+      embeds: [
+        { title: 'What you see', color: RED, url: '{lumenSite}', image: '{assetBase}/lumen/home.jpg', description: '**Home** is built from your catalogs. **Movies**, **Series** and **Anime** are full pages with their own Top 10 and filters; **Search** looks across every addon at once; **Library** keeps your lists and progress.' },
+        { color: RED, url: '{lumenSite}', image: '{assetBase}/lumen/detail.jpg' },
+        { color: RED, url: '{lumenSite}', image: '{assetBase}/lumen/anime-calendar.jpg' },
+        { color: RED, url: '{lumenSite}', image: '{assetBase}/lumen/themes.jpg' },
+      ],
+    },
+    {
+      title: 'Where to go next', color: RED,
+      description: 'Set it up step by step in <#{lumenguide}>. Chat about it in <#{lumenchat}>. Problems go in <#{help}> with the **Lumen** tag. Phones and TVs are in <#{lumendevices}>.',
+    },
+  ],
+
+  lumenguide: [
+    {
+      title: 'Set up addons and Real-Debrid', color: RED, thumbnail: '{assetBase}/emoji-lumen.png', url: '{lumenSite}/windows/', image: '{assetBase}/lumen/realdebrid.jpg',
+      description: 'Six steps, in the order to do them. Real-Debrid and some addons are separate services with their own prices, and **you are responsible for how you use them**: Lumen doesn\'t host or provide any content.',
+      fields: [
+        { name: '1 · Install and open Lumen', value: '[Download it]({lumenDownload}) and open it. A first home screen from the default catalogs appears right away, with no setup.' },
+        { name: '2 · Get addons', value: 'Open **Addons**. Under **Get addons** are popular ones. Those with an **Add** button install in one click (catalog addons such as The Movie Database or Anime Kitsu). Those that need an account or a key show **Set up** or **Set up on its page** and open their setup page right inside Lumen. You can also paste the link of an addon you already use.' },
+        { name: '3 · Link Real-Debrid (optional)', value: 'Open **Settings → Real-Debrid & Usenet** and press **Link Real-Debrid**, then follow the prompts. The status changes from "Not linked". You need your own Real-Debrid account.' },
+        { name: '4 · Torrent addons need your key too', value: 'Torrent addons such as Comet keep your Real-Debrid API key in their own setup. If you get a new key, update them from **Settings → Real-Debrid & Usenet** (the "Real-Debrid key in your addons" box) instead of setting each one up again.' },
+        { name: '5 · Usenet (optional)', value: 'In the same Settings page, **Usenet** lets you add a TorBox API key and press **Link**. It plays the Usenet (NZB) results your addons find, and torrents when Real-Debrid isn\'t linked.' },
+        { name: '6 · Press play', value: 'Open a title. The sources your addons found are listed by quality with your usual pick marked, and Lumen warns you when a sound format needs fixing. Pick one and watch.' },
+      ],
+    },
+    {
+      title: 'If something isn\'t working', color: GOLD,
+      fields: [
+        { name: 'No sources for a title', value: 'Most often no stream addon is installed yet, or the addon still needs its key (check **Addons** and the Real-Debrid page in Settings).' },
+        { name: 'Empty rows on Home', value: 'The catalog addons couldn\'t load. Check your internet connection, then look at **Addons**.' },
+        { name: 'A warning on a source about sound', value: 'On Windows Lumen fixes Dolby and DTS sound as it plays. On Android and Samsung TV, sources with only DTS sound are marked when the device can\'t play them.' },
+        { name: 'Still stuck?', value: 'Make a post in <#{help}> with the **Lumen** tag: your Lumen version, your device, which addons you use (their names only) and the exact message you see.' },
+      ],
+    },
+    {
+      title: 'Keep your keys private', color: RED, thumbnail: '{assetBase}/emoji-alert.png',
+      description: 'Never post your **Real-Debrid API key**, your **TorBox key** or the **link of an addon you set up**: many addon links contain your key inside them, so anyone who sees the link can use your account. If you posted one by mistake, delete the message and create a new key.\n\nThis server doesn\'t share addon lists or help find content, and a request for it will be removed (see the <#{rules}>).',
+    },
   ],
 
   // ------------------------------------------------------------------------------------------------ Lumen Studios
