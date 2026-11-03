@@ -4,7 +4,7 @@ A Windows system-care app: scan for viruses, find outdated drivers and apps, and
 
 ![Overview](docs/overview.png)
 
-**[Download the installer](https://github.com/RivaDeveloper/system-guardian/releases/latest)** (Windows 10 1809+ / Windows 11, x64). The installer is not code-signed, so SmartScreen may warn about an unknown publisher.
+**[Join the Discord](https://discord.gg/76PgqgZgjV)** for help, false-positive reports and new versions. **[Download the installer](https://github.com/RivaDeveloper/system-guardian/releases/latest)** (Windows 10 1809+ / Windows 11, x64). The installer is not code-signed, so SmartScreen may warn about an unknown publisher.
 
 ## What it does
 
