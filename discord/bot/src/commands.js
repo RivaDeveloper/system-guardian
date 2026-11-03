@@ -26,11 +26,25 @@ export const definitions = [
     .addIntegerOption((o) => o.setName('seconds').setDescription('0 turns it off').setRequired(true).setMinValue(0).setMaxValue(21600)),
   new SlashCommandBuilder().setName('bot').setDescription('Bot settings (admins)').setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
     .addSubcommand((s) => s.setName('status').setDescription('Show what the bot is doing right now'))
+    .addSubcommand((s) => s.setName('notes').setDescription('Post the staff cheat sheet of bot commands in this channel'))
     .addSubcommand((s) => s.setName('mode').setDescription('Live = it deletes, times out and answers. Test = it only writes to its log')
       .addStringOption((o) => o.setName('mode').setDescription('live or test').setRequired(true).addChoices({ name: 'live', value: 'live' }, { name: 'test', value: 'test' })))
     .addSubcommand((s) => s.setName('chat').setDescription('Answer clear questions in the chat channels without being asked')
       .addStringOption((o) => o.setName('state').setDescription('on or off').setRequired(true).addChoices({ name: 'on', value: 'on' }, { name: 'off', value: 'off' }))),
 ].map((c) => c.toJSON());
+
+/** The staff cheat sheet, posted by `/bot notes` into #mod-chat and #dev-chat. */
+function staffNotes() {
+  return new EmbedBuilder().setColor(0x8b6bff).setTitle('Lumen Helper: staff commands')
+    .setDescription('The bot is **Lumen Helper**. It runs on its own server, so it stays on when nobody is at their PC. Commands only show up for people who may use them.')
+    .addFields(
+      { name: 'Admins (Owner, Co-owner)', value: '`/bot status` what it is doing now\n`/bot mode live` it deletes, times out and answers for real\n`/bot mode test` it only writes to its log (use this if it misbehaves)\n`/bot chat on|off` unprompted answers in the chat channels\n`/bot notes` post this sheet' },
+      { name: 'Moderators and developers', value: '`/warn member reason` give a strike (10 min timeout at strike 2, 1 hour at 3)\n`/warnings member` list strikes\n`/clearwarnings member` wipe strikes\n`/timeout member minutes` (0 removes it)\n`/purge count` delete the latest messages here\n`/slowmode seconds` (0 turns it off)' },
+      { name: 'Everyone', value: '`/ask question` or write in #ask-the-bot. It answers from the server guides and points to #help when it is not sure.' },
+      { name: 'What it removes on its own', value: 'Leaked keys and tokens, scams, piracy links, other servers\' invites, program attachments (.exe, .zip and similar), mention spam and floods. Staff are never touched. It never bans: serious cases time the member out for a day and ask staff in #mod-log.' },
+      { name: 'If something goes wrong', value: 'Run `/bot mode test` first, then tell the server owner. A wrongly removed message can simply be reposted by the member; `/clearwarnings` removes a strike that should not count.' },
+    );
+}
 
 export async function handleCommand(interaction, { store, moderator, answerer, resolver, cfg }) {
   const name = interaction.commandName;
@@ -47,6 +61,10 @@ export async function handleCommand(interaction, { store, moderator, answerer, r
   if (name === 'bot') {
     if (!interaction.memberPermissions?.has(PermissionFlagsBits.Administrator)) return reply('Only admins can change the bot settings.');
     const sub = interaction.options.getSubcommand();
+    if (sub === 'notes') {
+      await interaction.channel.send({ embeds: [staffNotes()], allowedMentions: { parse: [] } });
+      return reply('Posted the cheat sheet here. Pin it so it stays easy to find.');
+    }
     if (sub === 'mode') saveSwitch(cfg, 'dryRun', interaction.options.getString('mode', true) === 'test');
     if (sub === 'chat') saveSwitch(cfg, 'autoAnswer', interaction.options.getString('state', true) === 'on');
     return reply([
