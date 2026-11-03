@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Guardian link card</title>
+<!-- Rendered to website/media/og.png (1200x630) by tools/make-og.ps1. This is the picture chat apps and search engines show for the website link. -->
+<style>
+@font-face { font-family: 'Syne'; font-weight: 800; src: url('../Assets/Fonts/Syne-ExtraBold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 700; src: url('../Assets/Fonts/Manrope-Bold.ttf'); }
+@font-face { font-family: 'Manrope'; font-weight: 400; src: url('../Assets/Fonts/Manrope-Regular.ttf'); }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1200px; height: 630px; overflow: hidden; background: #05060b; font-family: 'Manrope', sans-serif; color: #f1f2f8; }
+.card { position: relative; width: 1200px; height: 630px; overflow: hidden;
+  background:
+    radial-gradient(520px 460px at 8% 0%, rgba(139,107,255,.55), transparent 70%),
+    radial-gradient(560px 520px at 100% 30%, rgba(255,46,85,.42), transparent 70%),
+    radial-gradient(520px 420px at 55% 115%, rgba(56,208,255,.25), transparent 70%),
+    #05060b; }
+.rings { position: absolute; right: -150px; top: -110px; width: 860px; height: 860px; }
+.rings i { position: absolute; left: 50%; top: 50%; border-radius: 50%; border: 1px solid rgba(255,255,255,.08); transform: translate(-50%, -50%); }
+.rings i:nth-child(1) { width: 34%; height: 34%; border-color: rgba(139,107,255,.35); }
+.rings i:nth-child(2) { width: 56%; height: 56%; }
+.rings i:nth-child(3) { width: 78%; height: 78%; border-style: dashed; border-color: rgba(255,255,255,.12); }
+.rings i:nth-child(4) { width: 100%; height: 100%; }
+.sweep { position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(from 20deg, transparent 0deg, transparent 280deg, rgba(61,220,132,.16) 335deg, rgba(61,220,132,.42) 360deg);
+  -webkit-mask-image: radial-gradient(closest-side, transparent 14%, #000 15%, #000 96%, transparent); }
+.brand { position: absolute; left: 70px; top: 58px; display: flex; align-items: center; gap: 16px; font: 800 38px 'Syne'; letter-spacing: -.02em; }
+.brand svg { width: 54px; height: 54px; }
+h1 { position: absolute; left: 70px; top: 168px; font: 800 96px/.98 'Syne'; letter-spacing: -.045em; }
+h1 span { display: block; }
+h1 .g { background: linear-gradient(100deg, #fff 0%, #ffd5de 30%, #ff2e55 62%, #8b6bff 100%); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: 12px; }
+.sub { position: absolute; left: 72px; top: 400px; width: 520px; font: 400 27px/1.4 'Manrope'; color: #cdd1df; }
+.pills { position: absolute; left: 72px; top: 528px; display: flex; gap: 12px; }
+.pills b { font: 700 18px 'Manrope'; padding: 11px 20px; border-radius: 999px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); }
+.pills b.free { background: linear-gradient(135deg, #ff2e55, #ff5a3d 45%, #8b6bff); border: 0; }
+.shield { position: absolute; left: 872px; top: 192px; width: 168px; filter: drop-shadow(0 24px 60px rgba(139,107,255,.7)); }
+.window { position: absolute; left: 640px; top: 270px; width: 610px; padding: 8px; border-radius: 22px; background: linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.04)); border: 1px solid rgba(255,255,255,.18); box-shadow: 0 50px 100px rgba(0,0,0,.7); transform: rotate(-4deg); }
+.window img { display: block; width: 100%; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; border-radius: 15px; }
+.chip { position: absolute; display: flex; align-items: center; gap: 10px; padding: 11px 18px; border-radius: 999px; font: 700 18px 'Manrope'; background: rgba(14,15,28,.86); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 16px 40px rgba(0,0,0,.5); }
+.chip::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: #3ddc84; box-shadow: 0 0 0 4px rgba(61,220,132,.2); }
+.c1 { left: 700px; top: 86px; } .c2 { left: 930px; top: 150px; }
+</style></head>
+<body><div class="card">
+  <div class="rings"><i></i><i></i><i></i><i></i><div class="sweep"></div></div>
+  <div class="brand"><svg viewBox="0 0 32 32"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff2e55"/><stop offset=".55" stop-color="#8b6bff"/><stop offset="1" stop-color="#38d0ff"/></linearGradient></defs><circle cx="16" cy="16" r="14" fill="url(#gg)"/><ellipse cx="12" cy="16" rx="10" ry="14" fill="#fff" fill-opacity=".28"/><circle cx="16" cy="16" r="8" fill="#fff" fill-opacity=".2"/><circle cx="16" cy="16" r="6" fill="#fff" fill-opacity=".9"/></svg>Guardian</div>
+  <h1><span>Your PC,</span><span class="g">under guard.</span></h1>
+  <p class="sub">Antivirus protection with a switch for every shield.</p>
+  <div class="pills"><b class="free">Free</b><b>Windows 10 &amp; 11</b><b>No ads</b></div>
+  <svg class="shield" viewBox="0 0 100 116"><defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff2e55"/><stop offset=".55" stop-color="#8b6bff"/><stop offset="1" stop-color="#38d0ff"/></linearGradient></defs><path d="M50 3 93 19v36c0 31-19 50-43 58C26 105 7 86 7 55V19z" fill="url(#sg)"/><path d="M50 3 93 19v36c0 31-19 50-43 58z" fill="#fff" fill-opacity=".14"/><circle cx="50" cy="55" r="24" fill="#fff" fill-opacity=".2"/><path d="M36 56l10 10 19-21" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <div class="window"><img src="../website/media/protection.jpg" alt=""></div>
+  <div class="chip c1">Signature verified</div><div class="chip c2">Startup entry checked</div>
+</div></body></html>

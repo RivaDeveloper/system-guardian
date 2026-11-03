@@ -55,11 +55,17 @@ public sealed partial class ProtectionPage : Page
         var open = ProtectionService.Events.Count(e => e.Action == "Alert");
         StatusTitle.Text = on ? (open > 0 ? "NEEDS A LOOK" : "PROTECTED") : "PROTECTION OFF";
         StatusTitle.Foreground = on ? (open > 0 ? Tones.Warn : Tones.Good) : Tones.Bad;
+        var tone = on ? (open > 0 ? Tones.Warn : Tones.Good) : Tones.Bad;
+        StatusRing.Stroke = tone;
+        StatusHalo.Fill = tone;
+        StatusGlyph.Foreground = tone;
+        StatusGlyph.Glyph = !on ? "" : open > 0 ? "" : "";
         StatusSub.Text = on
             ? (open > 0 ? $"{open} alert(s) in the history below are waiting for your decision." : "Guardian is watching for new files, startup changes and USB drives.")
             : "Real-time protection is switched off. Guardian still scans when you ask it to.";
         var problem = ProtectionService.ProgramWatchProblem;
         ProgramNote.Text = problem.Length > 0 ? "Not running: " + problem + (Elevation.IsElevated ? "" : " Restart Guardian as administrator to use it.") : "";
+        ProgramNote.Foreground = Tones.Warn;
         ProgramNote.Visibility = problem.Length > 0 ? Visibility.Visible : Visibility.Collapsed;
         var s = ProtectionService.State;
         CheckedText.Text = s.FilesChecked.ToString("N0");
