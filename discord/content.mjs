@@ -19,7 +19,7 @@ export const messages = {
       embeds: [
         { color: RED, image: '{assetBase}/banner.png' },
         {
-          color: RED, title: 'Lumen', url: '{lumenSite}', thumbnail: '{assetBase}/emoji-lumen.png', image: '{lumenMedia}/home.jpg',
+          color: RED, title: 'Lumen', url: '{lumenSite}', thumbnail: '{assetBase}/emoji-lumen.png', image: '{assetBase}/lumen/home.jpg',
           description: ':lumen: **The streaming app.** Your Stremio addons and Real-Debrid account on one glass screen: movies, series and anime, a proper player, profiles, calendars and Watch together. Windows, Android and Samsung TV. Lumen doesn\'t host or provide any content.\n\n**[Download for Windows]({lumenDownload})** · [Website]({lumenSite}) · <#{lumenchat}>',
         },
         {
@@ -154,12 +154,12 @@ export const messages = {
     {
       embeds: [
         {
-          title: 'Show off your setup', color: RED, url: '{lumenSite}', thumbnail: '{assetBase}/emoji-lumen.png', image: '{lumenMedia}/home-rows.jpg',
+          title: 'Show off your setup', color: RED, url: '{lumenSite}', thumbnail: '{assetBase}/emoji-lumen.png', image: '{assetBase}/lumen/home-rows.jpg',
           description: 'Post screenshots of your Lumen home screen, your themes and profiles, your cleanest PCs, your Guardian scans, anything you are proud of. One post per picture, a line about it, and please crop out personal details.\n\n**For videos made with Lumen Studios** use <#{studiosshowcase}>.\n\nHere is what the three apps look like out of the box:',
         },
-        { url: '{lumenSite}', color: RED, image: '{lumenMedia}/library.jpg' },
-        { url: '{lumenSite}', color: RED, image: '{lumenMedia}/profiles.jpg' },
-        { url: '{lumenSite}', color: RED, image: '{lumenMedia}/series-calendar.jpg' },
+        { url: '{lumenSite}', color: RED, image: '{assetBase}/lumen/anime-calendar.jpg' },
+        { url: '{lumenSite}', color: RED, image: '{assetBase}/lumen/themes.jpg' },
+        { url: '{lumenSite}', color: RED, image: '{assetBase}/lumen/series.jpg' },
       ],
     },
     gallery('{guardianSite}', CYAN, { title: 'Guardian' }, ['{guardianMedia}/overview.jpg', '{guardianMedia}/protection.jpg', '{guardianMedia}/tools.jpg']),
@@ -193,7 +193,7 @@ export const messages = {
     gallery('{lumenSite}', RED, {
       title: 'Lumen: every story, in a new light', thumbnail: '{assetBase}/emoji-lumen.png',
       description: ':lumen: Lumen turns the Stremio addons and Real-Debrid account you already have into one beautiful home for movies, series and anime, on your PC, your phone and your TV. Free, no ads, no account needed, and it updates itself.\n\n**[Download for Windows]({lumenDownload})** · [Website]({lumenSite}) · <#{lumensetup}> to get started',
-    }, ['{lumenMedia}/home.jpg', '{lumenMedia}/sources.jpg', '{lumenMedia}/player-languages.jpg', '{lumenMedia}/anime.jpg']),
+    }, ['{assetBase}/lumen/home.jpg', '{assetBase}/lumen/detail.jpg', '{assetBase}/lumen/anime.jpg', '{assetBase}/lumen/anime-calendar.jpg']),
     {
       title: 'What it does', color: RED,
       fields: [
@@ -208,14 +208,14 @@ export const messages = {
     gallery('{lumenSite}', RED, {
       title: 'Small things, done right',
       description: '**Library:** lists, history and anime progress synced with MyAnimeList or AniList, with new-episode badges.\n**Languages:** audio tracks and subtitles in one menu, with subtitle size, colour and timing.\n**Profiles & kids:** their own lists and look; kids see only titles rated for their age, behind a PIN.\n**15 themes** per profile · **Skip intro** on the progress bar · **Calendars** for series and movies · **One search** across every addon.',
-    }, ['{lumenMedia}/watch-together.jpg', '{lumenMedia}/series-calendar.jpg', '{lumenMedia}/profiles.jpg', '{lumenMedia}/skip-intro.jpg']),
+    }, ['{assetBase}/lumen/themes.jpg', '{assetBase}/lumen/search.jpg', '{assetBase}/lumen/series.jpg', '{assetBase}/lumen/movies.jpg']),
   ],
 
   lumensetup: [
     gallery('{lumenSite}/windows/', RED, {
       title: 'Up and running in a minute', thumbnail: '{assetBase}/emoji-lumen.png',
       description: '**1. Download & install.** Run the installer. Windows may say "Windows protected your PC" because Lumen isn\'t code-signed yet: choose *More info*, then *Run anyway*.\n\n**2. Add your addons.** Open *Addons › Get addons* and add the ones you like, or paste the links of addons you already use.\n\n**3. Link Real-Debrid.** Optional: link your account in *Settings* for cached torrent sources, then press play.\n\n**[Download Lumen]({lumenDownload})**',
-    }, ['{lumenMedia}/addons.jpg', '{lumenMedia}/settings.jpg']),
+    }, ['{assetBase}/lumen/realdebrid.jpg', '{assetBase}/lumen/playback.jpg']),
     {
       title: 'Good to know', color: RED,
       fields: [
