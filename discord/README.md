@@ -41,7 +41,13 @@ the releases channel.
 
    Leave out `--github` and the script prints the webhook URL for you to add in GitHub (*Settings → Webhooks*, payload
    URL ending in `/github`, content type `application/json`, only the *Releases* event).
-6. **Clean up.** In the developer portal press *Reset Token* again and kick the "Guardian Setup" bot. Never commit a token.
+6. **Clean up.** In the developer portal press *Reset Token* again and remove the "Guardian Setup" bot. Never commit a token.
+
+   > **The release webhook belongs to the bot.** Discord deletes a bot's webhooks when the bot is removed, which stops the
+   > release feed. Before you remove the bot, make your own webhook: *Server Settings → Integrations → Webhooks → New
+   > Webhook*, pick the `releases` channel, copy the URL, and point GitHub at it with
+   > `gh api -X PATCH repos/<owner>/<repo>/hooks/<hook id> -f "config[url]=<webhook url>/github" -f "config[content_type]=json"`
+   > (or edit the webhook in the repo's *Settings → Webhooks*). A webhook you create yourself survives.
 
 The script prints your permanent invite link at the end. Send that link to people.
 

@@ -242,6 +242,7 @@ if (ids.releases) {
   if (hook?.token) hookUrl = `https://discord.com/api/webhooks/${hook.id}/${hook.token}`;
 }
 if (hookUrl) {
+  console.log('  Note: this webhook is owned by the bot and Discord deletes it when the bot is removed. Create your own in Server Settings > Integrations > Webhooks before you remove the bot, and use that URL for GitHub.');
   const github = cfg.links.github.replace('https://github.com/', '');
   if (args.has('--github')) {
     const gh = spawnSync('gh', ['api', '-X', 'POST', `repos/${github}/hooks`, '--input', '-'], {
