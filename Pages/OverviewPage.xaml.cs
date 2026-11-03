@@ -1,4 +1,6 @@
 using Guardian.Services;
+using Guardian.Services.Deep;
+using Guardian.Services.Protection;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
@@ -31,22 +33,39 @@ public sealed partial class OverviewPage : Page
         Busy.IsActive = true;
         try
         {
+            // Guardian protects on its own: Defender is a bonus when it is running, never a requirement.
             var s = await _defender.GetStatusAsync();
-            if (s is null)
+            var defenderOn = s is { Usable: true };
+            var guardianOn = ProtectionService.Running;
+
+            if (guardianOn || (defenderOn && s!.RealTime))
             {
-                ProtectionValue.Text = "Unknown";
-                ProtectionDot.Fill = Tones.Neutral;
-                ProtectionDetail.Text = "Another antivirus may be managing protection.";
-                DefinitionsValue.Text = "—";
-                DefinitionsDetail.Text = "";
-                return;
+                ProtectionValue.Text = "Protected";
+                ProtectionDot.Fill = Tones.Good;
             }
-            var healthy = s.Enabled && s.RealTime;
-            ProtectionValue.Text = healthy ? "Protected" : "At risk";
-            ProtectionDot.Fill = healthy ? Tones.Good : Tones.Bad;
-            ProtectionDetail.Text = $"Defender {(s.Enabled ? "on" : "OFF")}, real-time protection {(s.RealTime ? "on" : "OFF")}.";
-            DefinitionsValue.Text = s.SignatureVersion;
-            DefinitionsDetail.Text = $"Updated {s.SignaturesUpdated}";
+            else
+            {
+                ProtectionValue.Text = "At risk";
+                ProtectionDot.Fill = Tones.Bad;
+            }
+            var own = guardianOn ? "Guardian real-time protection on" : "Guardian real-time protection OFF";
+            ProtectionDetail.Text = defenderOn
+                ? $"{own}. Windows Defender {(s!.RealTime ? "on" : "real-time OFF")}."
+                : $"{own}. Windows Defender isn't running, and Guardian doesn't need it.";
+
+            var meta = IntelMeta.Load();
+            if (defenderOn)
+            {
+                DefinitionsValue.Text = s!.SignatureVersion;
+                DefinitionsDetail.Text = $"Defender updated {s.SignaturesUpdated}. Guardian: {ThreatIntel.Count:N0} fingerprints, {meta.RuleCount:N0} rules.";
+            }
+            else
+            {
+                DefinitionsValue.Text = ThreatIntel.Count > 0 ? $"{ThreatIntel.Count:N0}" : "None yet";
+                DefinitionsDetail.Text = meta.HashesUpdatedUtc is { } h
+                    ? $"Known-bad fingerprints, plus {meta.RuleCount:N0} rules. Updated {h.ToLocalTime():d MMM yyyy}."
+                    : "Update Guardian's definitions to download the known-bad lists and signature rules.";
+            }
         }
         finally { Busy.IsActive = false; }
     }
@@ -55,10 +74,22 @@ public sealed partial class OverviewPage : Page
     {
         Busy.IsActive = true;
         UpdateButton.IsEnabled = false;
-        var ok = await _defender.UpdateSignaturesAsync();
-        UpdateButton.IsEnabled = true;
-        Busy.IsActive = false;
-        if (!ok) await Ui.ShowAsync(XamlRoot, "Update failed", "Could not update virus definitions. Try running as administrator.");
+        var failed = new List<string>();
+        try
+        {
+            // Guardian's own definitions first: they are what protects the PC when Defender isn't there.
+            var progress = new Progress<string>(_ => { });
+            try { await ThreatIntel.UpdateAsync(progress, false, CancellationToken.None); } catch (Exception ex) { failed.Add("Guardian's lists: " + ex.Message); }
+            try { await YaraEngine.UpdateRulesAsync(progress, false, CancellationToken.None); } catch (Exception ex) { failed.Add("signature rules: " + ex.Message); }
+            var s = await _defender.GetStatusAsync();
+            if (s is { Usable: true } && !await _defender.UpdateSignaturesAsync()) failed.Add("Windows Defender (try running as administrator)");
+        }
+        finally
+        {
+            UpdateButton.IsEnabled = true;
+            Busy.IsActive = false;
+        }
+        if (failed.Count > 0) await Ui.ShowAsync(XamlRoot, "Some updates failed", string.Join("\n", failed));
         await RefreshAsync();
     }
 }

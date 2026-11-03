@@ -83,7 +83,7 @@
                                 <FontIcon Glyph="&#xEA18;" Foreground="White" FontSize="20" />
                             </Border>
                             <TextBlock Text="Scan for viruses" FontFamily="{StaticResource DisplayBoldFont}" FontSize="24" />
-                            <TextBlock Text="Defender scan plus VirusTotal check" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
+                            <TextBlock Text="Guardian deep scan, Defender and VirusTotal" Foreground="{StaticResource MutedBrush}" TextWrapping="Wrap" />
                         </StackPanel>
                     </Button>
 

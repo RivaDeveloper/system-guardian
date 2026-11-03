@@ -61,7 +61,7 @@ public sealed partial class ScanPage : Page
             var progress = new Progress<ScanProgress>(p => { items = p.ItemsChecked; Overlay.Update(p); });
             results = await scanner.RunAsync(progress, _cts.Token);
 
-            if (IncludeDefender.IsChecked == true)
+            if (IncludeDefender.IsChecked == true && _defenderUsable)
             {
                 Overlay.Begin("Windows Defender quick scan", new[] { "Quick scan" }, percentKnown: false,
                     note: "Defender doesn't report a percentage while it scans, so Guardian shows how long it has been running. A quick scan usually takes a few minutes.");
@@ -268,8 +268,25 @@ public sealed partial class ScanPage : Page
     //  Windows Defender
     // =====================================================================
 
+    bool _defenderUsable = true;
+
+    /// <summary>Guardian's own scan needs nothing from Defender. Without it the Defender options switch off instead of failing.</summary>
+    async Task CheckDefenderAsync()
+    {
+        DefenderStatus? s = null;
+        try { s = await _defender.GetStatusAsync(); } catch { /* cmdlets missing: no Defender */ }
+        _defenderUsable = s is { Usable: true };
+        IncludeDefender.IsEnabled = _defenderUsable;
+        if (!_defenderUsable) IncludeDefender.IsChecked = false;
+        SetScanning(false);
+        if (!_defenderUsable)
+            StatusText.Text = "Windows Defender isn't running on this PC. That's fine: Guardian's deep scan and real-time protection work without it.";
+    }
+
     async Task LoadThreatsAsync()
     {
+        await CheckDefenderAsync();
+        if (!_defenderUsable) return;
         try
         {
             var threats = await _defender.GetThreatsAsync();
@@ -282,7 +299,8 @@ public sealed partial class ScanPage : Page
 
     void SetScanning(bool scanning)
     {
-        QuickButton.IsEnabled = FullButton.IsEnabled = FolderButton.IsEnabled = DeepButton.IsEnabled = !scanning;
+        QuickButton.IsEnabled = FullButton.IsEnabled = FolderButton.IsEnabled = !scanning && _defenderUsable;
+        DeepButton.IsEnabled = !scanning;
     }
 
     async Task RunScanAsync(DefenderScanType type, string? path)

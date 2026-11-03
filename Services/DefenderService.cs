@@ -1,6 +1,10 @@
 namespace Guardian.Services;
 
-public sealed record DefenderStatus(bool Enabled, bool RealTime, string SignatureVersion, string SignaturesUpdated);
+public sealed record DefenderStatus(bool Enabled, bool RealTime, string SignatureVersion, string SignaturesUpdated)
+{
+    /// <summary>Defender is installed and is the antivirus that is running. False when another antivirus replaced it or it was removed.</summary>
+    public bool Usable => Enabled;
+}
 
 // Classes with settable properties (not records): the XAML type-info generator can't assign init-only properties.
 public sealed class ThreatInfo(string id, string name, int severity, bool active, string resources)

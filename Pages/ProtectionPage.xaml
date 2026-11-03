@@ -70,7 +70,7 @@
                         <StackPanel><TextBlock Text="Start Guardian with Windows" /><TextBlock Opacity="0.6" FontSize="12" TextWrapping="Wrap" Text="Starts quietly in the taskbar corner when you sign in, so you are protected from the start." /></StackPanel>
                         <ToggleSwitch x:Name="AutoStartSwitch" Grid.Column="1" Tag="autostart" OnContent="On" OffContent="Off" Toggled="Option_Toggled" /></Grid>
                     <TextBlock Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0"
-                               Text="Guardian's protection works in user mode: it checks files right after they appear, not before they run, and it does not replace Windows Defender. Keeping Defender on alongside Guardian gives you two independent layers." />
+                               Text="Guardian protects your PC on its own and does not need Windows Defender. Its protection works in user mode: it checks files right after they appear, not before they run. With Defender on as well you get two independent layers." />
                 </StackPanel>
             </Border>
 
