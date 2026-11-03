@@ -51,7 +51,9 @@ export class Knowledge {
       const bodyTokens = tokenize(clean(d.text));
       const tokens = [...titleTokens, ...titleTokens, ...bodyTokens];    // the title counts double
       const tf = new Map(); for (const t of tokens) tf.set(t, (tf.get(t) || 0) + 1);
-      return { ...d, tf, len: tokens.length };
+      // alternate phrasings of a written question: an exact match on the meaningful words beats the word statistics
+      const phrasings = [d.title, ...(d.extraQuestions || [])].map((p) => [...new Set(tokenize(clean(p)))].sort().join(' ')).filter(Boolean);
+      return { ...d, tf, len: tokens.length, phrasings: d.extraQuestions ? phrasings : [] };
     });
     this.avg = this.docs.reduce((a, d) => a + d.len, 0) / Math.max(1, this.docs.length);
     this.df = new Map();
@@ -62,6 +64,7 @@ export class Knowledge {
   search(question, limit = 3) {
     const q = [...new Set(tokenize(question))];
     if (!q.length) return [];
+    const qKey = [...q].sort().join(" ");
     const N = this.docs.length, k1 = 1.4, b = 0.75;
     const scored = this.docs.map((d) => {
       let score = 0, hits = 0;
@@ -71,7 +74,9 @@ export class Knowledge {
         const idf = Math.log(1 + (N - this.df.get(t) + 0.5) / (this.df.get(t) + 0.5));
         score += idf * ((f * (k1 + 1)) / (f + k1 * (1 - b + (b * d.len) / this.avg)));
       }
-      return { doc: d, score: score * (0.6 + 0.4 * (hits / q.length)), hits, of: q.length };
+      score *= 0.6 + 0.4 * (hits / q.length);
+      if (d.phrasings.includes(qKey)) score = Math.max(score, 20);
+      return { doc: d, score, hits, of: q.length };
     }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score);
     return scored.slice(0, limit).map((x) => ({ ...x.doc, score: x.score, hits: x.hits, of: x.of }));
   }
@@ -81,4 +86,4 @@ export class Knowledge {
 /** Good enough to present as "the answer" when someone asks (/ask, a mention, a new help post). */
 export const isConfident = (r) => !!r && (r.score >= 7.5 || (r.hits >= 2 && r.hits === r.of && r.score >= 4.5));
 /** Good enough to speak up unprompted in chat: stricter, so the bot stays quiet unless it is sure. */
-export const isSure = (r) => !!r && (r.score >= 9.5 || (r.hits >= 3 && r.hits === r.of && r.score >= 7));
+export const isSure = (r) => !!r && (r.score >= 9.0 || (r.hits >= 3 && r.hits === r.of && r.score >= 7));

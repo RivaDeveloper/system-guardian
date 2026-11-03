@@ -79,7 +79,7 @@
     ],
     "source": "rules",
     "topic": "Rules",
-    "a": "No, sorry: this server doesn't help find free copies of anything, and Lumen doesn't host or provide any content (see rule 3 in <#{rules}>). Lumen plays what the addons you add can find, and you are responsible for how you use them. For setting the app up see <#{lumenguide}>."
+    "a": "No, sorry: this server doesn't help find free copies of anything, and Lumen doesn't host or provide any content (see rule 3 in <#{rules}>). Lumen plays what the addons you add can find, and you are responsible for how you use them. For setting the app up see <#{howitworks}>."
   },
   {
     "q": [
@@ -124,7 +124,7 @@
     ],
     "source": "lumenguide",
     "topic": "Lumen",
-    "a": "Open **Addons** in Lumen. Under **Get addons**, catalog addons with an **Add** button install in one click; ones that need an account or key show **Set up** and open their setup page inside Lumen. You can also paste the link of an addon you already use. Full steps are in <#{lumenguide}>."
+    "a": "Open **Addons** in Lumen. Under **Get addons**, catalog addons with an **Add** button install in one click; ones that need an account or key show **Set up** and open their setup page inside Lumen. You can also paste the link of an addon you already use. Full steps are in <#{howitworks}>."
   },
   {
     "q": [
@@ -133,7 +133,7 @@
     ],
     "source": "lumenguide",
     "topic": "Lumen",
-    "a": "Open **Settings → Real-Debrid & Usenet** and press **Link Real-Debrid**, then follow the prompts. You need your own Real-Debrid account, which is a separate paid service. Torrent addons such as Comet keep a key in their own setup; update it from the same Settings page. Steps are in <#{lumenguide}>."
+    "a": "Open **Settings → Real-Debrid & Usenet** and press **Link Real-Debrid**, then follow the prompts. You need your own Real-Debrid account, which is a separate paid service. Torrent addons such as Comet keep a key in their own setup; update it from the same Settings page. Steps are in <#{howitworks}>."
   },
   {
     "q": [
@@ -215,5 +215,39 @@
     "source": "welcome",
     "topic": "General",
     "a": "Only from the official GitHub releases linked in <#{welcome}>: [Lumen]({lumenDownload}), [Lumen Studios]({studiosDownload}) and [Guardian]({guardianDownload}). Staff never send installers by DM."
+  },
+  {
+    "q": [
+      "What is Lumen Studios?",
+      "what is lumen studios",
+      "what does lumen studios do",
+      "is lumen studios a video editor"
+    ],
+    "source": "faq",
+    "topic": "Lumen Studios",
+    "a": "**Lumen Studios** is a free video editor for Windows: a multi-track timeline, text and stickers, 75+ effects, 94 transitions, filters, automatic captions, 32 templates, HDR tone mapping and frame-accurate MP4 export."
+  },
+  {
+    "q": [
+      "What is Guardian?",
+      "what is guardian",
+      "what does guardian do",
+      "is guardian an antivirus",
+      "tell me about guardian"
+    ],
+    "source": "faq",
+    "topic": "Guardian",
+    "a": "**Guardian** is a free antivirus and PC-care app for Windows. It scans for malware, checks drivers, repairs common problems and watches your PC in the background. It works with or without Windows Defender."
+  },
+  {
+    "q": [
+      "Are Lumen, Lumen Studios and Guardian made by the same person?",
+      "who makes lumen",
+      "who is the developer",
+      "who made these apps"
+    ],
+    "source": "faq",
+    "topic": "General",
+    "a": "Yes. Lumen, Lumen Studios and Guardian are separate apps made by the same developer, all free for Windows. Guardian is open source on GitHub."
   }
 ]
