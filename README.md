@@ -64,6 +64,8 @@ Turn the automatic check off, or check on demand, under **Settings > Updates**. 
 
 ## Credits and licenses
 
+Guardian's own code is released under the [MIT License](LICENSE). The components below keep their own licenses.
+
 See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) for the YARA engine, the YARA-Forge rules, LOLDrivers and the hash lists the deep scan uses.
 
 The Syne and Manrope fonts in `Assets/Fonts` are licensed under the [SIL Open Font License 1.1](https://openfontlicense.org). See the upstream projects for their copyright notices: [Syne](https://github.com/googlefonts/syne) and [Manrope](https://github.com/sharanda/manrope).
