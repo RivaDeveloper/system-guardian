@@ -103,7 +103,7 @@
                     <Grid ColumnSpacing="14">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                         <Border Style="{StaticResource RowIcon}"><FontIcon Glyph="&#xE72E;" FontSize="18" Foreground="{StaticResource InkBrush}" /></Border>
-                        <StackPanel Grid.Column="1"><TextBlock Text="QUARANTINED" Style="{StaticResource CardLabelStyle}" /><TextBlock x:Name="QuarantinedText" Style="{StaticResource CardValueStyle}" FontSize="34" /></StackPanel>
+                        <StackPanel Grid.Column="1"><TextBlock Text="IN QUARANTINE" Style="{StaticResource CardLabelStyle}" /><TextBlock x:Name="QuarantinedText" Style="{StaticResource CardValueStyle}" FontSize="34" /><HyperlinkButton Content="View and restore" Padding="0" Click="OpenQuarantine_Click" /></StackPanel>
                     </Grid>
                 </Border>
             </Grid>

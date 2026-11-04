@@ -35,10 +35,15 @@ public static class Quarantine
         catch { return new(); }
     }
 
+    static readonly object Gate = new();
+
+    /// <summary>Written to a temp file first, so a crash mid-write can't leave the list (and the way back) damaged.</summary>
     static void Save(List<QuarantineEntry> entries)
     {
         Directory.CreateDirectory(Folder);
-        File.WriteAllText(IndexPath, JsonSerializer.Serialize(entries));
+        var tmp = IndexPath + ".tmp";
+        File.WriteAllText(tmp, JsonSerializer.Serialize(entries));
+        File.Move(tmp, IndexPath, overwrite: true);
     }
 
     /// <summary>Moves the file into quarantine. Throws if it is in use or protected.</summary>
@@ -52,36 +57,62 @@ public static class Quarantine
         {
             Id = Guid.NewGuid().ToString("N"), OriginalPath = path, Sha256 = sha256, Reason = reason, When = DateTime.Now,
         };
-        File.Move(path, Path.Combine(Folder, entry.Id + ".quarantined"));
-
-        var entries = List();
-        entries.Add(entry);
-        Save(entries);
+        lock (Gate)
+        {
+            File.Move(path, Path.Combine(Folder, entry.Id + ".quarantined"));
+            var entries = List();
+            entries.Add(entry);
+            Save(entries);
+        }
         return entry;
     }
 
-    public static void Restore(QuarantineEntry entry)
+    /// <summary>
+    /// Puts the file back where it came from (next to it, as "name (restored)", if something new is already there).
+    /// With <paramref name="alwaysAllow"/> the restored file is also added to the protection exclusions,
+    /// otherwise real-time protection would just flag it again. Returns where the file ended up.
+    /// </summary>
+    public static string Restore(QuarantineEntry entry, bool alwaysAllow = false)
     {
-        var source = Path.Combine(Folder, entry.Id + ".quarantined");
-        if (!File.Exists(source)) throw new FileNotFoundException("The quarantined copy is missing.");
-        Directory.CreateDirectory(Path.GetDirectoryName(entry.OriginalPath)!);
-        var target = File.Exists(entry.OriginalPath)
-            ? Path.Combine(Path.GetDirectoryName(entry.OriginalPath)!, Path.GetFileNameWithoutExtension(entry.OriginalPath) + " (restored)" + Path.GetExtension(entry.OriginalPath))
-            : entry.OriginalPath;
-        File.Move(source, target);
+        string target;
+        lock (Gate)
+        {
+            var source = Path.Combine(Folder, entry.Id + ".quarantined");
+            if (!File.Exists(source)) throw new FileNotFoundException("The quarantined copy is missing.");
+            Directory.CreateDirectory(Path.GetDirectoryName(entry.OriginalPath)!);
+            target = File.Exists(entry.OriginalPath)
+                ? Path.Combine(Path.GetDirectoryName(entry.OriginalPath)!, Path.GetFileNameWithoutExtension(entry.OriginalPath) + " (restored)" + Path.GetExtension(entry.OriginalPath))
+                : entry.OriginalPath;
+            File.Move(source, target);
 
-        var entries = List();
-        entries.RemoveAll(e => e.Id == entry.Id);
-        Save(entries);
+            var entries = List();
+            entries.RemoveAll(e => e.Id == entry.Id);
+            Save(entries);
+        }
+
+        if (alwaysAllow)
+        {
+            var settings = SettingsStore.Load();
+            if (!settings.Protection.Exclusions.Contains(target, StringComparer.OrdinalIgnoreCase))
+            {
+                settings.Protection.Exclusions.Add(target);
+                SettingsStore.Save(settings);
+                Protection.ProtectionService.Reconfigure();
+            }
+        }
+        return target;
     }
 
     /// <summary>Permanently removes a quarantined file. Only call after the user explicitly asks.</summary>
     public static void DeleteForever(QuarantineEntry entry)
     {
-        var source = Path.Combine(Folder, entry.Id + ".quarantined");
-        if (File.Exists(source)) File.Delete(source);
-        var entries = List();
-        entries.RemoveAll(e => e.Id == entry.Id);
-        Save(entries);
+        lock (Gate)
+        {
+            var source = Path.Combine(Folder, entry.Id + ".quarantined");
+            if (File.Exists(source)) File.Delete(source);
+            var entries = List();
+            entries.RemoveAll(e => e.Id == entry.Id);
+            Save(entries);
+        }
     }
 }

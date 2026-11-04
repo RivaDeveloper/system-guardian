@@ -260,44 +260,8 @@ public sealed partial class ScanPage : Page
         DeepSummary.Text = "Ignored. Guardian won't show this one again.";
     }
 
-    async void ShowQuarantine_Click(object sender, RoutedEventArgs e)
-    {
-        var entries = Quarantine.List();
-        if (entries.Count == 0)
-        {
-            await Ui.ShowAsync(XamlRoot, "Quarantine", "Nothing is in quarantine.");
-            return;
-        }
-
-        var list = new ListView { ItemsSource = entries, SelectionMode = ListViewSelectionMode.Single, MaxHeight = 360 };
-        list.ItemTemplate = (DataTemplate)Microsoft.UI.Xaml.Markup.XamlReader.Load(
-            "<DataTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation'><StackPanel Padding='0,6'><TextBlock Text='{Binding DisplayName}' FontWeight='SemiBold'/><TextBlock Text='{Binding Summary}' Opacity='0.7' FontSize='12' TextWrapping='Wrap'/></StackPanel></DataTemplate>");
-        list.SelectedIndex = 0;
-
-        var dialog = new ContentDialog
-        {
-            XamlRoot = XamlRoot, Title = "Quarantine", Content = list,
-            PrimaryButtonText = "Restore", SecondaryButtonText = "Delete forever", CloseButtonText = "Close",
-        };
-        var result = await dialog.ShowAsync();
-        if (list.SelectedItem is not QuarantineEntry entry) return;
-
-        try
-        {
-            if (result == ContentDialogResult.Primary)
-            {
-                Quarantine.Restore(entry);
-                DeepSummary.Text = $"Restored {entry.DisplayName} to its original place.";
-            }
-            else if (result == ContentDialogResult.Secondary &&
-                     await Ui.ConfirmAsync(XamlRoot, "Delete permanently?", $"{entry.DisplayName} will be deleted for good. This can't be undone.", "Delete"))
-            {
-                Quarantine.DeleteForever(entry);
-                DeepSummary.Text = $"Deleted {entry.DisplayName}.";
-            }
-        }
-        catch (Exception ex) { await Ui.ShowAsync(XamlRoot, "Quarantine", ex.Message); }
-    }
+    async void ShowQuarantine_Click(object sender, RoutedEventArgs e) =>
+        await QuarantineDialog.ShowAsync(XamlRoot, () => DeepSummary.Text = "Quarantine updated.");
 
     // =====================================================================
     //  Windows Defender

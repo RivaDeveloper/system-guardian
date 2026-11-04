@@ -70,7 +70,7 @@ public sealed partial class ProtectionPage : Page
         var s = ProtectionService.State;
         CheckedText.Text = s.FilesChecked.ToString("N0");
         ThreatsText.Text = s.ThreatsFound.ToString("N0");
-        QuarantinedText.Text = s.Quarantined.ToString("N0");
+        QuarantinedText.Text = Quarantine.List().Count.ToString("N0");
 
         var meta = IntelMeta.Load();
         EngineText.Text = $"Detection: {ThreatIntel.Count:N0} known-bad fingerprints" +
@@ -148,7 +148,7 @@ public sealed partial class ProtectionPage : Page
     async void EventQuarantine_Click(object sender, RoutedEventArgs e)
     {
         if (((FrameworkElement)sender).DataContext is not ProtectionEvent ev) return;
-        if (!await Ui.ConfirmAsync(XamlRoot, "Quarantine this file?", $"{ev.Path}\n\nIt is moved to Guardian's quarantine and can be restored from Virus scan.", "Quarantine")) return;
+        if (!await Ui.ConfirmAsync(XamlRoot, "Quarantine this file?", $"{ev.Path}\n\nIt is moved to Guardian's quarantine. You can restore it any time with \"View and restore\" at the top of this page.", "Quarantine")) return;
         try
         {
             ProtectionService.QuarantineFromEvent(ev);
@@ -157,6 +157,9 @@ public sealed partial class ProtectionPage : Page
         }
         catch (Exception ex) { await Ui.ShowAsync(XamlRoot, "Couldn't quarantine it", ex.Message); }
     }
+
+    async void OpenQuarantine_Click(object sender, RoutedEventArgs e) =>
+        await QuarantineDialog.ShowAsync(XamlRoot, () => DispatcherQueue.TryEnqueue(RefreshStatus));
 
     void EventAllow_Click(object sender, RoutedEventArgs e)
     {

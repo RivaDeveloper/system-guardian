@@ -22,6 +22,14 @@
   <ItemGroup>
     <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />  </ItemGroup>
   <ItemGroup>
+    <!-- tools\ holds separate helper projects (screenshots, link card); their sources must not end up in the app -->
+    <Compile Remove="tools\**;publish\**;dist\**;discord\**;website\**" />
+    <EmbeddedResource Remove="tools\**;publish\**;dist\**;discord\**;website\**" />
+    <None Remove="tools\**;publish\**;dist\**;discord\**;website\**" />
+    <Page Remove="tools\**" />
+    <ApplicationDefinition Remove="tools\**" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Microsoft.Diagnostics.Tracing.TraceEvent" Version="4.0.0" />
     <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.7.250310001" />
     <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.1742" />
