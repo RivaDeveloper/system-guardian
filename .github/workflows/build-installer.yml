@@ -1,0 +1,48 @@
+# Builds the Guardian installer on GitHub's own Windows machines, from the repository's source only.
+# Run it by hand: Actions > Build installer > Run workflow. Nothing here publishes a release.
+# The installer is attached to the run as an artifact, together with its SHA-256.
+name: Build installer
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 9.0.x
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: |
+          $found = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ }
+          if (-not $found) { choco install innosetup --no-progress -y }
+
+      # installer\build.ps1 fetches YARA (pinned SHA-256), publishes the app and runs Inno Setup.
+      - name: Build
+        shell: pwsh
+        run: powershell -NoProfile -ExecutionPolicy Bypass -File installer\build.ps1
+
+      - name: Checksum
+        id: sum
+        shell: pwsh
+        run: |
+          $file = Get-ChildItem dist\Guardian-Setup-*.exe | Select-Object -First 1
+          $hash = (Get-FileHash $file.FullName -Algorithm SHA256).Hash.ToLower()
+          "name=$($file.Name)" >> $env:GITHUB_OUTPUT
+          "sha=$hash" >> $env:GITHUB_OUTPUT
+          "### $($file.Name)`n`nSHA-256: ``$hash``" >> $env:GITHUB_STEP_SUMMARY
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.sum.outputs.name }}
+          path: dist/Guardian-Setup-*.exe
+          if-no-files-found: error
