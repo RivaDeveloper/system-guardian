@@ -46,6 +46,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 UsedUserAreasWarning=no
 CloseApplications=yes
 RestartApplications=no
+UsePreviousTasks=no
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -58,6 +59,8 @@ FinishedLabel=Open Guardian to check your PC. Driver installs and repairs need i
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Shortcuts:"; Flags: unchecked
+; Unchecked and not remembered: the in-app updater installs silently, and an update must never switch start-up back on after you turned it off.
+Name: "startup"; Description: "Start {#AppName} quietly in the taskbar corner when &Windows starts"; GroupDescription: "Protection:"; Flags: unchecked
 
 [Files]
 Source: "..\Assets\Fonts\Syne-ExtraBold.ttf"; DestDir: "{tmp}"; Flags: dontcopy
@@ -68,10 +71,19 @@ Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExe}"
 Name: "{group}\Uninstall {#AppName}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExe}"; Tasks: desktopicon
 
+[Registry]
+; The same per-user entry the in-app switch writes. The administrator option is made inside the app, where Windows can ask for permission.
+Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "Guardian"; ValueData: """{app}\{#AppExe}"" --background"; Tasks: startup; Flags: uninsdeletevalue
+
 [Run]
 ; Silent installs come from the in-app updater: reopen Guardian (as the signed-in user, not elevated).
 Filename: "{app}\{#AppExe}"; Flags: nowait runasoriginaluser skipifnotsilent
 Description: "Launch {#AppName}"; Filename: "{app}\{#AppExe}"; Flags: nowait postinstall skipifsilent
+
+[UninstallRun]
+; Remove whatever start-up the app set up itself (the scheduled task, and the Run entry when the installer didn't make it).
+Filename: "{sys}\schtasks.exe"; Parameters: "/Delete /TN GuardianStartup /F"; Flags: runhidden; RunOnceId: "RemoveStartupTask"
+Filename: "{sys}\reg.exe"; Parameters: "delete HKCU\Software\Microsoft\Windows\CurrentVersion\Run /v Guardian /f"; Flags: runhidden; RunOnceId: "RemoveRunEntry"
 
 [UninstallDelete]
 ; Saved VirusTotal key (DPAPI-encrypted) for the user who uninstalls.

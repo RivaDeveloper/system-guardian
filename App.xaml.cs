@@ -43,6 +43,7 @@ public partial class App : Application
             while (_showEvent.WaitOne()) MainWindow?.DispatcherQueue.TryEnqueue(ShowMainWindow);
         }) { IsBackground = true }.Start();
 
+        Task.Run(Guardian.Services.Protection.AutoStart.Tidy);
         MainWindow = new MainWindow();
 
         _tray = new TrayIcon { IsProtectionOn = () => ProtectionService.Running };

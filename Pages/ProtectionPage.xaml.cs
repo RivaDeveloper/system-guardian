@@ -38,7 +38,7 @@ public sealed partial class ProtectionPage : Page
         CloudSwitch.IsOn = p.CloudCheck;
         NotifySwitch.IsOn = p.Notify;
         BackgroundSwitch.IsOn = p.RunInBackground;
-        AutoStartSwitch.IsOn = AutoStart.IsEnabled;
+        _ = SyncStartSwitchesAsync();
         ScheduleBox.SelectedIndex = p.Schedule == "Daily" ? 1 : p.Schedule == "Weekly" ? 2 : 0;
         Exclusions.Clear();
         foreach (var x in p.Exclusions) Exclusions.Add(x);
@@ -112,8 +112,40 @@ public sealed partial class ProtectionPage : Page
             case "cloud": Save(p => p.CloudCheck = on); break;
             case "notify": Save(p => p.Notify = on); break;
             case "background": Save(p => p.RunInBackground = on); break;
-            case "autostart": AutoStart.Set(on); break;
         }
+    }
+
+    // ---- start with Windows -------------------------------------------------------------------------
+
+    /// <summary>Shows what Windows really has: asking about the task starts a small helper, so it runs off the UI thread.</summary>
+    async Task SyncStartSwitchesAsync()
+    {
+        var mode = await Task.Run(() => AutoStart.Mode);
+        var was = _loading;
+        _loading = true;
+        AutoStartSwitch.IsOn = mode != StartMode.Off;
+        AdminStartSwitch.IsOn = mode == StartMode.Admin;
+        AdminStartSwitch.IsEnabled = mode != StartMode.Off;
+        _loading = was;
+    }
+
+    async void StartToggled(object sender, RoutedEventArgs e)
+    {
+        if (_loading) return;
+        var target = !AutoStartSwitch.IsOn ? StartMode.Off
+            : sender == AdminStartSwitch ? (AdminStartSwitch.IsOn ? StartMode.Admin : StartMode.User)
+            : StartMode.User;                         // turning start-up on keeps it simple; the administrator option is a second choice
+        AutoStartSwitch.IsEnabled = AdminStartSwitch.IsEnabled = false;
+        StartNote.Visibility = Visibility.Collapsed;
+        var (ok, error) = await AutoStart.SetAsync(target);
+        if (!ok)
+        {
+            StartNote.Text = error;
+            StartNote.Foreground = Tones.Warn;
+            StartNote.Visibility = Visibility.Visible;
+        }
+        await SyncStartSwitchesAsync();               // always end on what Windows actually has
+        AutoStartSwitch.IsEnabled = true;
     }
 
     void Schedule_Changed(object sender, SelectionChangedEventArgs e)

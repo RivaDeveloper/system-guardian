@@ -184,7 +184,12 @@
                         <Grid Padding="0,12" ColumnSpacing="16"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <Border Style="{StaticResource RowIcon}"><FontIcon Glyph="&#xE768;" FontSize="18" Foreground="{StaticResource InkBrush}" /></Border>
                             <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Start Guardian with Windows" Style="{StaticResource RowTitle}" /><TextBlock Style="{StaticResource RowText}" Text="Starts quietly in the taskbar corner when you sign in, so you are protected from the start." /></StackPanel>
-                            <ToggleSwitch x:Name="AutoStartSwitch" Grid.Column="2" Tag="autostart" OnContent="On" OffContent="Off" VerticalAlignment="Center" Toggled="Option_Toggled" /></Grid>
+                            <ToggleSwitch x:Name="AutoStartSwitch" Grid.Column="2" OnContent="On" OffContent="Off" VerticalAlignment="Center" Toggled="StartToggled" /></Grid>
+                        <Rectangle Height="1" Fill="{StaticResource StrokeBrush}" />
+                        <Grid Padding="0,12" ColumnSpacing="16"><Grid.ColumnDefinitions><ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <Border Style="{StaticResource RowIcon}"><FontIcon Glyph="&#xE72E;" FontSize="18" Foreground="{StaticResource InkBrush}" /></Border>
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center"><TextBlock Text="Start with administrator rights (recommended)" Style="{StaticResource RowTitle}" /><TextBlock Style="{StaticResource RowText}" Text="Lets the &quot;programs as they start&quot; shield work right after you sign in. Windows asks you to allow it once when you switch this on, and never again at start-up." /><TextBlock x:Name="StartNote" Style="{StaticResource RowText}" Visibility="Collapsed" TextWrapping="Wrap" /></StackPanel>
+                            <ToggleSwitch x:Name="AdminStartSwitch" Grid.Column="2" OnContent="On" OffContent="Off" VerticalAlignment="Center" Toggled="StartToggled" /></Grid>
                     </StackPanel>
                 </Border>
                 <TextBlock Foreground="{StaticResource FaintBrush}" FontSize="12" TextWrapping="Wrap" Margin="4,4,0,0"
